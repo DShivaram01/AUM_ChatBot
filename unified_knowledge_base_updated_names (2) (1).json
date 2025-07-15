@@ -1,0 +1,340 @@
+[
+
+    {
+        "id": "runderwood@aum.edu",
+        "name": "Dr. Robert Underwood",
+        "category": "Faculty",
+        "topic": "Faculty Full Context",
+        "subtopic": "Dr. Robert Underwood - Complete Profile",
+        "department": "Computer Science",
+        "research_areas": "Number Theory, Applied Cryptography",
+        "web_link": "https://www.aum.edu/directory/robert-underwood/",
+        "content": "Dr. Robert Underwood is a Professor in the Department of Computer Science at Auburn University at Montgomery. He specializes in number theory and applied cryptography."
+    },
+    {
+        "id": "okursun@aum.edu",
+        "name": "Dr. Olcay Kursun",
+        "category": "Faculty",
+        "topic": "Faculty Full Context",
+        "subtopic": "Dr. Olcay Kursun - Complete Profile",
+        "department": "Computer Science",
+        "research_areas": "Machine Learning, Deep Learning",
+        "web_link": "https://www.aum.edu/directory/kursun-olcay/",
+        "content": "Dr. Olcay Kursun is an Assistant Professor in the College of Sciences at Auburn University at Montgomery. He is affiliated with the Department of Computer Science & Computer Information Systems. His office is located in Goodwyn Hall, Room 310F. You can reach him at okursun@aum.edu or by phone at 334-244-3314."
+    },
+    {
+        "id": "bokeke@aum.edu",
+        "category": "Faculty",
+        "topic": "Faculty Full Context",
+        "subtopic": "Dr. Ben Okeke - Complete Profile",
+        "department": " ",
+        "research_areas": " ",
+        "content": "Dr. Ben Okeke is a Professor in the College of Sciences at Auburn University at Montgomery, serving in the Department of Biology & Environmental Science. He holds a Ph.D. (1994) and M.S. (1989) from the University of Strathclyde, Glasgow, Scotland, and a B.S. (1985) from the University of Nigeria, Nsukka. He is a Distinguished Research Professor of Industrial and Environmental Microbiology. His teaching areas include Industrial Microbiology, Environmental Microbiology, Special Topics in Biotechnology, General Microbiology, and Directed Research.\n\nDr. Okeke\u2019s research interests span biofuel and co-products, biosensors, bioremediation, enzyme biotechnology, the effects of pollutants on microbial communities, microbiological safety indicators in water and food, and genetic engineering of microbes. He has completed postdoctoral work at the University of California, Riverside; Gifu University in Japan; and the International Center for Genetic Engineering and Biotechnology in Trieste, Italy.\n\nDr. Okeke has published over 60 research papers in peer-reviewed journals, holds three U.S. patents, and authored two books. He has contributed numerous conference abstracts and received several major research grants, including a million-dollar grant for research on ethanol fuel production from biomass. His awards include the Alumni Professor honor and the Ida Belle Young Endowed Professorship. He is the founding Director of the Bioprocessing and Biofuel Research Lab (BBRL). Dr. Okeke has also served as Associate and Assistant Editor for the Journal of Environmental Quality and Applied Biochemistry and Biotechnology.\n\nContact: bokeke@aum.edu | Phone: 334-244-3508 | Office: Science and Technology Complex, Room 1116.",
+        "name": "Dr. Ben Okeke"
+    },
+    {
+        "id": "cward3@aum.edu",
+        "category": "Faculty",
+        "topic": "Faculty Full Context",
+        "subtopic": "Dr. Chelsea Ward - Complete Profile",
+        "department": " ",
+        "research_areas": " ",
+        "content": "Dr. Chelsea Ward is a Professor and Head of the Department of Biology & Environmental Science and RHERI at Auburn University at Montgomery. She earned her Ph.D. in Biology from Auburn University in 2005 and her B.S. in Marine Biology from the Florida Institute of Technology in 1998. \n\nHer research focuses on immunology and stress physiology, particularly as it relates to temperature variations and changing environments. Dr. Ward is also interested in studying latitudinal gradients in stress physiology, immunology, and metabolism in Anurans. \n\nYou can contact her at cward3@aum.edu or by phone at 334-244-3317. Her office is located in the Science and Technology Complex, Room 1112.",
+        "name": "Dr. Chelsea Ward"
+    },
+    {
+        "id": "gcosta@aum.edu",
+        "category": "Faculty",
+        "topic": "Faculty Full Context",
+        "subtopic": "Dr. Gabriel Costa - Complete Profile",
+        "department": " ",
+        "research_areas": " ",
+        "content": "Dr. Gabriel Costa is an Associate Professor in the Department of Biology & Environmental Science at Auburn University at Montgomery. He also serves as the Coordinator of Environmental Sciences and GIS. \n\nDr. Costa\u2019s research centers on understanding the ecological and evolutionary drivers of biodiversity variation at global scales. He has studied amphibians, reptiles, and mammals to uncover how abiotic, biotic, and evolutionary forces shape biodiversity from local to global patterns. His work is also oriented toward applying scientific insights to support conservation decisions and help mitigate the negative ecological impacts of human activities. \n\nHe teaches courses such as Biostatistics, Species Distribution Modeling, Landscape Ecology, and Biogeography and Macroecology \u2014 with an emphasis on data analytics, R programming, GIS, and spatial analysis. \n\nDr. Costa has published more than 60 peer-reviewed articles that have been cited over 2,400 times. He can be reached at gcosta@aum.edu or 334-244-3229. His office is located in the Science and Technology Complex, Room 1060.",
+        "name": "Dr. Gabriel Costa"
+    },
+    {
+        "id": "phaddix@aum.edu",
+        "category": "Faculty",
+        "topic": "Faculty Full Context",
+        "subtopic": "Dr. Pryce Haddix - Complete Profile",
+        "department": " ",
+        "research_areas": " ",
+        "content": "Dr. Pryce Haddix is an Associate Professor in the Department of Biology & Environmental Science at Auburn University at Montgomery. He earned his Ph.D. in Microbiology from the University of Kentucky in May 1992 and his B.A. in Biology with a chemistry emphasis from Transylvania University, Lexington, KY, in May 1985. \n\nDr. Haddix has a broad background in microbiology and molecular biology. His primary research interest focuses on the biological functions of bacterial pigments and the use of bacteria as biological sensors to detect environmental contaminants. He is especially known for his work on a red pigment called prodigiosin, produced by the bacterium *Serratia marcescens*.\n\nHis early work suggested a negative role of the pigment in cellular energy production during periods of high cell multiplication. More recent research has shown that when energy levels are low, prodigiosin plays a positive role by enhancing cellular energy production, effectively doubling the yield of pigmented cells compared to non-pigmented ones. His most recent studies further define this dual role and are preparing for publication. \n\nDr. Haddix continues to explore how prodigiosin affects cellular energy fluxes in bacterial population growth. Contact: phaddix@aum.edu | Office: STC 1072 | Phone: 334-244-3333.",
+        "name": "Dr. Pryce Haddix"
+    },
+    {
+        "id": "tkroft@aum.edu",
+        "category": "Faculty",
+        "topic": "Faculty Full Context",
+        "subtopic": "Dr. Tim Kroft - Complete Profile",
+        "department": " ",
+        "research_areas": " ",
+        "content": "Dr. Tim Kroft is an Associate Professor in the Department of Biology & Environmental Science at Auburn University at Montgomery. He is based in the Science and Technology Complex, Room 1104. \n\nYou can reach him via email at tkroft@aum.edu or by phone at 334-244-3331. Additional academic and research information about Dr. Kroft will be updated as more details become available.",
+        "name": "Dr. Tim Kroft"
+    },
+    {
+        "id": "cstein1@aum.edu",
+        "category": "Faculty",
+        "topic": "Faculty Full Context",
+        "subtopic": "Dr. Claudia Stein - Complete Profile",
+        "department": " ",
+        "research_areas": " ",
+        "content": "Dr. Claudia Stein is an Assistant Professor in the Department of Biology & Environmental Science at Auburn University at Montgomery. She received her Ph.D. in Biology in 2008 from the University of Potsdam & Helmholtz Centre for Environmental Research in Germany. She also holds a Diploma in Biology (with a focus on chemical ecology and botany) from Freie Universit\u00e4t Berlin, Germany, awarded in 2003.\n\nDr. Stein specializes in plant ecology and is broadly interested in understanding the patterns, causes, and consequences of plant diversity. Her research focuses on the mechanisms through which species interactions\u2014such as plant-soil microbial feedbacks and plant-herbivore dynamics\u2014affect species diversity, biological invasions, and ecosystem functioning under the influence of climate change. Her work is driven by the goal of developing effective management solutions for restoration, conservation, and climate change mitigation.\n\nShe conducts research across various ecosystems, including grasslands, working rangelands, and woodlands. Her work is widely published in journals such as *Ecology*, *Journal of Ecology*, *Oecologia*, *Plant and Soil*, *Mycorrhiza*, and *Ecology and Evolution*. Dr. Stein is an active member of the Ecological Society of America (ESA) and the Ecological Society of Germany, Austria, and Switzerland (Gf\u00d6).\n\nContact: cstein1@aum.edu | Office: STC 1102 | Phone: 334-244-3145",
+        "name": "Dr. Claudia Stein"
+    },
+    {
+        "id": "dkim@aum.edu",
+        "category": "Faculty",
+        "topic": "Faculty Full Context",
+        "subtopic": "Dr. Duk (Daniel) Kim - Complete Profile",
+        "department": " ",
+        "research_areas": " ",
+        "content": "Dr. Duk (Daniel) Kim is the Department Chair and Professor in the Department of Chemistry at the College of Sciences, AUM. His office is located at the Science and Technology Complex, Room 1062. You can reach him via email at dkim@aum.edu or call 334-244-3329. Dr. Kim holds a Ph.D. in Chemistry from Florida International University (2003), an M.S. in Chemistry (1987), and a B.S. in Chemistry (1985), both from Yonsei University in Seoul, Korea. An organic chemist by specialization, Dr. Kim\u2019s research interests include the use of ultrasound to accelerate slow chemical reactions, the removal of persistent pollutants from polluted water, and the use of ultrasound to measure the antioxidant capacity of natural materials. His broad expertise spans the synthesis of unusual organic compounds, nuclear chemistry involving reactors and particle accelerators, environmental remediation via advanced oxidation, and the modification of solid materials using accelerated particle beams. He also serves as the advisor of the Chemistry Club at AUM.",
+        "name": "Dr. Duk (Daniel) Kim"
+    },
+    {
+        "id": "jhutchi4@aum.edu",
+        "category": "Faculty",
+        "topic": "Faculty Full Context",
+        "subtopic": "Dr. John Hutchison - Complete Profile",
+        "department": " ",
+        "research_areas": " ",
+        "content": "Dr. John Hutchison is an Associate Professor in the Department of Chemistry at the College of Sciences, AUM. He can be contacted at jhutchi4@aum.edu or 334-244-3522, and his office is located in the Science and Technology Complex, Room 1066. He earned his Ph.D. in Organic Chemistry from the University of Arkansas in 2007 and his B.S. in Chemistry from the University of Southern Indiana in 2000. Dr. Hutchison specializes in Synthetic Organic Chemistry, with research interests centered on the synthesis of structurally interesting and biologically active molecules. His graduate and postdoctoral research involved work on complex molecules like eupomatilone-6, sclerophytin A, and antascomicin B, as well as organometallic complexes and semiconductor nanoparticles. At AUM, his undergraduate students have synthesized natural products including gymnoascolide A, eutypoid A, and microperfuranone. Ongoing research projects involve short synthetic pathways for active natural products and antibacterial structure-activity studies. Dr. Hutchison is recognized as both an excellent research mentor and a life guide for his students.",
+        "name": "Dr. John Hutchison"
+    },
+    {
+        "id": "ssakamur@aum.edu",
+        "category": "Faculty",
+        "topic": "Faculty Full Context",
+        "subtopic": "Dr. Siva Sakamuri - Complete Profile",
+        "department": " ",
+        "research_areas": " ",
+        "content": "Dr. Siva Sakamuri is an Assistant Professor in the Department of Chemistry at AUM\u2019s College of Sciences. He is located in the Science and Technology Complex, Room 1082, and can be contacted via email at ssakamur@aum.edu or by phone at 334-394-5808. Further research interests and teaching areas were not specified in the current data.",
+        "name": "Dr. Siva Sakamuri"
+    },
+    {
+        "id": "tbhattacharya@aum.edu",
+        "name": "Dr. Tathagata Bhattacharya",
+        "category": "Faculty",
+        "topic": "Faculty Full Context",
+        "subtopic": "Dr. Tathagata Bhattacharya - Complete Profile",
+        "department": "Computer Science",
+        "research_areas": "Green Computing, Sustainable Engineering",
+        "web_link": "https://www.aum.edu/directory/bhattacharya-tathagata/",
+        "content": "Dr. Tathagata Bhattacharya is a faculty member in the Department of Computer Science at Auburn University at Montgomery. His research interests include green computing and sustainable engineering."
+    },
+    {
+        "id": "nthomas@aum.edu",
+        "name": "Dr. Nick Thomas",
+        "category": "Faculty",
+        "topic": "Faculty Full Context",
+        "subtopic": "Dr. Nick Thomas - Complete Profile",
+        "department": " ",
+        "research_areas": " ",
+        "content": "Dr. Nick Thomas is a Professor in the Department of Chemistry at AUM\u2019s College of Sciences. He can be found in Room 1064 of the Science and Technology Complex and reached via email at nthomas@aum.edu or phone at 334-244-3327. He was honored as a Distinguished Teaching Professor from 2006 to 2009. Dr. Thomas teaches Inorganic Chemistry, Analytical Chemistry, and General Chemistry. His research focuses on coordination chemistry of transition metals, including lanthanide (rare earth) elements, and chemical education. Beyond the academic sphere, Dr. Thomas has written numerous encyclopedia entries and general-interest articles for newspapers and magazines across the U.S."
+
+    },
+    {
+        "id": "varma@aum.edu",
+        "name": "Dr. Mrinal Varma",
+        "category": "Faculty",
+        "topic": "Faculty Full Context",
+        "subtopic": "Dr. Mrinal Varma - Complete Profile",
+        "department": " ",
+        "research_areas": " ",
+        "content": "Dr. Mrinal Varma serves as the Provost and Senior Vice Chancellor at Auburn University at Montgomery. He is part of the university\u2019s leadership team under the Department of Leadership and Provost. Dr. Varma\u2019s office is located in the Administration Building. You can contact him via email at varma@aum.edu or by phone at 334-244-3600."
+
+    },
+    {
+        "id": "svarma@aum.edu",
+        "name": "Dr. Shanta Varma",
+        "category": "Faculty",
+        "topic": "Faculty Full Context",
+        "subtopic": "Dr. Shanta Varma - Complete Profile",
+        "department": " ",
+        "research_areas": " ",
+        "content": "Dr. Shanta Varma is a Special Advisor to the Chancellor for Distance Education and Collaborative Partnerships, and a Professor in the College of Education at Auburn University at Montgomery. She contributes across multiple departments, including Chancellor, Collaborative Partnerships, Curriculum, Instruction & Technology, Distance Education, and Leadership. Dr. Varma\u2019s office is located in the Administration Building, Room 107D. You can reach her at svarma@aum.edu or by phone at 334-244-3272."
+
+    },
+    {
+        "id": "zqin@aum.edu",
+        "name": "Dr. Zhenlu Qin",
+        "category": "Faculty",
+        "topic": "Faculty Full Context",
+        "subtopic": "Dr. Zhenlu Qin - Complete Profile",
+        "department": "Computer Science",
+        "research_areas": "High-Performance Computing (HPC), Data Compression and Reduction, I/O Performance",
+        "web_link": "https://www.aum.edu/directory/qin-zhenlu/",
+        "content": "Dr. Zhenlu Qin is an Assistant Professor in the College of Sciences at Auburn University at Montgomery. She is part of the Department of Computer Science & Computer Information Systems. Her office is located in Goodwyn Hall, Room 310R. You can contact her at zqin@aum.edu or call 334-244-5639."
+    },
+    {
+        "id": "wli1@aum.edu",
+        "name": "Dr. Wei Li",
+        "category": "Faculty",
+        "topic": "Faculty Full Context",
+        "subtopic": "Dr. Wei Li - Complete Profile",
+        "department": " ",
+        "research_areas": " ",
+        "content": "Dr. Wei Li is a Lecturer in the College of Sciences at Auburn University at Montgomery. He serves in the Department of Computer Science & Computer Information Systems. His office is located in Goodwyn Hall. You can reach him at wli1@aum.edu. Phone contact is currently not available."
+
+    },
+    {
+        "id": "ycui1@aum.edu",
+        "name": "Dr. Yue Cui",
+        "category": "Faculty",
+        "topic": "Faculty Full Context",
+        "subtopic": "Dr. Yue Cui - Complete Profile",
+        "department": " ",
+        "research_areas": " ",
+        "content": "Dr. Yue Cui is a Lecturer in the College of Sciences at Auburn University at Montgomery. She works in the Department of Computer Science & Computer Information Systems. Her office is located in the Education Building, Room 210. You can contact her at ycui1@aum.edu or call 334-394-5338."
+
+    },
+    {
+        "id": "lwu@aum.edu",
+        "name": "Dr. Lei Wu",
+        "category": "Faculty",
+        "topic": "Faculty Full Context",
+        "subtopic": "Dr. Lei Wu - Complete Profile",
+        "department": "Computer Science",
+        "research_areas": "Robotics, 3D Modeling",
+        "web_link": "https://www.aum.edu/directory/lei-wu/",
+        "content": "Dr. Lei Wu is a Professor and the Department Chair of Computer Science & Computer Information Systems in the College of Sciences at Auburn University at Montgomery. His office is located in Goodwyn Hall. You can reach him at lwu@aum.edu or call 334-244-3862."
+    },
+    {
+        "id": "sbhatta4@aum.edu",
+        "category": "Faculty",
+        "topic": "Faculty Full Context",
+        "subtopic": "Dr. Sutanu Bhattacharya - Complete Profile",
+        "department": "Computer Science, Biology",
+        "research_areas": "Computational Biology, NLP, Deep Learning",
+        "web_link": "https://www.aum.edu/directory/bhattacharya-sutanu/",
+        "content": "Dr. Sutanu Bhattacharya is an Assistant Professor in the College of Sciences at Auburn University at Montgomery. He is part of the Department of Computer Science & Computer Information Systems. His office is located in Goodwyn Hall, Room 309L. You can contact him at sbhatta4@aum.edu or by phone at 334-244-3251.",
+        "name": "Dr. Sutanu Bhattacharya"
+    },
+    {
+        "id": "search-001",
+        "category": "DSA",
+        "topic": "Searching",
+        "subtopic": "Overview",
+        "content": "Searching is a core concept in computer science where the goal is to retrieve the position or presence of an element within a data structure. Common algorithms include Linear Search and Binary Search. Choosing the right algorithm depends on data organization, time constraints, and memory limits."
+    },
+    {
+        "id": "search-002",
+        "category": "DSA",
+        "topic": "Searching",
+        "subtopic": "Linear Search - Algorithm & Complexity",
+        "content": "Linear Search checks every element in the array from left to right until the target is found. Time complexity: O(n) in worst and average case, O(1) in best case. Space complexity is O(1). It\u2019s simple and works on unsorted arrays."
+    },
+    {
+        "id": "search-003",
+        "category": "DSA",
+        "topic": "Searching",
+        "subtopic": "Linear Search - When to Use",
+        "content": "Use Linear Search when the dataset is small or unsorted and search operations are infrequent. It's best used for quick one-time scans where sorting the data isn\u2019t justified."
+    },
+    {
+        "id": "search-004",
+        "category": "DSA",
+        "topic": "Searching",
+        "subtopic": "Binary Search - Algorithm & Complexity",
+        "content": "Binary Search is a divide-and-conquer algorithm used on sorted arrays. It compares the target to the middle element and recursively halves the search space. Time complexity: O(log n), space complexity: O(1) (iterative), O(log n) (recursive)."
+    },
+    {
+        "id": "search-005",
+        "category": "DSA",
+        "topic": "Searching",
+        "subtopic": "Binary Search - Requirements & Limitations",
+        "content": "Binary Search requires the input array to be sorted and supports random access. It doesn't work on linked lists or unsorted data. Requires careful handling of edge cases like duplicates and integer overflow when calculating mid."
+    },
+    {
+        "id": "search-006",
+        "category": "DSA",
+        "topic": "Searching",
+        "subtopic": "Binary Search - Iterative vs Recursive",
+        "content": "The iterative version of Binary Search uses a loop and constant space, while the recursive version uses the call stack and can lead to stack overflow on large arrays. Choose iterative for better space efficiency."
+    },
+    {
+        "id": "search-007",
+        "category": "DSA",
+        "topic": "Searching",
+        "subtopic": "Binary vs Linear Search",
+        "content": "Linear Search works on unsorted data but has O(n) time, while Binary Search works only on sorted data with O(log n) time. Binary Search is faster on large sorted arrays. Linear Search is better when sorting is too expensive or unnecessary."
+    },
+    {
+        "id": "divide-001",
+        "category": "DSA",
+        "topic": "Divide and Conquer",
+        "subtopic": "Concept Overview",
+        "content": "Divide and Conquer splits problems into smaller parts, solves each recursively, and combines them. It's used in many efficient algorithms and reduces time complexity by eliminating redundant work. Examples: Merge Sort, Quick Sort, Binary Search, Strassen\u2019s Matrix Multiplication."
+    },
+    {
+        "id": "divide-002",
+        "category": "DSA",
+        "topic": "Divide and Conquer",
+        "subtopic": "Merge Sort - Algorithm & Complexity",
+        "content": "Merge Sort divides the array into halves, sorts them recursively, and merges the sorted halves. It guarantees O(n log n) time in all cases and uses O(n) space. It is stable and good for linked lists or external sorting."
+    },
+    {
+        "id": "divide-003",
+        "category": "DSA",
+        "topic": "Divide and Conquer",
+        "subtopic": "Merge Sort - Use Cases",
+        "content": "Use Merge Sort when stability is needed or data size exceeds memory (external sorting). It works well on linked lists since it doesn\u2019t require random access like Quick Sort."
+    },
+    {
+        "id": "divide-004",
+        "category": "DSA",
+        "topic": "Divide and Conquer",
+        "subtopic": "Quick Sort - Algorithm & Complexity",
+        "content": "Quick Sort picks a pivot, partitions the array, and recursively sorts the partitions. Average time: O(n log n), Worst: O(n^2), Space: O(log n). It\u2019s in-place but not stable. Randomized Quick Sort reduces worst-case chance."
+    },
+    {
+        "id": "divide-005",
+        "category": "DSA",
+        "topic": "Divide and Conquer",
+        "subtopic": "Quick Sort - When to Use",
+        "content": "Quick Sort is efficient in memory-constrained environments. It has lower constant factors than Merge Sort and is widely used in practice. Use it when stability is not required and worst-case behavior can be mitigated."
+    },
+    {
+        "id": "divide-006",
+        "category": "DSA",
+        "topic": "Divide and Conquer",
+        "subtopic": "Quick vs Merge Sort",
+        "content": "Quick Sort is faster on average and uses less memory but is unstable. Merge Sort is stable and consistent but uses extra space. Choose based on data constraints: stability and large datasets favor Merge Sort; in-place speed favors Quick Sort."
+    },
+    {
+        "id": "greedy-001",
+        "category": "DSA",
+        "topic": "Greedy Algorithms",
+        "subtopic": "Concept Overview",
+        "content": "Greedy Algorithms make locally optimal choices at each step hoping they lead to a globally optimal solution. Greedy methods are efficient and simple but don\u2019t always guarantee global optimality unless the problem exhibits greedy-choice property and optimal substructure."
+    },
+    {
+        "id": "greedy-002",
+        "category": "DSA",
+        "topic": "Greedy Algorithms",
+        "subtopic": "Activity Selection - Problem Statement",
+        "content": "Given start and end times of activities, the goal is to select the maximum number of non-overlapping activities. Sort by end time and pick the earliest finishing activity compatible with previous selections."
+    },
+    {
+        "id": "greedy-003",
+        "category": "DSA",
+        "topic": "Greedy Algorithms",
+        "subtopic": "Activity Selection - Greedy Justification",
+        "content": "Choosing the earliest finishing activity ensures that more slots are left for upcoming activities. This local greedy choice leads to a global optimum. The problem satisfies both greedy choice and optimal substructure properties."
+    },
+    {
+        "id": "greedy-004",
+        "category": "DSA",
+        "topic": "Greedy Algorithms",
+        "subtopic": "Fractional Knapsack - Greedy Strategy",
+        "content": "In Fractional Knapsack, items can be broken. To maximize value, sort items by value-to-weight ratio and greedily pick highest ratios first until the capacity is filled. This greedy method gives an optimal solution because partial inclusion is allowed."
+    },
+    {
+        "id": "greedy-005",
+        "category": "DSA",
+        "topic": "Greedy Algorithms",
+        "subtopic": "Greedy vs Dynamic Programming",
+        "content": "Greedy algorithms are faster and simpler but require strict conditions to work (greedy choice + optimal substructure). Dynamic Programming is more flexible and handles overlapping subproblems but is usually slower and uses more space."
+    }
+]
