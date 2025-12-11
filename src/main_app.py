@@ -2,6 +2,7 @@
 
 import gradio as gr
 from typing import List, Dict, Tuple
+from pathlib import Path
 
 from modes.faculty_mode import init_faculty_mode, faculty_chat_handler
 from modes.research_mode import init_research_mode, research_chat_handler
