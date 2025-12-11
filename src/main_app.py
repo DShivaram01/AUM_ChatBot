@@ -114,4 +114,4 @@ def build_ui():
 if __name__ == "__main__":
     init_all_modes()
     app = build_ui()
-    app.launch(debug=True, share=False)
+    app.launch(debug=True, share=True)
