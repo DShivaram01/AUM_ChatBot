@@ -1,25 +1,27 @@
 """
 research_mode.py
 
-Modular version of research_2.0_frozen.ipynb.
+COS Research Mode for your CS-BOT.
 
-Provides:
-- init_research_mode(...)       # load COS JSONL, build/load FAISS + BM25 + models
-- research_chat_handler(...)    # main handler for COS research Q&A (chat-style)
-- retrieve_layered(...)         # core layered retriever (BM25 -> FAISS -> rerank)
-- summarize_best(...)           # Phi-2 research summary for best hit
+Responsibilities:
+- Load cos_data.jsonl (COS research abstracts with metadata)
+- Build / load Sentence-BERT embeddings + FAISS IP index
+- Build BM25 over metadata (title, mentor, lead presenters, dept, category, year, keywords)
+- Layered retrieval: BM25 -> FAISS fallback + CrossEncoder rerank
+- Generate single-project summaries with Phi-2
+- Switch between 'single' and 'list' mode based on rerank scores
 
-Intended usage from main_app.py:
+Public API:
+- init_research_mode(data_file, out_dir, rebuild_store=False, ...)
+- research_query(query, max_rows=50) -> (mode, combined_text, table_rows)
 
-    from research_mode import init_research_mode, research_chat_handler
+Debug CLI:
+    python -m src.modes.research_mode --rebuild
 
-    init_research_mode(
-        data_file="COS_dataset/cos_data.jsonl",
-        out_dir="COS_dataset/emb_store",
-    )
-
-    history, memory = [], []
-    history, memory = research_chat_handler("projects about protein homology", history, memory)
+It will:
+- auto-resolve default dataset + emb_store paths relative to this file
+- init Research Mode
+- open an interactive Q&A loop where each query prints either a summary or a list.
 """
 
 from __future__ import annotations
@@ -28,86 +30,84 @@ import os
 import json
 import time
 import re
+import argparse
 from typing import List, Dict, Any, Optional, Tuple
+
+from pathlib import Path
+from collections import defaultdict
 
 import numpy as np
 import faiss
 import torch
 from sentence_transformers import SentenceTransformer, CrossEncoder
-from transformers import AutoTokenizer, AutoModelForCausalLM
 from rank_bm25 import BM25Okapi
-from collections import defaultdict
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 
 # =====================================================================
-# GLOBALS (initialized by init_research_mode)
+# GLOBALS
 # =====================================================================
 
 DEVICE: str = "cuda" if torch.cuda.is_available() else "cpu"
 
-EMBED_MODEL_ID: str = "sentence-transformers/all-MiniLM-L6-v2"
-RERANKER_ID: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
-PHI_MODEL_ID: str = "microsoft/phi-2"
+EMBED_MODEL_ID_DEFAULT: str = "sentence-transformers/all-MiniLM-L6-v2"
+RERANKER_ID_DEFAULT: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+PHI_MODEL_ID_DEFAULT: str = "microsoft/phi-2"
+PHI_MODEL_ID_SMALL: str = "microsoft/phi-1_5"
 
-embedder: Optional[SentenceTransformer] = None
-reranker: Optional[CrossEncoder] = None
-phi_tok: Optional[AutoTokenizer] = None
-phi_model: Optional[AutoModelForCausalLM] = None
-
-# COS data
-ROWS: List[Dict[str, Any]] = []
-IDS: List[Any] = []
-TEXTS: List[str] = []
-META: List[Dict[str, Any]] = []
-
-# Store files
+# Embedding / index paths (set by init_research_mode)
 EMB_PATH: str = ""
 ID_PATH: str = ""
 META_PATH: str = ""
 TEXTS_PATH: str = ""
 FAISS_PATH: str = ""
 
-# Loaded store
-index: Optional[faiss.Index] = None
-EMB: Optional[np.ndarray] = None
-ID_LIST: List[Any] = []
-META_LIST: List[Dict[str, Any]] = []
-TEXTS_LIST: List[str] = []
+# Data + models
+ROWS: List[Dict[str, Any]] = []       # raw rows (id, text, metadata)
+IDS: List[str] = []
+TEXTS: List[str] = []
+META: List[Dict[str, Any]] = []
 
-# BM25 & name/field indexes
+EMB: Optional[np.ndarray] = None
+index: Optional[faiss.Index] = None
+
 bm25: Optional[BM25Okapi] = None
 
-INDEX_LEAD_PRESENTERS = defaultdict(list)   # norm_name(lead_presenter) -> [row_idx,...]
-INDEX_MENTOR          = defaultdict(list)   # norm_name(mentor)        -> [row_idx,...]
-INDEX_DEPARTMENT      = defaultdict(list)   # norm_text(dept)          -> [row_idx,...]
-INDEX_CATEGORY        = defaultdict(list)   # norm_text(category)      -> [row_idx,...]
-INDEX_YEAR            = defaultdict(list)   # "2024"                   -> [row_idx,...]
-INDEX_KEYWORD         = defaultdict(list)   # norm_text(keyword)       -> [row_idx,...]
+embedder: Optional[SentenceTransformer] = None
+reranker: Optional[CrossEncoder] = None
+
+phi_tok: Optional[AutoTokenizer] = None
+phi_model: Optional[AutoModelForCausalLM] = None
+
+# Name normalization / indexes (currently not used heavily but kept for future)
+INDEX_LEAD_PRESENTERS = defaultdict(list)
+INDEX_MENTOR = defaultdict(list)
+INDEX_DEPARTMENT = defaultdict(list)
+INDEX_CATEGORY = defaultdict(list)
+INDEX_YEAR = defaultdict(list)
+INDEX_KEYWORD = defaultdict(list)
 
 ALL_LEAD_PRESENTERS = set()
-ALL_MENTORS         = set()
-ALL_DEPARTMENTS     = set()
-ALL_CATEGORIES      = set()
-ALL_YEARS           = set()
-ALL_KEYWORDS        = set()
-
-# Simple chat memory (not heavily used here but kept for consistency)
-MAX_MEMORY = 5
+ALL_MENTORS = set()
+ALL_DEPARTMENTS = set()
+ALL_CATEGORIES = set()
+ALL_YEARS = set()
+ALL_KEYWORDS = set()
 
 
 # =====================================================================
-# JSONL LOADER
+# UTIL: LOAD JSONL
 # =====================================================================
 
 def load_jsonl(path: str) -> List[Dict[str, Any]]:
-    rows: List[Dict[str, Any]] = []
+    rows_local = []
     with open(path, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line:
                 continue
-            rows.append(json.loads(line))
-    return rows
+            rows_local.append(json.loads(line))
+    return rows_local
 
 
 # =====================================================================
@@ -115,7 +115,6 @@ def load_jsonl(path: str) -> List[Dict[str, Any]]:
 # =====================================================================
 
 def norm_text(s: str) -> str:
-    """Generic cleaner for text fields (dept, category, keywords)."""
     if not s:
         return ""
     s = s.lower().strip()
@@ -124,7 +123,6 @@ def norm_text(s: str) -> str:
 
 
 def norm_name(name: str) -> str:
-    """Name-specific cleaner (presenters, mentor)."""
     if not name:
         return ""
     name = name.lower()
@@ -135,32 +133,50 @@ def norm_name(name: str) -> str:
 
 
 # =====================================================================
-# STORE BUILD / LOAD
+# BUILD / LOAD STORE
 # =====================================================================
 
-def _build_store() -> None:
+def _build_store(data_file: str) -> None:
     """
-    Build embeddings + FAISS ip index from global TEXTS / IDS
-    using global paths defined in init_research_mode.
+    Build:
+      - ROWS, IDS, TEXTS, META
+      - embeddings (cosine-normalized SBERT)
+      - FAISS IndexFlatIP + IDMap
+      - Save everything to disk
     """
-    global EMB, index
+    global ROWS, IDS, TEXTS, META, EMB, index
 
     if embedder is None:
-        raise RuntimeError("Embedder not initialized before _build_store().")
+        raise RuntimeError("embedder must be initialized before _build_store().")
 
+    print(f"\n📂 Loading COS research data from: {data_file}")
+    ROWS = load_jsonl(data_file)
+    print(f"Loaded {len(ROWS)} rows")
+
+    IDS = [r["id"] for r in ROWS]
+    TEXTS = [r["text"] for r in ROWS]
+    META = [r["metadata"] for r in ROWS]
+
+    print("\nSample row (keys):")
+    if ROWS:
+        print("id:", IDS[0])
+        print("metadata keys:", list(META[0].keys())[:10])
+        print("text first 200 chars:\n", TEXTS[0][:200], "...")
+    else:
+        print("No rows found in dataset!")
+
+    # Embeddings
     print("\n[Build] Encoding texts for embeddings (cosine)...")
-    EMB = embedder.encode(
-        TEXTS,
-        batch_size=64,
-        convert_to_numpy=True,
-        normalize_embeddings=True,
-    )
+    EMB = embedder.encode(TEXTS, batch_size=64, convert_to_numpy=True, normalize_embeddings=True)
 
     print("[Build] Building FAISS (IndexFlatIP + IDMap)...")
-    faiss_index = faiss.IndexFlatIP(EMB.shape[1])
-    faiss_index = faiss.IndexIDMap2(faiss_index)
-    faiss_index.add_with_ids(EMB, np.arange(len(IDS)).astype(np.int64))
+    base_index = faiss.IndexFlatIP(EMB.shape[1])
+    id_map = faiss.IndexIDMap2(base_index)
+    id_map.add_with_ids(EMB, np.arange(len(IDS)).astype(np.int64))
+    index = id_map
 
+    # Save
+    os.makedirs(os.path.dirname(EMB_PATH), exist_ok=True)
     np.save(EMB_PATH, EMB)
     with open(ID_PATH, "w", encoding="utf-8") as f:
         json.dump(IDS, f)
@@ -168,44 +184,53 @@ def _build_store() -> None:
         json.dump(META, f, indent=2)
     with open(TEXTS_PATH, "w", encoding="utf-8") as f:
         json.dump(TEXTS, f)
-
-    faiss.write_index(faiss_index, FAISS_PATH)
-    index = faiss_index
-    print("✅ Store built & saved:", index.ntotal, "vectors")
+    faiss.write_index(index, FAISS_PATH)
+    print("✅ COS store built & saved:", index.ntotal, "vectors")
 
 
 def _load_store() -> None:
     """
-    Load FAISS + embeddings + meta from disk into globals.
+    Load embeddings / index / ids / metadata / texts from disk.
     """
-    global index, EMB, ID_LIST, META_LIST, TEXTS_LIST
+    global ROWS, IDS, TEXTS, META, EMB, index
 
+    print("\n📥 Loading COS emb_store from disk...")
     index = faiss.read_index(FAISS_PATH)
     EMB = np.load(EMB_PATH)
-
     with open(ID_PATH, "r", encoding="utf-8") as f:
-        ID_LIST = json.load(f)
+        IDS_local = json.load(f)
     with open(META_PATH, "r", encoding="utf-8") as f:
-        META_LIST = json.load(f)
+        META_local = json.load(f)
     with open(TEXTS_PATH, "r", encoding="utf-8") as f:
-        TEXTS_LIST = json.load(f)
+        TEXTS_local = json.load(f)
 
-    print(f"Index size: {index.ntotal} | Device: {DEVICE}")
+    IDS.clear()
+    META.clear()
+    TEXTS.clear()
+
+    IDS.extend(IDS_local)
+    META.extend(META_local)
+    TEXTS.extend(TEXTS_local)
+
+    ROWS.clear()
+    for i, _id in enumerate(IDS):
+        ROWS.append({"id": _id, "text": TEXTS[i], "metadata": META[i]})
+
+    print(f"✅ Loaded COS store: {len(ROWS)} rows | index size = {index.ntotal}")
 
 
 # =====================================================================
-# BM25 OVER METADATA
+# BM25 + INDEXES
 # =====================================================================
 
 def build_bm25_corpus() -> BM25Okapi:
     """
-    Build BM25 over metadata-only corpus.
-    We intentionally drop the full text here to keep BM25 aligned to structured fields:
-    title, mentor, leads, dept, category, year, keywords.
+    Build BM25 over *metadata only* so that name / year / dept queries
+    hit exactly the structured fields and not random mentions in text.
     """
     corpus_tokens: List[List[str]] = []
 
-    for meta, full_text in zip(META_LIST, TEXTS_LIST):
+    for meta, full_text in zip(META, TEXTS):
         title   = meta.get("title", "") or ""
         mentor  = meta.get("mentor", "") or ""
         leads   = " ".join(meta.get("lead_presenters", []) or [])
@@ -214,30 +239,19 @@ def build_bm25_corpus() -> BM25Okapi:
         year    = str(meta.get("year", "") or "")
         keys    = " ".join(meta.get("keywords", []) or [])
 
-        combined = " ".join(
-            [
-                title,
-                mentor,
-                leads,
-                dept,
-                cat,
-                year,
-                keys,
-            ]
-        )
-
+        combined = " ".join([title, mentor, leads, dept, cat, year, keys])
         tokens = combined.lower().split()
         corpus_tokens.append(tokens)
 
     return BM25Okapi(corpus_tokens)
 
 
-def _build_field_indexes() -> None:
+def _build_meta_indexes() -> None:
     """
-    Populate name/field indexes and canonical sets from META_LIST
-    for possible future structured querying (by mentor, department, etc.).
+    Build various helper indexes & canonical sets (lead presenters, mentor,
+    department, category, year, keywords).
     """
-    for idx, meta in enumerate(META_LIST):
+    for idx, meta in enumerate(META):
         # lead_presenters
         for lp in meta.get("lead_presenters", []) or []:
             lp = lp.strip()
@@ -256,7 +270,7 @@ def _build_field_indexes() -> None:
             if m_norm:
                 INDEX_MENTOR[m_norm].append(idx)
 
-        # department
+        # dept
         dept = (meta.get("department") or "").strip()
         if dept:
             ALL_DEPARTMENTS.add(dept)
@@ -298,35 +312,31 @@ def _build_field_indexes() -> None:
 def init_research_mode(
     data_file: str,
     out_dir: str,
-    embed_model_id: str = EMBED_MODEL_ID,
-    reranker_id: str = RERANKER_ID,
-    phi_model_id: str = PHI_MODEL_ID,
-    device: Optional[str] = None,
     rebuild_store: bool = False,
+    embed_model_id: str = EMBED_MODEL_ID_DEFAULT,
+    reranker_id: str = RERANKER_ID_DEFAULT,
+    use_phi15: bool = False,
+    phi_model_id: Optional[str] = None,
+    device: Optional[str] = None,
 ) -> None:
     """
-    Initialize COS research mode from a JSONL file.
+    Initialize Research Mode.
 
     Args:
-        data_file:      Path to cos_data.jsonl (id, text, metadata)
-        out_dir:        Directory to store/load embeddings/index files
+        data_file:     Path to cos_data.jsonl
+        out_dir:       Directory to store embeddings/index/metadata (emb_store)
+        rebuild_store: If True, always rebuild emb_store from JSONL
         embed_model_id: SentenceTransformer model ID
-        reranker_id:    CrossEncoder model ID
-        phi_model_id:   Phi model ID (default microsoft/phi-2)
-        device:         "cuda" or "cpu" (None -> auto)
-        rebuild_store:  If True, force rebuild of FAISS/embeddings from JSONL
+        reranker_id:   CrossEncoder model ID
+        use_phi15:     Use phi-1_5 instead of phi-2
+        phi_model_id:  Manual override for Phi model ID
+        device:        "cuda" or "cpu". If None, auto-detect
     """
-    global DEVICE, EMBED_MODEL_ID, RERANKER_ID, PHI_MODEL_ID
-    global EMB_PATH, ID_PATH, META_PATH, TEXTS_PATH, FAISS_PATH
-    global embedder, reranker, phi_tok, phi_model
-    global ROWS, IDS, TEXTS, META, bm25
+    global DEVICE, EMB_PATH, ID_PATH, META_PATH, TEXTS_PATH, FAISS_PATH
+    global embedder, bm25, reranker, phi_tok, phi_model
 
     if device is not None:
         DEVICE = device
-
-    EMBED_MODEL_ID = embed_model_id
-    RERANKER_ID = reranker_id
-    PHI_MODEL_ID = phi_model_id
 
     os.makedirs(out_dir, exist_ok=True)
     EMB_PATH   = os.path.join(out_dir, "embeddings.npy")
@@ -335,26 +345,11 @@ def init_research_mode(
     TEXTS_PATH = os.path.join(out_dir, "texts.json")
     FAISS_PATH = os.path.join(out_dir, "faiss_ip.index")
 
-    # 1) Load JSONL
-    print(f"📂 Loading COS data from: {data_file}")
-    ROWS = load_jsonl(data_file)
-    print(f"Loaded {len(ROWS)} rows.")
+    # Sentence-BERT
+    print(f"\n🧠 Loading SentenceTransformer for Research Mode: {embed_model_id} (device={DEVICE})")
+    embedder = SentenceTransformer(embed_model_id, device=DEVICE)
 
-    IDS   = [r["id"] for r in ROWS]
-    TEXTS = [r["text"] for r in ROWS]
-    META  = [r["metadata"] for r in ROWS]
-
-    if ROWS:
-        print("\nSample row (keys):")
-        print("id:", IDS[0])
-        print("metadata keys:", list(META[0].keys())[:10])
-        print("text first 200 chars:\n", TEXTS[0][:200], "...")
-
-    # 2) Load embedder
-    print(f"\n🧠 Loading SentenceTransformer: {EMBED_MODEL_ID} (device={DEVICE})")
-    embedder = SentenceTransformer(EMBED_MODEL_ID, device=DEVICE)
-
-    # 3) Build or load store
+    # Build or load store
     need_build = rebuild_store or not (
         os.path.exists(FAISS_PATH)
         and os.path.exists(EMB_PATH)
@@ -362,31 +357,37 @@ def init_research_mode(
         and os.path.exists(META_PATH)
         and os.path.exists(TEXTS_PATH)
     )
+
     if need_build:
-        _build_store()
+        _build_store(data_file)
     else:
         _load_store()
 
-    # 4) Build BM25 and field indexes
+    # BM25 + meta indexes
     print("\n[Build] BM25 corpus...")
-    global bm25
     bm25 = build_bm25_corpus()
     print("[Build] BM25 ready.")
 
-    print("[Build] Field indexes (names, dept, year, keywords)...")
-    _build_field_indexes()
+    print("\n[Build] Meta indexes...")
+    _build_meta_indexes()
+    print("[Build] Meta indexes ready.")
 
-    # 5) Load reranker (CrossEncoder)
-    print(f"\n🧪 Loading CrossEncoder reranker: {RERANKER_ID}")
-    reranker = CrossEncoder(RERANKER_ID, device=DEVICE)
+    # Reranker
+    print(f"\n🧪 Loading CrossEncoder reranker: {reranker_id}")
+    reranker = CrossEncoder(reranker_id, device=DEVICE)
 
-    # 6) Load Phi model
-    print(f"🧪 Loading Phi model: {PHI_MODEL_ID}")
-    phi_tok = AutoTokenizer.from_pretrained(PHI_MODEL_ID)
+    # Phi model
+    if phi_model_id is not None:
+        chosen_phi_id = phi_model_id
+    else:
+        chosen_phi_id = PHI_MODEL_ID_SMALL if use_phi15 else PHI_MODEL_ID_DEFAULT
+
+    print(f"\n🧪 Loading Phi model for Research Mode: {chosen_phi_id}")
+    phi_tok = AutoTokenizer.from_pretrained(chosen_phi_id)
     phi_model = AutoModelForCausalLM.from_pretrained(
-        PHI_MODEL_ID,
+        chosen_phi_id,
         device_map="auto",
-        torch_dtype=(torch.float16 if DEVICE == "cuda" else torch.float32),
+        torch_dtype="auto",
     )
 
     # Warmup
@@ -394,19 +395,19 @@ def init_research_mode(
         **phi_tok("hi", return_tensors="pt").to(phi_model.device),
         max_new_tokens=1,
     )
-    print("✅ Research mode models ready.")
+    print("✅ Research Mode initialized (emb_store + BM25 + reranker + Phi ready).")
 
 
 # =====================================================================
-# RETRIEVAL & RERANK
+# RETRIEVAL + SUMMARY HELPERS
 # =====================================================================
 
-def bm25_search(query: str, top_k: int = 50):
+def bm25_search(query: str, top_k: int = 50) -> Tuple[np.ndarray, np.ndarray]:
     """
-    BM25 keyword search over the metadata corpus.
+    BM25 keyword search over metadata-only corpus.
     Returns:
-        top_idxs: numpy array of indices (int)
-        scores:   numpy array of BM25 scores for all docs
+        top_idxs: indices of top docs
+        scores:   BM25 scores for ALL docs
     """
     if bm25 is None:
         raise RuntimeError("BM25 not initialized. Call init_research_mode() first.")
@@ -423,155 +424,11 @@ def bm25_search(query: str, top_k: int = 50):
 
 
 def extract_abstract(full_text: str) -> str:
-    """
-    Split on the first 'Abstract:' and take the rest.
-    If not found, return full_text stripped.
-    """
     parts = full_text.split("Abstract:", 1)
     if len(parts) == 2:
         return parts[1].strip()
     return full_text.strip()
 
-
-def print_hit(rank: int, meta: Dict[str, Any], vec: float, rr: Optional[float]):
-    title = meta.get("title", "")
-    year  = meta.get("year", "")
-    dept  = meta.get("department", "")
-    cats  = meta.get("category", "")
-    print(f"\n--- Hit {rank} ---")
-    print(f"Title: {title}")
-    print(f"Year: {year} | Dept: {dept} | Category: {cats}")
-    print(f"VecScore: {vec:.4f} | Rerank: {0.0 if rr is None else float(rr):.4f}")
-
-
-def retrieve_layered(
-    query: str,
-    top_k_bm25: int = 50,
-    top_k_vec: int = 30,
-    max_for_rerank: int = 30,
-) -> List[Dict[str, Any]]:
-    """
-    Layered retrieve:
-    1) Try BM25 over metadata-only corpus.
-    2) If BM25 produces candidates -> rerank them with CrossEncoder (no FAISS).
-    3) If BM25 is empty -> fallback to FAISS semantic search + rerank.
-    Returns:
-        List of candidate dicts with keys:
-        { idx, vec, bm25, combined, rerank, meta, text }
-    """
-    if index is None or embedder is None or reranker is None:
-        raise RuntimeError("Research mode not initialized. Call init_research_mode() first.")
-
-    print(f"\n🧠 Query (layered): {query}")
-
-    # 1) BM25 keyword search (metadata)
-    t_bm0 = time.time()
-    bm25_idxs, bm25_scores = bm25_search(query, top_k=top_k_bm25)
-    print(f"BM25 time: {(time.time() - t_bm0) * 1000:.1f} ms")
-
-    bm25_candidates: Dict[int, float] = {}
-    for idx_ in bm25_idxs:
-        score = float(bm25_scores[idx_])
-        if score > 0.0:
-            bm25_candidates[int(idx_)] = score
-
-    cands: List[Dict[str, Any]] = []
-
-    if bm25_candidates:
-        max_bm = max(bm25_candidates.values()) if bm25_candidates else 1.0
-        for idx_, score in bm25_candidates.items():
-            meta = META_LIST[idx_]
-            text = TEXTS_LIST[idx_]
-            cands.append(
-                {
-                    "idx": int(idx_),
-                    "vec": 0.0,
-                    "bm25": float(score),
-                    "combined": float(score / max_bm),
-                    "rerank": None,
-                    "meta": meta,
-                    "text": text,
-                }
-            )
-
-        cands.sort(key=lambda x: x["bm25"], reverse=True)
-
-        print("\n📥 Candidates from BM25 (before rerank):")
-        for i, c in enumerate(cands[:5], 1):
-            print(f"{i}. bm25={c['bm25']:.3f}")
-            print("   Title:", c["meta"].get("title", "NO TITLE"))
-            print("   Mentor:", c["meta"].get("mentor", ""))
-            print("   Year:", c["meta"].get("year", ""))
-
-    else:
-        # 2) Fallback: FAISS semantic search
-        print("BM25 produced no candidates. Falling back to FAISS.")
-        t0 = time.time()
-        q_emb = embedder.encode(
-            [query],
-            convert_to_numpy=True,
-            normalize_embeddings=True,
-        )
-        D, I = index.search(q_emb, top_k_vec)
-        print(f"FAISS time: {(time.time() - t0) * 1000:.1f} ms")
-
-        vec_candidates: Dict[int, float] = {}
-        for rank, idx_ in enumerate(I[0]):
-            if idx_ == -1:
-                continue
-            vec_candidates[int(idx_)] = float(D[0][rank])
-
-        if not vec_candidates:
-            print("No candidates from FAISS either.")
-            return []
-
-        max_vec = max(vec_candidates.values()) if vec_candidates else 1.0
-        for idx_, vscore in vec_candidates.items():
-            meta = META_LIST[idx_]
-            text = TEXTS_LIST[idx_]
-            cands.append(
-                {
-                    "idx": int(idx_),
-                    "vec": float(vscore),
-                    "bm25": 0.0,
-                    "combined": float(vscore / max_vec),
-                    "rerank": None,
-                    "meta": meta,
-                    "text": text,
-                }
-            )
-
-        print("\n📥 Candidates from FAISS (before rerank):")
-        for i, c in enumerate(cands[:5], 1):
-            print(f"{i}. vec={c['vec']:.3f}")
-            print("   Title:", c["meta"].get("title", "NO TITLE"))
-            print("   Mentor:", c["meta"].get("mentor", ""))
-            print("   Year:", c["meta"].get("year", ""))
-
-    # 3) CrossEncoder rerank
-    keep = min(len(cands), max_for_rerank)
-    if keep > 0:
-        t2 = time.time()
-        pairs = [(query, cands[i]["text"]) for i in range(keep)]
-        scores = reranker.predict(pairs)
-        for i, s in enumerate(scores):
-            cands[i]["rerank"] = float(s)
-        cands[:keep] = sorted(cands[:keep], key=lambda x: x["rerank"], reverse=True)
-        print(f"\n🔁 Rerank time: {(time.time() - t2) * 1000:.1f} ms")
-
-        print("\n📦 Top (after rerank):")
-        for i, c in enumerate(cands[:5], 1):
-            print(f"{i}. rerank={c['rerank']:.3f}")
-            print("   Title:", c["meta"].get("title", "NO TITLE"))
-            print("   Mentor:", c["meta"].get("mentor", ""))
-            print("   Year:", c["meta"].get("year", ""))
-
-    return cands
-
-
-# =====================================================================
-# SUMMARY HELPERS
-# =====================================================================
 
 META_MARKERS = (
     "Title:",
@@ -584,6 +441,26 @@ META_MARKERS = (
     "Keywords:",
     "Abstract:",
 )
+
+
+def clean_summary(text: str) -> str:
+    if "Summary:" in text:
+        text = text.split("Summary:", 1)[1]
+
+    for m in META_MARKERS:
+        if m in text:
+            text = text.split(m, 1)[0]
+
+    text = text.strip().split("\n\n", 1)[0].strip()
+
+    sents = re.split(r'(?<=[.!?])\s+', text)
+    seen, dedup = set(), []
+    for s in sents:
+        ss = s.strip()
+        if ss and ss.lower() not in seen:
+            seen.add(ss.lower())
+            dedup.append(ss)
+    return " ".join(dedup).strip()
 
 
 def build_summary_prompt(meta: dict, abstract: str) -> str:
@@ -615,33 +492,7 @@ Category: {cat}
 Keywords: {keys}
 
 
-
-
 Summary:"""
-
-
-def clean_summary(text: str) -> str:
-    # Keep only content after the "Summary:" anchor (if present)
-    if "Summary:" in text:
-        text = text.split("Summary:", 1)[1]
-
-    # Stop before any metadata markers if the model starts echoing them
-    for m in META_MARKERS:
-        if m in text:
-            text = text.split(m, 1)[0]
-
-    # Keep only the first paragraph
-    text = text.strip().split("\n\n", 1)[0].strip()
-
-    # Remove duplicate sentences while preserving order
-    sents = re.split(r"(?<=[.!?])\s+", text)
-    seen, dedup = set(), []
-    for s in sents:
-        ss = s.strip()
-        if ss and ss.lower() not in seen:
-            seen.add(ss.lower())
-            dedup.append(ss)
-    return " ".join(dedup).strip()
 
 
 def format_meta_details(meta: dict) -> str:
@@ -668,11 +519,6 @@ def format_meta_details(meta: dict) -> str:
 
 
 def summarize_best(best: Dict[str, Any], max_new_tokens: int = 140) -> Tuple[str, str]:
-    """
-    Summarize the best candidate's abstract with Phi-2.
-    Returns:
-        summary, meta_details
-    """
     if phi_model is None or phi_tok is None:
         raise RuntimeError("Phi model not initialized. Call init_research_mode() first.")
 
@@ -694,23 +540,135 @@ def summarize_best(best: Dict[str, Any], max_new_tokens: int = 140) -> Tuple[str
     return summary, details
 
 
-# =====================================================================
-# MODE INFERENCE: SINGLE vs LIST
-# =====================================================================
+def retrieve_layered(
+    query: str,
+    top_k_bm25: int = 50,
+    top_k_vec: int = 30,
+    max_for_rerank: int = 30,
+) -> List[Dict[str, Any]]:
+    """
+    Layered retrieve:
+    1) BM25 over metadata-only corpus.
+    2) If BM25 produces candidates → rerank them with CrossEncoder (no FAISS).
+    3) If BM25 is empty → fallback to FAISS semantic search + rerank.
+    """
+    if embedder is None or index is None or reranker is None:
+        raise RuntimeError("Research Mode not initialized. Call init_research_mode() first.")
+
+    print(f"\n🧠 Query (layered): {query}")
+
+    # 1) BM25
+    t_bm0 = time.time()
+    bm25_idxs, bm25_scores = bm25_search(query, top_k=top_k_bm25)
+    print(f"BM25 time: {(time.time()-t_bm0)*1000:.1f} ms")
+
+    bm25_candidates: Dict[int, float] = {}
+    for idx_ in bm25_idxs:
+        score = float(bm25_scores[idx_])
+        if score > 0.0:
+            bm25_candidates[int(idx_)] = score
+
+    cands: List[Dict[str, Any]] = []
+
+    if bm25_candidates:
+        max_bm = max(bm25_candidates.values()) if bm25_candidates else 1.0
+
+        for idx_, score in bm25_candidates.items():
+            meta = META[idx_]
+            text = TEXTS[idx_]
+            cands.append(
+                {
+                    "idx": int(idx_),
+                    "vec": 0.0,
+                    "bm25": float(score),
+                    "combined": float(score / max_bm),
+                    "rerank": None,
+                    "meta": meta,
+                    "text": text,
+                }
+            )
+
+        cands.sort(key=lambda x: x["bm25"], reverse=True)
+
+        print("\n📥 Candidates from BM25 (before rerank):")
+        for i, c in enumerate(cands[:5], 1):
+            print(f"{i}. bm25={c['bm25']:.3f}")
+            print("   Title:", c["meta"].get("title", "NO TITLE"))
+            print("   Mentor:", c["meta"].get("mentor", ""))
+            print("   Year:", c["meta"].get("year", ""))
+
+    else:
+        # 2) FAISS fallback
+        print("BM25 produced no candidates. Falling back to FAISS.")
+        t0 = time.time()
+        q = embedder.encode([query], convert_to_numpy=True, normalize_embeddings=True)
+        D, I = index.search(q, top_k_vec)
+        print(f"FAISS time: {(time.time()-t0)*1000:.1f} ms")
+
+        vec_candidates: Dict[int, float] = {}
+        for rank, idx_ in enumerate(I[0]):
+            if idx_ == -1:
+                continue
+            vec_candidates[int(idx_)] = float(D[0][rank])
+
+        if not vec_candidates:
+            print("No candidates from FAISS either.")
+            return []
+
+        max_vec = max(vec_candidates.values()) if vec_candidates else 1.0
+
+        for idx_, vscore in vec_candidates.items():
+            meta = META[idx_]
+            text = TEXTS[idx_]
+            cands.append(
+                {
+                    "idx": int(idx_),
+                    "vec": float(vscore),
+                    "bm25": 0.0,
+                    "combined": float(vscore / max_vec),
+                    "rerank": None,
+                    "meta": meta,
+                    "text": text,
+                }
+            )
+
+        print("\n📥 Candidates from FAISS (before rerank):")
+        for i, c in enumerate(cands[:5], 1):
+            print(f"{i}. vec={c['vec']:.3f}")
+            print("   Title:", c["meta"].get("title", "NO TITLE"))
+            print("   Mentor:", c["meta"].get("mentor", ""))
+            print("   Year:", c["meta"].get("year", ""))
+
+    # 3) CrossEncoder rerank
+    keep = min(len(cands), max_for_rerank)
+    if keep > 0:
+        t2 = time.time()
+        pairs = [(query, cands[i]["text"]) for i in range(keep)]
+        scores = reranker.predict(pairs)
+        for i, s in enumerate(scores):
+            cands[i]["rerank"] = float(s)
+        cands[:keep] = sorted(cands[:keep], key=lambda x: x["rerank"], reverse=True)
+        print(f"\n🔁 Rerank time: {(time.time()-t2)*1000:.1f} ms")
+        print("\n📦 Top (after rerank):")
+        for i, c in enumerate(cands[:5], 1):
+            print(f"{i}. rerank={c['rerank']:.3f}")
+            print("   Title:", c["meta"].get("title", "NO TITLE"))
+            print("   Mentor:", c["meta"].get("mentor", ""))
+            print("   Year:", c["meta"].get("year", ""))
+
+    return cands
+
 
 def infer_mode_from_rerank_candidates(cands: List[Dict[str, Any]]) -> str:
     """
     Decide 'single' vs 'list' based on CrossEncoder rerank scores.
 
     Logic:
-    - Use the rerank scores (more semantic, see full text).
-    - If we have no rerank scores → 'single'
-    - If exactly one candidate has a rerank score → 'single'.
-    - Otherwise, look at how sharply the top score stands out:
-        - If top1 is clearly stronger than top2 (ratio), treat as 'single'.
-        - Else, treat as 'list'.
+    - Use the rerank scores.
+    - If no rerank scores -> 'single'
+    - If exactly one -> 'single'
+    - Otherwise, compare top1 vs top2 ratio.
     """
-
     scores = sorted(
         [c["rerank"] for c in cands if c.get("rerank") is not None],
         reverse=True,
@@ -718,12 +676,10 @@ def infer_mode_from_rerank_candidates(cands: List[Dict[str, Any]]) -> str:
 
     if not scores:
         return "single"
-
     if len(scores) == 1:
         return "single"
 
-    top1 = scores[0]
-    top2 = scores[1]
+    top1, top2 = scores[0], scores[1]
 
     if top1 <= 0:
         return "list"
@@ -737,93 +693,167 @@ def infer_mode_from_rerank_candidates(cands: List[Dict[str, Any]]) -> str:
 
 
 # =====================================================================
-# SIMPLE MEMORY
+# PUBLIC QUERY FUNCTION
 # =====================================================================
 
-def update_memory(
-    memory: List[Dict[str, str]],
+def research_query(
     query: str,
-    answer: str,
-    max_length: int = MAX_MEMORY,
-) -> List[Dict[str, str]]:
-    memory.append({"user": query, "assistant": answer})
-    return memory[-max_length:]
-
-
-# =====================================================================
-# CHAT HANDLER (FOR MAIN ROUTER)
-# =====================================================================
-
-def research_chat_handler(
-    query: str,
-    history: Optional[List[Dict[str, str]]] = None,
-    memory: Optional[List[Dict[str, str]]] = None,
-) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
+    max_rows: int = 50,
+) -> Tuple[str, str, List[List[Any]]]:
     """
-    Main COS research Q&A handler.
-    - Uses layered retrieval (BM25 + FAISS + CrossEncoder)
-    - Infers single vs list mode
-    - For single: returns Phi-2 summary + metadata
-    - For list: returns a markdown list of top hits
+    High-level handler similar to run_query in the notebook.
 
     Returns:
-        updated_history, updated_memory
+        mode: "single" or "list"
+        combined_text: summary + details (for single) or "" (for list)
+        table_rows: list of [rank, title, year, mentor, department, rerank_score]
     """
-    if history is None:
-        history = []
-    if memory is None:
-        memory = []
+    if index is None or bm25 is None or embedder is None or reranker is None:
+        raise RuntimeError("Research Mode not initialized. Call init_research_mode() first.")
 
-    if index is None:
-        raise RuntimeError("Research mode not initialized. Call init_research_mode() first.")
-
-    topk = len(IDS) if IDS else 50
+    topk = len(IDS)
     cands = retrieve_layered(
         query,
-        top_k_bm25=min(len(IDS), 500) if IDS else 500,
+        top_k_bm25=min(len(IDS), 500),
         top_k_vec=int(topk),
-        max_for_rerank=min(len(IDS), 50) if IDS else 50,
+        max_for_rerank=min(len(IDS), 50),
     )
-
     if not cands:
-        answer = "I couldn't find any COS projects matching that query."
-        history += [
-            {"role": "user", "content": query},
-            {"role": "assistant", "content": answer},
-        ]
-        memory = update_memory(memory, query, answer)
-        return history, memory
+        return "none", "No results.", []
 
     mode = infer_mode_from_rerank_candidates(cands)
     print(f"Mode: {mode}")
 
-    if mode == "single":
+    # table rows
+    rows = []
+    for i, c in enumerate(cands[:max_rows], 1):
+        m = c["meta"]
+        rows.append(
+            [
+                i,
+                m.get("title", ""),
+                m.get("year", ""),
+                m.get("mentor", ""),
+                m.get("department", ""),
+                round(c.get("rerank", 0.0), 4),
+            ]
+        )
+
+    if mode == "list":
+        combined = ""
+        return mode, combined, rows
+    else:
         best = cands[0]
         summary, details = summarize_best(best)
-        answer = f"{summary}\n\n---\n{details}"
-    else:
-        # Build a markdown list of results
-        lines: List[str] = []
-        max_rows = 10
-        for i, c in enumerate(cands[:max_rows], 1):
-            m = c["meta"]
-            title = m.get("title", "")
-            year = m.get("year", "")
-            mentor = m.get("mentor", "")
-            dept = m.get("department", "")
-            score = c.get("rerank", 0.0)
-            lines.append(
-                f"**{i}. {title}**\n"
-                f"- Year: {year}\n"
-                f"- Mentor: {mentor}\n"
-                f"- Department: {dept}\n"
-                f"- Relevance Score: {score:.3f}"
-            )
-        answer = "\n\n".join(lines)
+        combined = f"{summary}\n\n---\n{details}"
+        return mode, combined, rows
 
-    history += [
-        {"role": "user", "content": query},
-        {"role": "assistant", "content": answer},
-    ]
-    memory = update_memory(memory, query, answer)
-    return history, memory
+
+# =====================================================================
+# DEBUG CLI
+# =====================================================================
+
+def _parse_cli_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Debug CLI for Research Mode"
+    )
+
+    # research_mode.py is in src/modes/
+    here = Path(__file__).resolve().parent   # .../src/modes
+
+    # Walk up until we find a parent containing "datasets"
+    base = here
+    while base != base.parent and not (base / "datasets").exists():
+        base = base.parent
+
+    datasets_root = base / "datasets"
+    default_data = datasets_root / "COS_research_data" / "cos_data.jsonl"
+    default_out  = datasets_root / "COS_research_data" / "emb_store"
+
+    parser.add_argument(
+        "--data-file",
+        type=str,
+        default=str(default_data),
+        help=f"Path to cos_data.jsonl (default: {default_data})",
+    )
+    parser.add_argument(
+        "--out-dir",
+        type=str,
+        default=str(default_out),
+        help=f"Directory for COS emb_store (default: {default_out})",
+    )
+    parser.add_argument(
+        "--rebuild",
+        action="store_true",
+        help="Force rebuild of embeddings / FAISS even if files exist.",
+    )
+    parser.add_argument(
+        "--phi15",
+        action="store_true",
+        help="Use microsoft/phi-1_5 instead of phi-2.",
+    )
+    parser.add_argument(
+        "--device",
+        type=str,
+        default=None,
+        choices=["cuda", "cpu"],
+        help="Override device (cuda/cpu). If omitted, auto-detect.",
+    )
+    return parser.parse_args()
+
+
+def _run_cli() -> None:
+    args = _parse_cli_args()
+
+    print("\n=== Research Mode CLI ===")
+    print(f"Data file : {args.data_file}")
+    print(f"Out dir   : {args.out_dir}")
+    print(f"Rebuild   : {args.rebuild}")
+    print(f"Use phi-1_5: {args.phi15}")
+    print(f"Device    : {args.device or DEVICE}")
+    print("========================\n")
+
+    init_research_mode(
+        data_file=args.data_file,
+        out_dir=args.out_dir,
+        rebuild_store=args.rebuild,
+        use_phi15=args.phi15,
+        device=args.device,
+    )
+
+    print("Type your COS research queries. Type 'exit' or 'quit' to stop.\n")
+
+    try:
+        while True:
+            q = input("You: ").strip()
+            if not q:
+                continue
+            if q.lower() in {"exit", "quit"}:
+                print("Bye 👋")
+                break
+
+            mode, combined, rows = research_query(q, max_rows=10)
+
+            if mode == "none":
+                print("\nBot: No results.\n")
+                continue
+
+            if mode == "single":
+                print("\nBot (single mode):")
+                print(combined)
+                print("\nTop hits:")
+                for r in rows[:5]:
+                    print(f"{r[0]}. {r[1]} ({r[2]}) | Mentor: {r[3]} | Dept: {r[4]} | Rerank={r[5]}")
+                print()
+            else:
+                print("\nBot (list mode): showing top hits:")
+                for r in rows[:10]:
+                    print(f"{r[0]}. {r[1]} ({r[2]}) | Mentor: {r[3]} | Dept: {r[4]} | Rerank={r[5]}")
+                print()
+
+    except KeyboardInterrupt:
+        print("\nInterrupted. Bye 👋")
+
+
+if __name__ == "__main__":
+    _run_cli()
