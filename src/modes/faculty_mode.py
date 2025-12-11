@@ -652,10 +652,17 @@ def _parse_cli_args() -> argparse.Namespace:
         description="Debug CLI for Faculty Research Mode"
     )
 
-    # Resolve defaults relative to this file: src/faculty_mode.py
-    here = Path(__file__).resolve().parent
-    default_data = here / "datasets" / "faculty_dataset" / "faculty_data.json"
-    default_out = here / "datasets" / "faculty_dataset" / "emb_store"
+    # faculty_mode.py is in src/modes/
+    here = Path(__file__).resolve().parent           # .../src/modes
+    # Find the first parent that has a "datasets" folder
+    base = here
+    while base != base.parent and not (base / "datasets").exists():
+        base = base.parent
+
+    datasets_root = base / "datasets"
+
+    default_data = datasets_root / "faculty_dataset" / "faculty_data.json"
+    default_out  = datasets_root / "faculty_dataset" / "emb_store"
 
     parser.add_argument(
         "--data-file",
