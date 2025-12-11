@@ -16,18 +16,15 @@ Public API:
 - init_faculty_mode(data_file, out_dir, rebuild_store=False, ...)
 - faculty_pipeline(query, history=None, memory=None)
 
-Typical usage from main_app.py:
+Debug CLI:
+    python -m src.faculty_mode
+or (depending on layout)
+    python src/faculty_mode.py
 
-    from faculty_mode import init_faculty_mode, faculty_pipeline
-
-    init_faculty_mode(
-        data_file="src/datasets/faculty_dataset/faculty_data.json",
-        out_dir="src/datasets/faculty_dataset/emb_store",
-        rebuild_store=False,
-    )
-
-    history, memory = [], []
-    history, memory = faculty_pipeline("Who is working on protein homology?", history, memory)
+It will:
+- auto-resolve default dataset + emb_store paths relative to this file
+- init Faculty Mode
+- open an interactive Q&A loop until you type 'exit' or Ctrl+C
 """
 
 from __future__ import annotations
@@ -40,6 +37,8 @@ from typing import List, Dict, Any, Optional, Tuple
 import numpy as np
 import faiss
 from collections import defaultdict
+from pathlib import Path
+import argparse
 
 import torch
 from sentence_transformers import SentenceTransformer
@@ -642,3 +641,95 @@ def faculty_pipeline(
     ]
 
     return history, memory
+
+
+# =====================================================================
+# DEBUG CLI
+# =====================================================================
+
+def _parse_cli_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Debug CLI for Faculty Research Mode"
+    )
+
+    # Resolve defaults relative to this file: src/faculty_mode.py
+    here = Path(__file__).resolve().parent
+    default_data = here / "datasets" / "faculty_dataset" / "faculty_data.json"
+    default_out = here / "datasets" / "faculty_dataset" / "emb_store"
+
+    parser.add_argument(
+        "--data-file",
+        type=str,
+        default=str(default_data),
+        help=f"Path to faculty_data.json (default: {default_data})",
+    )
+    parser.add_argument(
+        "--out-dir",
+        type=str,
+        default=str(default_out),
+        help=f"Directory for emb_store (default: {default_out})",
+    )
+    parser.add_argument(
+        "--rebuild",
+        action="store_true",
+        help="Force rebuild of embeddings / FAISS even if files exist.",
+    )
+    parser.add_argument(
+        "--phi15",
+        action="store_true",
+        help="Use microsoft/phi-1_5 instead of phi-2.",
+    )
+    parser.add_argument(
+        "--device",
+        type=str,
+        default=None,
+        choices=["cuda", "cpu"],
+        help="Override device (cuda/cpu). If omitted, auto-detect.",
+    )
+    return parser.parse_args()
+
+
+def _run_cli() -> None:
+    args = _parse_cli_args()
+
+    print("\n=== Faculty Mode CLI ===")
+    print(f"Data file : {args.data_file}")
+    print(f"Out dir   : {args.out_dir}")
+    print(f"Rebuild   : {args.rebuild}")
+    print(f"Use phi-1_5: {args.phi15}")
+    print(f"Device    : {args.device or DEVICE}")
+    print("========================\n")
+
+    # Init mode
+    init_faculty_mode(
+        data_file=args.data_file,
+        out_dir=args.out_dir,
+        rebuild_store=args.rebuild,
+        use_phi15=args.phi15,
+        device=args.device,
+    )
+
+    history: List[Dict[str, str]] = []
+    memory: List[Dict[str, str]] = []
+
+    print("Type your questions about faculty. Type 'exit' or 'quit' to stop.\n")
+
+    try:
+        while True:
+            q = input("You: ").strip()
+            if not q:
+                continue
+            if q.lower() in {"exit", "quit"}:
+                print("Bye 👋")
+                break
+
+            history, memory = faculty_pipeline(q, history, memory)
+            last_answer = history[-1]["content"]
+            print(f"\nBot: {last_answer}\n")
+
+    except KeyboardInterrupt:
+        print("\nInterrupted. Bye 👋")
+
+
+if __name__ == "__main__":
+    _run_cli()
