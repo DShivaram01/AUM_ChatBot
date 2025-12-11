@@ -1,0 +1,18 @@
+# Core numerical / ML stack
+numpy>=1.26.0
+
+# PyTorch (needed for transformers + sentence-transformers + Phi models)
+torch>=2.1.0
+
+# Embeddings + retrieval
+sentence-transformers>=2.6.0
+faiss-cpu>=1.8.0
+rank-bm25>=0.2.2
+
+# LLM stack (Phi models etc.)
+transformers>=4.41.0
+accelerate>=0.30.0
+safetensors>=0.4.2
+
+# Web UI
+gradio>=4.44.0
