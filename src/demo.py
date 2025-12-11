@@ -12,7 +12,7 @@ Usage in Colab:
 
 This script will:
   1. Install requirements from src/requirements.txt
-  2. Launch the main Gradio app (main_app.py or main_aoo.py) via `python -m`
+  2. Launch the main Gradio app from main_app.py via `python -m main_app`
 """
 
 import sys
@@ -46,31 +46,18 @@ def main():
         run([sys.executable, "-m", "pip", "install", "-r", str(req_path)])
 
     # ----------------------------------------------------
-    # 2) Decide which main module to run
-    #    Try main_app first, then main_aoo
+    # 2) Launch the main app via `python -m main_app`
     # ----------------------------------------------------
-    import importlib
-
-    mod_name = "main_app"
-    try:
-        importlib.import_module(mod_name)
-        chosen_module = mod_name
-        print(f"✅ Found main module: {mod_name}")
-        
-    except ModuleNotFoundError:
-        print(f"ℹ️ Module not found: {mod_name} (trying next...)")
-
-    if chosen_module is None:
-        print("❌ Could not find main_app.py or main_aoo.py in src/.")
-        print("   Please make sure one of these exists and is importable.")
+    main_py = root / "main_app.py"
+    if not main_py.exists():
+        print("❌ main_app.py not found in src/.")
+        print("   Make sure AUM_ChatBot/src/main_app.py exists.")
         raise SystemExit(1)
 
-    # ----------------------------------------------------
-    # 3) Launch the main app via `python -m`
-    # ----------------------------------------------------
-    print(f"🚀 Launching Gradio app from {chosen_module} ...")
+    print("✅ Found main_app.py")
+    print("🚀 Launching Gradio app from main_app ...")
     # This will block and run until you stop the Gradio server.
-    run([sys.executable, "-m", chosen_module])
+    run([sys.executable, "-m", "main_app"])
 
 
 if __name__ == "__main__":
