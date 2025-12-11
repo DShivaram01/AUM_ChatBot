@@ -854,6 +854,60 @@ def _run_cli() -> None:
     except KeyboardInterrupt:
         print("\nInterrupted. Bye 👋")
 
+# =====================================================================
+# Gradio / main_app-friendly chat handler
+# =====================================================================
+
+def research_chat_handler(
+    query: str,
+    history=None,
+    memory=None,
+):
+    """
+    Thin wrapper so main_app.py can treat research mode as a chat handler.
+
+    Expected behavior:
+    - history: list of {"role": "...", "content": "..."} messages
+    - memory:  (currently unused, but kept for API symmetry)
+    - Returns: (updated_history, memory)
+    """
+    if history is None:
+        history = []
+    if memory is None:
+        memory = []
+
+    # Use our high-level research_query()
+    mode, combined, rows = research_query(query, max_rows=10)
+
+    if mode == "none":
+        answer = "No results found for your query."
+    elif mode == "single":
+        # combined already has: summary + --- + meta details
+        # Optionally append a tiny top-hits view
+        top_lines = []
+        for r in rows[:5]:
+            rank, title, year, mentor, dept, score = r
+            top_lines.append(
+                f"{rank}. {title} ({year}) | Mentor: {mentor} | Dept: {dept} | Score: {score}"
+            )
+        hits_block = "\n\nTop relevant projects:\n" + "\n".join(top_lines) if top_lines else ""
+        answer = combined + hits_block
+    else:  # list mode
+        # Build a list-style answer summarizing the top hits
+        lines = ["Here are the most relevant research projects I found:\n"]
+        for r in rows[:10]:
+            rank, title, year, mentor, dept, score = r
+            lines.append(
+                f"{rank}. {title} ({year})\n   Mentor: {mentor} | Dept: {dept} | Score: {score}"
+            )
+        answer = "\n".join(lines)
+
+    history = history + [
+        {"role": "user", "content": query},
+        {"role": "assistant", "content": answer},
+    ]
+    # research mode doesn't use memory yet, so we just pass it through unchanged
+    return history, memory
 
 if __name__ == "__main__":
     _run_cli()
