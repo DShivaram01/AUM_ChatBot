@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 """
-demo.py
+demo.py  (lives in: AUM_ChatBot/src)
 
 One-shot launcher for your AUM_ChatBot project.
 
 Usage in Colab:
 
-    !git clone https://github.com/<you>/AUM_ChatBot.git
-    %cd AUM_ChatBot
+    !git clone https://github.com/DShivaram01/AUM_ChatBot.git
+    %cd AUM_ChatBot/src
     !python demo.py
 
 This script will:
-  1. Install requirements from requirements.txt or src/requirements.txt
-  2. Launch the main Gradio app (src/main_app.py or src/main_aoo.py) via `python -m`
+  1. Install requirements from src/requirements.txt
+  2. Launch the main Gradio app (main_app.py or main_aoo.py) via `python -m`
 """
 
 import sys
@@ -30,20 +30,16 @@ def run(cmd):
 
 
 def main():
+    # We are inside src/
     root = Path(__file__).resolve().parent
-    print(f"📂 Repo root: {root}")
+    print(f"📂 Src root: {root}")
 
     # ----------------------------------------------------
-    # 1) Find requirements.txt (prefer root, then src/)
+    # 1) Install requirements from requirements.txt in src/
     # ----------------------------------------------------
-    req_candidates = [
-        root / "requirements.txt",
-        root / "src" / "requirements.txt",
-    ]
-    req_path = next((p for p in req_candidates if p.exists()), None)
-
-    if req_path is None:
-        print("⚠️ No requirements.txt found in root or src/. Skipping pip install.")
+    req_path = root / "requirements.txt"
+    if not req_path.exists():
+        print("⚠️ requirements.txt not found in src/. Skipping pip install.")
     else:
         print(f"📦 Using requirements file: {req_path}")
         run([sys.executable, "-m", "pip", "install", "--upgrade", "pip"])
@@ -51,26 +47,21 @@ def main():
 
     # ----------------------------------------------------
     # 2) Decide which main module to run
-    #    Try src.main_app first, then src.main_aoo
+    #    Try main_app first, then main_aoo
     # ----------------------------------------------------
-    # We will *run* it via `python -m`, but we use importlib
-    # first just to detect which one actually exists.
     import importlib
 
-    main_modules = ["src.main_app", "src.main_aoo"]
-    chosen_module = None
-
-    for mod_name in main_modules:
-        try:
-            importlib.import_module(mod_name)
-            chosen_module = mod_name
-            print(f"✅ Found main module: {mod_name}")
-            break
-        except ModuleNotFoundError:
-            print(f"ℹ️ Module not found: {mod_name} (trying next...)")
+    mod_name = "main_app"
+    try:
+        importlib.import_module(mod_name)
+        chosen_module = mod_name
+        print(f"✅ Found main module: {mod_name}")
+        break
+    except ModuleNotFoundError:
+        print(f"ℹ️ Module not found: {mod_name} (trying next...)")
 
     if chosen_module is None:
-        print("❌ Could not find src.main_app or src.main_aoo.")
+        print("❌ Could not find main_app.py or main_aoo.py in src/.")
         print("   Please make sure one of these exists and is importable.")
         raise SystemExit(1)
 
