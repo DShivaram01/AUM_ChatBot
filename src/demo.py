@@ -56,7 +56,7 @@ def main():
         importlib.import_module(mod_name)
         chosen_module = mod_name
         print(f"✅ Found main module: {mod_name}")
-        break
+        
     except ModuleNotFoundError:
         print(f"ℹ️ Module not found: {mod_name} (trying next...)")
 
