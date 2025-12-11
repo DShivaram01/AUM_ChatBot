@@ -1,26 +1,33 @@
 """
 faculty_mode.py
 
-Modular version of Faculty_Mode.ipynb for use in a multi-mode CS-BOT.
+Faculty Research Mode for your CS-BOT.
 
-Provides:
-- build_faculty_store(...)  # optional one-time index builder
-- init_faculty_mode(...)    # load models, metadata, FAISS, BM25
-- faculty_pipeline(...)     # main faculty research Q&A
-- exam_qa_pipeline(...)     # exam question generator
+Responsibilities:
+- Load faculty_data.json (raw faculty profiles)
+- Build rich "content" blocks per professor
+- Build / load Sentence-BERT embeddings + FAISS index
+- Build BM25 over metadata (name, dept, interests, keywords, etc.)
+- Use layered retrieval: BM25 → FAISS fallback + heuristic rerank
+- Generate answers with Phi (phi-2 by default) using retrieved context
+- Maintain a small memory for pronoun resolution ("him", "her", etc.)
 
-Intended usage (from main_app.py or a notebook):
+Public API:
+- init_faculty_mode(data_file, out_dir, rebuild_store=False, ...)
+- faculty_pipeline(query, history=None, memory=None)
+
+Typical usage from main_app.py:
 
     from faculty_mode import init_faculty_mode, faculty_pipeline
 
     init_faculty_mode(
-        metadata_path="embeddings/faculty_metadata.json",
-        index_path="embeddings/faculty_faiss_index.bin",
-        use_phi15=False,
+        data_file="src/datasets/faculty_dataset/faculty_data.json",
+        out_dir="src/datasets/faculty_dataset/emb_store",
+        rebuild_store=False,
     )
 
     history, memory = [], []
-    history, memory = faculty_pipeline("What does Dr. X work on?", history, memory)
+    history, memory = faculty_pipeline("Who is working on protein homology?", history, memory)
 """
 
 from __future__ import annotations
@@ -28,67 +35,106 @@ from __future__ import annotations
 import os
 import json
 import re
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Any, Optional, Tuple
 
 import numpy as np
 import faiss
-from sentence_transformers import SentenceTransformer
-from rank_bm25 import BM25Okapi
-
-import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM
 from collections import defaultdict
 
+import torch
+from sentence_transformers import SentenceTransformer
+from rank_bm25 import BM25Okapi
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
 
 # =====================================================================
-# GLOBALS (initialized by init_faculty_mode)
+# GLOBALS
 # =====================================================================
 
+DEVICE: str = "cuda" if torch.cuda.is_available() else "cpu"
+
+EMBED_MODEL_ID_DEFAULT: str = "sentence-transformers/all-MiniLM-L6-v2"
+PHI_MODEL_ID_DEFAULT: str = "microsoft/phi-2"
+PHI_MODEL_ID_SMALL: str = "microsoft/phi-1_5"
+
+# Embedding / index paths (set by init_faculty_mode)
+EMB_PATH: str = ""
+FAISS_PATH: str = ""
+METADATA_PATH: str = ""
+
+# Data + models
+faculty_metadata: List[Dict[str, Any]] = []  # each contains "content" field
+faculty_embeddings: Optional[np.ndarray] = None
+faculty_faiss_index: Optional[faiss.Index] = None
 bert_model: Optional[SentenceTransformer] = None
-phi_model: Optional[AutoModelForCausalLM] = None
-phi_tokenizer: Optional[AutoTokenizer] = None
-metadata: List[Dict] = []
-faiss_index: Optional[faiss.Index] = None
 faculty_bm25: Optional[BM25Okapi] = None
 
-INDEX_NAME        = defaultdict(list)   # norm_name(name)       -> [idx,...]
-INDEX_DEPARTMENT  = defaultdict(list)   # norm_text(dept)       -> [idx,...]
-INDEX_KEYWORD     = defaultdict(list)   # norm_text(keyword)    -> [idx,...]
+phi_model: Optional[AutoModelForCausalLM] = None
+phi_tokenizer: Optional[AutoTokenizer] = None
 
-ALL_NAMES        = set()
-ALL_DEPARTMENTS  = set()
-ALL_KEYWORDS     = set()
+# Indexes and canonical sets
+INDEX_NAME = defaultdict(list)       # norm_name(name)      -> [idx,...]
+INDEX_DEPARTMENT = defaultdict(list) # norm_text(dept)      -> [idx,...]
+INDEX_KEYWORD = defaultdict(list)    # norm_text(keyword)   -> [idx,...]
 
-MAX_MEMORY = 10  # for memory trimming
+ALL_NAMES = set()
+ALL_DEPARTMENTS = set()
+ALL_KEYWORDS = set()
+
+# Memory settings
+MAX_MEMORY = 10
 
 
 # =====================================================================
-# OPTIONAL: one-time builder for embeddings + FAISS index + metadata
+# NORMALIZERS
 # =====================================================================
 
-def build_faculty_store(
-    data_file: str,
-    embedding_output_path: str,
-    metadata_output_path: str,
-    model_name: str = "all-MiniLM-L6-v2",
-) -> None:
-    """
-    One-time function to:
-    - Read `faculty_data.json`
-    - Build text content
-    - Encode with SentenceTransformer
-    - Build FAISS index
-    - Save index and metadata to disk
+def norm_text(s: str) -> str:
+    """Generic cleaner for texty fields (dept, interests, keywords, courses)."""
+    if not s:
+        return ""
+    s = s.lower().strip()
+    s = re.sub(r"\s+", " ", s)
+    return s
 
-    Run this offline or in a notebook; then point init_faculty_mode() at the outputs.
+
+def norm_name(name: str) -> str:
+    """Name-specific cleaner for faculty names."""
+    if not name:
+        return ""
+    name = name.lower()
+    # remove typical title words
+    name = re.sub(r"\b(dr\.?|prof\.?|professor|mr\.?|ms\.?|mrs\.?)\b", "", name)
+    name = name.replace(".", " ")
+    name = re.sub(r"\s+", " ", name)
+    return name.strip()
+
+
+# =====================================================================
+# BUILD / LOAD STORE
+# =====================================================================
+
+def _build_faculty_store(data_file: str) -> None:
     """
-    print(f"📂 Loading faculty data from: {data_file}")
+    Build:
+      - faculty_metadata (with a rich 'content' block)
+      - faculty_embeddings (Sentence-BERT)
+      - FAISS index (L2)
+      - METADATA json
+
+    Saves them into paths under out_dir.
+    """
+    global faculty_metadata, faculty_embeddings, faculty_faiss_index, bert_model
+
+    if bert_model is None:
+        raise RuntimeError("bert_model must be initialized before _build_faculty_store().")
+
+    print(f"\n📂 Loading faculty data from: {data_file}")
     with open(data_file, "r", encoding="utf-8") as f:
         raw_data = json.load(f)
 
-    bert = SentenceTransformer(model_name)
-    metadata_list: List[Dict] = []
     texts: List[str] = []
+    faculty_metadata = []
 
     for prof in raw_data:
         try:
@@ -105,7 +151,7 @@ Research Keywords: {', '.join(prof.get('research_keywords', []))}
 """.strip()
 
             texts.append(content)
-            metadata_list.append(
+            faculty_metadata.append(
                 {
                     "name": prof["name"],
                     "designation": prof["designation"],
@@ -122,65 +168,62 @@ Research Keywords: {', '.join(prof.get('research_keywords', []))}
         except Exception as e:
             print(f"❌ Error processing entry: {prof.get('name', 'Unknown')} - {e}")
 
-    print("🧠 Encoding faculty texts...")
-    embeddings = bert.encode(texts, convert_to_numpy=True)
+    print(f"✅ Processed {len(faculty_metadata)} faculty entries.")
 
-    print("📦 Building FAISS IndexFlatL2...")
-    index = faiss.IndexFlatL2(embeddings.shape[1])
-    index.add(embeddings)
+    # Encode & build FAISS
+    print("\n[Build] Encoding faculty texts for embeddings...")
+    faculty_embeddings = bert_model.encode(texts, convert_to_numpy=True)
+    index = faiss.IndexFlatL2(faculty_embeddings.shape[1])
+    index.add(faculty_embeddings)
+    faculty_faiss_index = index
 
-    os.makedirs(os.path.dirname(embedding_output_path), exist_ok=True)
-    os.makedirs(os.path.dirname(metadata_output_path), exist_ok=True)
+    # Save to disk
+    os.makedirs(os.path.dirname(EMB_PATH), exist_ok=True)
+    faiss.write_index(index, FAISS_PATH)
+    np.save(EMB_PATH, faculty_embeddings)
+    with open(METADATA_PATH, "w", encoding="utf-8") as f:
+        json.dump(faculty_metadata, f, indent=2)
 
-    faiss.write_index(index, embedding_output_path)
-    with open(metadata_output_path, "w", encoding="utf-8") as f:
-        json.dump(metadata_list, f, indent=2)
-
-    print("✅ Data converted and index saved.")
-    print(f"   FAISS index: {embedding_output_path}")
-    print(f"   Metadata   : {metadata_output_path}")
-
-
-# =====================================================================
-# NORMALIZATION UTILITIES
-# =====================================================================
-
-def norm_text(s: str) -> str:
-    """Generic cleaner for text fields (department, interests, keywords, etc.)."""
-    if not s:
-        return ""
-    s = s.lower().strip()
-    s = re.sub(r"\s+", " ", s)
-    return s
+    print("✅ Faculty index and metadata saved.")
 
 
-def norm_name(name: str) -> str:
-    """Name-specific cleaner (faculty names)."""
-    if not name:
-        return ""
-    name = name.lower()
-    # remove typical title words
-    name = re.sub(r"\b(dr\.?|prof\.?|professor|mr\.?|ms\.?|mrs\.?)\b", "", name)
-    name = name.replace(".", " ")
-    name = re.sub(r"\s+", " ", name)
-    return name.strip()
+def _load_faculty_store() -> None:
+    """
+    Load:
+      - faculty_metadata
+      - faculty_embeddings
+      - FAISS index
+    from the previously saved files.
+    """
+    global faculty_metadata, faculty_embeddings, faculty_faiss_index
+
+    print("\n📥 Loading faculty emb_store from disk...")
+    faculty_faiss_index = faiss.read_index(FAISS_PATH)
+    faculty_embeddings = np.load(EMB_PATH)
+
+    with open(METADATA_PATH, "r", encoding="utf-8") as f:
+        faculty_metadata = json.load(f)
+
+    print(f"✅ Loaded faculty store: {len(faculty_metadata)} profiles | index size = {faculty_faiss_index.ntotal}")
 
 
 # =====================================================================
-# BM25 INDEX BUILDER
+# BM25 + INDEXES
 # =====================================================================
 
-def build_faculty_bm25(metadata_list: List[Dict]) -> BM25Okapi:
+def build_faculty_bm25(metadata_list: List[Dict[str, Any]]) -> BM25Okapi:
     """
     Build BM25 over metadata-only for each faculty:
-    - name, designation, department
-    - research interests, research keywords
-    - courses taught, recent publications, ongoing projects
-    Also fills:
-    - INDEX_NAME, INDEX_DEPARTMENT, INDEX_KEYWORD
-    - ALL_NAMES, ALL_DEPARTMENTS, ALL_KEYWORDS
+    - name
+    - designation
+    - department
+    - research interests
+    - research keywords
+    - courses taught
+    - recent publications
+    - ongoing projects
+    Also populates INDEX_NAME, INDEX_DEPARTMENT, INDEX_KEYWORD and canonical sets.
     """
-    global INDEX_NAME, INDEX_DEPARTMENT, INDEX_KEYWORD
     global ALL_NAMES, ALL_DEPARTMENTS, ALL_KEYWORDS
 
     corpus_tokens: List[List[str]] = []
@@ -211,7 +254,7 @@ def build_faculty_bm25(metadata_list: List[Dict]) -> BM25Okapi:
         tokens = combined.lower().split()
         corpus_tokens.append(tokens)
 
-        # Small inverted indexes for potential future use
+        # Small indexes for meta lookups
         n_norm = norm_name(name)
         if n_norm:
             ALL_NAMES.add(name)
@@ -239,43 +282,70 @@ def build_faculty_bm25(metadata_list: List[Dict]) -> BM25Okapi:
 # =====================================================================
 
 def init_faculty_mode(
-    metadata_path: str,
-    index_path: str,
+    data_file: str,
+    out_dir: str,
+    rebuild_store: bool = False,
+    embed_model_id: str = EMBED_MODEL_ID_DEFAULT,
     use_phi15: bool = False,
     phi_model_id: Optional[str] = None,
-    embed_model_name: str = "all-MiniLM-L6-v2",
+    device: Optional[str] = None,
 ) -> None:
     """
-    Initialize global models, metadata, FAISS index, and BM25.
+    Initialize Faculty Research Mode.
 
-    - metadata_path: path to faculty_metadata.json (from build_faculty_store)
-    - index_path:    path to faculty_faiss_index.bin
-    - use_phi15:     if True, use microsoft/phi-1_5 instead of phi-2
-    - phi_model_id:  override for custom phi model ID
-    - embed_model_name: SentenceTransformer model (default MiniLM-L6-v2)
+    Args:
+        data_file:     Path to faculty_data.json (raw faculty info).
+        out_dir:       Directory to store embeddings/index/metadata (emb_store).
+        rebuild_store: If True, always rebuild emb_store from faculty_data.json.
+        embed_model_id: SentenceTransformer model ID (default all-MiniLM-L6-v2).
+        use_phi15:     If True, use microsoft/phi-1_5 instead of phi-2.
+        phi_model_id:  Optional manual override for Phi model ID.
+        device:        "cuda" or "cpu". If None, auto-detect.
     """
-    global metadata, faiss_index, bert_model, phi_model, phi_tokenizer, faculty_bm25
+    global DEVICE, EMB_PATH, FAISS_PATH, METADATA_PATH
+    global bert_model, faculty_bm25
+    global phi_model, phi_tokenizer
 
-    print(f"📂 Loading metadata from: {metadata_path}")
-    with open(metadata_path, "r", encoding="utf-8") as f:
-        metadata = json.load(f)
+    if device is not None:
+        DEVICE = device
 
-    print(f"📦 Loading FAISS index from: {index_path}")
-    faiss_index = faiss.read_index(index_path)
+    # Paths
+    os.makedirs(out_dir, exist_ok=True)
+    EMB_PATH = os.path.join(out_dir, "faculty_embeddings.npy")
+    FAISS_PATH = os.path.join(out_dir, "faculty_faiss_index.bin")
+    METADATA_PATH = os.path.join(out_dir, "faculty_metadata.json")
 
-    print("🧠 Loading SentenceTransformer for query embeddings...")
-    bert_model = SentenceTransformer(embed_model_name)
+    # Load SBERT
+    print(f"\n🧠 Loading SentenceTransformer for Faculty Mode: {embed_model_id} (device={DEVICE})")
+    bert_model = SentenceTransformer(embed_model_id, device=DEVICE)
 
-    # Decide phi model ID
-    if phi_model_id is not None:
-        chosen_phi = phi_model_id
+    # Build or load store
+    need_build = rebuild_store or not (
+        os.path.exists(EMB_PATH)
+        and os.path.exists(FAISS_PATH)
+        and os.path.exists(METADATA_PATH)
+    )
+
+    if need_build:
+        _build_faculty_store(data_file)
     else:
-        chosen_phi = "microsoft/phi-1_5" if use_phi15 else "microsoft/phi-2"
+        _load_faculty_store()
 
-    print(f"🧪 Loading Phi model: {chosen_phi}")
-    phi_tokenizer = AutoTokenizer.from_pretrained(chosen_phi)
+    # Build BM25
+    print("\n[Build] Faculty BM25 corpus...")
+    faculty_bm25 = build_faculty_bm25(faculty_metadata)
+    print("[Build] Faculty BM25 ready.")
+
+    # Load Phi model
+    if phi_model_id is not None:
+        chosen_phi_id = phi_model_id
+    else:
+        chosen_phi_id = PHI_MODEL_ID_SMALL if use_phi15 else PHI_MODEL_ID_DEFAULT
+
+    print(f"\n🧪 Loading Phi model for Faculty Mode: {chosen_phi_id}")
+    phi_tokenizer = AutoTokenizer.from_pretrained(chosen_phi_id)
     phi_model = AutoModelForCausalLM.from_pretrained(
-        chosen_phi,
+        chosen_phi_id,
         device_map="auto",
         torch_dtype="auto",
     )
@@ -285,139 +355,22 @@ def init_faculty_mode(
         **phi_tokenizer("warmup", return_tensors="pt").to(phi_model.device),
         max_new_tokens=1,
     )
-
-    print("\n[Build] Faculty BM25 corpus...")
-    faculty_bm25 = build_faculty_bm25(metadata)
-    print("[Build] Faculty BM25 ready.")
-
-    print("✅ Faculty mode initialized successfully.")
+    print("✅ Faculty Mode initialized (emb_store + BM25 + Phi ready).")
 
 
 # =====================================================================
-# MEMORY MANAGEMENT
+# RETRIEVAL HELPERS
 # =====================================================================
 
-def update_memory(
-    memory: List[Dict[str, str]],
-    query: str,
-    answer: str,
-    max_length: int = 5,
-) -> List[Dict[str, str]]:
-    memory.append(
-        {
-            "user": query,
-            "assistant": answer,
-        }
-    )
-    return memory[-max_length:]
-
-
-def build_memory_prompt(
-    memory: List[Dict[str, str]],
-    context: str,
-    query: str,
-    include_memory: bool = True,
-    max_turns: int = 5,
-    debug_print: bool = True,
-) -> str:
+def rerank_results(query: str, chunks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
-    Build the final prompt for Phi-2.
-
-    include_memory = False:
-        do NOT feed prior conversation to the model
-        (use this when a professor name is already resolved)
-    max_turns:
-        how many recent QA pairs to include if include_memory=True
-    debug_print:
-        print memory contents to console (for debugging)
+    Simple heuristic reranker on top of BM25/FAISS candidates.
+    Gives more weight to:
+    - Department phrase matches
+    - Research keywords / interests
+    - Courses and projects
     """
-    recent = memory[-max_turns:] if memory else []
-    if debug_print and recent:
-        print("\n🧠 Memory (latest first shown last):")
-        for i, m in enumerate(recent, start=1):
-            print(f"Q{i}: {m.get('user', '')}")
-            print(f"A{i}: {m.get('assistant', '')}\n")
-
-    memory_str = ""
-    if include_memory and recent:
-        memory_str = "\n".join(
-            [f"Q: {m.get('user', '')}\nA: {m.get('assistant', '')}" for m in recent]
-        )
-    elif debug_print and recent:
-        print(
-            "⚠️ Memory is NOT included in the prompt for this turn "
-            "(name-locked or disambiguated query)."
-        )
-
-    prompt = f"""You are a helpful academic assistant. Use the context to answer accurately.
-Only respond based on the faculty data. Do not make up facts.
-
-Previous Conversation:
-{memory_str}
-
-Context from Faculty Data:
-{context}
-
-Question: {query}
-
-Answer:"""
-
-    return prompt
-
-
-# =====================================================================
-# NAME / MEMORY UTILITIES
-# =====================================================================
-
-def find_prof_by_name(query: str, metadata_list: List[Dict]) -> Optional[Dict]:
-    """Return metadata entry if a professor's name is mentioned in the query."""
-    query_lower = query.lower()
-    for prof in metadata_list:
-        name_parts = prof["name"].lower().split()
-        if all(part in query_lower for part in name_parts):
-            return prof  # full match
-        elif any(part in query_lower for part in name_parts):
-            return prof  # partial match
-    return None
-
-
-def is_ambiguous_query(query: str) -> bool:
-    pronouns = ["him", "her", "he", "she", "his", "they", "them"]
-    tokens = query.lower().split()
-    return any(p in tokens for p in pronouns)
-
-
-def resolve_query_via_memory(
-    query: str,
-    memory: List[Dict[str, str]],
-    metadata_list: List[Dict],
-) -> Optional[Dict]:
-    """
-    If the query is ambiguous (pronouns) and we have memory,
-    scan memory from newest to oldest and return the most recently
-    mentioned professor (full metadata dict). Otherwise return None.
-    """
-    if not is_ambiguous_query(query) or not memory:
-        return None
-
-    for turn in reversed(memory):
-        hay = f"{turn.get('user', '')} {turn.get('assistant', '')}".lower()
-        for prof in metadata_list:
-            if prof["name"].lower() in hay:
-                print(f"🔁 Ambiguity resolved via memory → using: {prof['name']}")
-                return prof
-    return None
-
-
-# =====================================================================
-# RERANKING & STRUCTURED LOGIC
-# =====================================================================
-
-def rerank_results(query: str, chunks: List[Dict]) -> List[Dict]:
-    """
-    Simple heuristic reranker using department, research keywords, interests, projects, and courses.
-    """
-    priority: List[Tuple[float, Dict]] = []
+    priority = []
     query_lower = query.lower()
     query_tokens = set(query_lower.split())
 
@@ -428,13 +381,12 @@ def rerank_results(query: str, chunks: List[Dict]) -> List[Dict]:
         r_interests = (c.get("research_interests", "") or "").lower()
         projects = (c.get("ongoing_projects", "") or "").lower()
         courses = [
-            c_name.lower()
-            for c_name in c.get("courses_taught", [])
-            if isinstance(c_name, str)
+            c_name.lower() for c_name in c.get("courses_taught", []) if isinstance(c_name, str)
         ]
 
-        # Department match
+        # Department matching (stricter)
         dept_tokens = set(dept.split())
+
         if dept and dept in query_lower:
             score += 2.0
         else:
@@ -464,37 +416,89 @@ def rerank_results(query: str, chunks: List[Dict]) -> List[Dict]:
     return [x[1] for x in priority]
 
 
-def structured_query_response(query: str) -> Optional[str]:
+def retrieve_faculty_layered(query: str) -> List[Dict[str, Any]]:
     """
-    Very simple direct response when the query clearly mentions names.
-    Not heavily used in the main pipeline, but can be useful as a fallback.
+    Layered retrieval for faculty:
+    1) BM25 over metadata-only corpus for ALL faculty.
+    2) If BM25 has hits, rerank and return them.
+    3) If BM25 is empty, fallback to FAISS semantic search over ALL faculty, then rerank.
     """
-    query_lower = query.lower()
-    results: List[str] = []
+    if faculty_bm25 is None or faculty_faiss_index is None or bert_model is None:
+        raise RuntimeError("Faculty Mode not initialized. Call init_faculty_mode() first.")
 
-    for prof in metadata:
-        name = prof.get("name", "").lower()
-        dept = prof.get("department", "").lower()
-        research = prof.get("research_interests", "").lower()
+    print(f"\n🧠 Faculty layered retrieve: {query!r}")
 
-        if any(name_part in query_lower for name_part in name.split()):
-            results.append(
-                f"👤 {prof['name']} ({prof['designation']}, {prof['department']})\n"
-                f"📘 Research Interests: {prof['research_interests']}"
-            )
+    # 1) BM25
+    q_tokens = query.lower().split()
+    scores = np.array(faculty_bm25.get_scores(q_tokens), dtype=np.float32)
+    positive_idxs = np.where(scores > 0)[0]
 
-    return "\n\n".join(results) if results else None
+    if len(positive_idxs) > 0:
+        sorted_positive = positive_idxs[np.argsort(scores[positive_idxs])[::-1]]
+        bm25_chunks = [faculty_metadata[int(i)] for i in sorted_positive]
+
+        print(f"📥 BM25 hits: {len(bm25_chunks)} (metadata-only)")
+        reranked = rerank_results(query, bm25_chunks)
+        return reranked if reranked else bm25_chunks
+
+    # 2) FAISS fallback
+    print("⚠️ BM25 returned no hits. Falling back to FAISS semantic search.")
+    q_embed = bert_model.encode([query], convert_to_numpy=True)
+    k_all = faculty_faiss_index.ntotal
+    D, I = faculty_faiss_index.search(q_embed, k=k_all)
+    faiss_chunks = [faculty_metadata[int(i)] for i in I[0]]
+
+    reranked = rerank_results(query, faiss_chunks)
+    return reranked if reranked else faiss_chunks
 
 
 # =====================================================================
-# CONTEXT BUILDERS
+# MEMORY + PRONOUN RESOLUTION
 # =====================================================================
+
+def update_memory(
+    memory: List[Dict[str, str]],
+    query: str,
+    answer: str,
+    max_length: int = MAX_MEMORY,
+) -> List[Dict[str, str]]:
+    memory.append({"user": query, "assistant": answer})
+    return memory[-max_length:]
+
+
+def is_ambiguous_query(query: str) -> bool:
+    pronouns = ["him", "her", "he", "she", "his", "they", "them"]
+    return any(p in query.lower().split() for p in pronouns)
+
+
+def resolve_query_via_memory(
+    query: str,
+    memory: List[Dict[str, str]],
+    metadata_list: List[Dict[str, Any]],
+) -> Optional[Dict[str, Any]]:
+    """
+    If the query is ambiguous (pronouns) and we have memory,
+    scan memory from newest to oldest and return the most recently
+    mentioned professor (full metadata dict). Otherwise return None.
+    """
+    if not is_ambiguous_query(query) or not memory:
+        return None
+
+    for turn in reversed(memory):
+        hay = f"{turn.get('user','')} {turn.get('assistant','')}".lower()
+        for prof in metadata_list:
+            if prof["name"].lower() in hay:
+                print(f"🔁 Ambiguity resolved via memory → using: {prof['name']}")
+                return prof
+
+    return None
+
 
 def truncate(text: str, max_words: int = 400) -> str:
     return " ".join(text.split()[:max_words])
 
 
-def build_context(top_chunks: List[Dict]) -> str:
+def build_context(top_chunks: List[Dict[str, Any]]) -> str:
     return "\n\n".join(
         [
             f"{m['name']} ({m['designation']}, {m['department']}):\n{m['content']}"
@@ -503,52 +507,55 @@ def build_context(top_chunks: List[Dict]) -> str:
     )
 
 
-# =====================================================================
-# RETRIEVAL (BM25 + FAISS)
-# =====================================================================
-
-def retrieve_faculty_layered(query: str) -> List[Dict]:
+def build_memory_prompt(
+    memory: List[Dict[str, str]],
+    context: str,
+    query: str,
+    include_memory: bool = True,
+    max_turns: int = 5,
+    debug_print: bool = True,
+) -> str:
     """
-    Layered retrieval for faculty:
-    1) Try BM25 over metadata-only corpus using ALL faculty.
-    2) If BM25 has hits, return all positive-score candidates (optionally re-ranked).
-    3) If BM25 is empty, fallback to FAISS semantic search over ALL faculty.
+    Build the final prompt for Phi.
+
+    include_memory = False -> do NOT feed prior conversation to the model
+                              (use this when name is already resolved).
     """
-    if faculty_bm25 is None or faiss_index is None or bert_model is None:
-        raise RuntimeError("Faculty mode not initialized. Call init_faculty_mode() first.")
+    recent = memory[-max_turns:] if memory else []
 
-    print(f"\n🧠 Faculty layered retrieve: {query!r}")
+    if debug_print and recent:
+        print("\n🧠 Memory (latest first shown last):")
+        for i, m in enumerate(recent, start=1):
+            print(f"Q{i}: {m.get('user','')}")
+            print(f"A{i}: {m.get('assistant','')}\n")
 
-    # 1) BM25 over metadata
-    q_tokens = query.lower().split()
-    scores = np.array(faculty_bm25.get_scores(q_tokens), dtype=np.float32)
-    positive_idxs = np.where(scores > 0)[0]
+    if include_memory and recent:
+        memory_str = "\n".join(
+            [f"Q: {m.get('user','')}\nA: {m.get('assistant','')}" for m in recent]
+        )
+    else:
+        memory_str = ""
+        if debug_print and recent:
+            print("⚠️ Memory is NOT included in the prompt for this turn.")
 
-    if len(positive_idxs) > 0:
-        sorted_positive = positive_idxs[np.argsort(scores[positive_idxs])[::-1]]
-        bm25_chunks = [metadata[int(i)] for i in sorted_positive]
+    prompt = f"""You are a helpful academic assistant. Use the faculty data context to answer accurately.
+Only respond based on the faculty data. Do not make up facts.
 
-        print(f"📥 BM25 hits: {len(bm25_chunks)} (metadata-only)")
-        reranked = rerank_results(query, bm25_chunks)
-        if reranked:
-            return reranked
-        return bm25_chunks
+Previous Conversation:
+{memory_str}
 
-    # 2) FAISS fallback
-    print("⚠️ BM25 returned no hits. Falling back to FAISS semantic search.")
-    q_embed = bert_model.encode([query], convert_to_numpy=True)
-    k_all = faiss_index.ntotal
-    D, I = faiss_index.search(q_embed, k=k_all)
-    faiss_chunks = [metadata[int(i)] for i in I[0]]
+Context from Faculty Data:
+{context}
 
-    reranked = rerank_results(query, faiss_chunks)
-    if reranked:
-        return reranked
-    return faiss_chunks
+Question: {query}
+
+Answer:"""
+
+    return prompt
 
 
 # =====================================================================
-# PIPELINE 1: FACULTY RESEARCH PIPELINE
+# FACULTY PIPELINE
 # =====================================================================
 
 def faculty_pipeline(
@@ -557,38 +564,50 @@ def faculty_pipeline(
     memory: Optional[List[Dict[str, str]]] = None,
 ) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
     """
-    Main faculty research Q&A pipeline.
+    Main Faculty Research pipeline.
+
+    Steps:
+    1) If query is ambiguous (pronouns), try resolving via memory
+       to lock onto a specific professor.
+    2) If resolved, skip retrieval and just use that professor's data.
+    3) Otherwise, use layered retrieval (BM25 -> FAISS fallback).
+    4) Build context and send to Phi for generation.
+    5) Update memory and history.
+
     Returns:
         updated_history, updated_memory
     """
+    global faculty_metadata, phi_model, phi_tokenizer
+
     if history is None:
         history = []
     if memory is None:
         memory = []
 
-    if phi_model is None or phi_tokenizer is None:
-        raise RuntimeError("Faculty mode not initialized. Call init_faculty_mode() first.")
+    if phi_model is None or phi_tokenizer is None or not faculty_metadata:
+        raise RuntimeError("Faculty Mode not initialized. Call init_faculty_mode() first.")
 
     print(f"\n🧠 Incoming Faculty Query: {query}")
 
-    matched_prof: Optional[Dict] = None
-    if is_ambiguous_query(query):
-        matched_prof = resolve_query_via_memory(query, memory, metadata)
+    matched_prof: Optional[Dict[str, Any]] = None
 
+    # 1) Ambiguous pronoun → try memory
+    if is_ambiguous_query(query):
+        matched_prof = resolve_query_via_memory(query, memory, faculty_metadata)
+
+    # 2) If resolved, skip retrieval
     if matched_prof:
-        print(
-            f"🎯 Ambiguous query resolved via memory: "
-            f"{matched_prof['name']} (skip BM25/FAISS)"
-        )
+        print(f"🎯 Ambiguous query resolved via memory: {matched_prof['name']} (skip BM25/FAISS)")
         top_chunks = [matched_prof]
         name_path = True
     else:
+        # 3) Layered retrieval
         top_chunks = retrieve_faculty_layered(query)
         name_path = False
 
     # Log retrieved chunks
-    print("\n📥 Retrieved Context Chunks:\n")
-    for idx, chunk in enumerate(top_chunks):
+    print("\n📥 Retrieved Faculty Context Chunks:\n")
+    for idx, chunk in enumerate(top_chunks[:5]):
         print(f"--- Chunk {idx+1} ---")
         print(f"Name: {chunk['name']}")
         print(f"Department: {chunk['department']}")
@@ -598,73 +617,28 @@ def faculty_pipeline(
 
     context = truncate(build_context(top_chunks))
     include_memory = not name_path
+
     prompt = build_memory_prompt(
         memory,
         context,
         query,
         include_memory=include_memory,
     )
-    print(
-        f"\n🧩 include_memory_in_prompt = {include_memory} "
-        f"and 📤 Final Prompt Sent to Phi:"
-    )
+
+    print(f"\n🧩 include_memory_in_prompt = {include_memory} and 📤 Final Prompt Sent to Phi:")
     print(prompt)
 
+    # Generate with Phi
     inputs = phi_tokenizer(prompt, return_tensors="pt").to(phi_model.device)
     outputs = phi_model.generate(**inputs, max_new_tokens=300)
     raw_output = phi_tokenizer.decode(outputs[0], skip_special_tokens=True)
-    answer = raw_output.split("Answer:")[-1].strip()
+    answer = raw_output.split("Answer:", 1)[-1].strip()
 
+    # Update memory + history
     memory = update_memory(memory, query, answer)
-    updated_history = history + [
+    history = history + [
         {"role": "user", "content": query},
         {"role": "assistant", "content": answer},
     ]
-    return updated_history, memory
 
-
-# =====================================================================
-# PIPELINE 2: EXAM QA PIPELINE
-# =====================================================================
-
-def exam_qa_pipeline(
-    query: str,
-    history: Optional[List[Dict[str, str]]] = None,
-) -> List[Dict[str, str]]:
-    """
-    Exam QA pipeline:
-    Given a topic, generate exactly 10 MCQs with options and answers.
-    """
-    if history is None:
-        history = []
-
-    if phi_model is None or phi_tokenizer is None:
-        raise RuntimeError("Faculty mode not initialized. Call init_faculty_mode() first.")
-
-    print(f"\n🧠 Incoming Exam QA Query: {query}")
-
-    prompt = f"""You are a university teaching assistant helping students prepare for exams.
-
-{query}
-
-Generate exactly 10 multiple choice questions with answers.
-Each question should be clearly numbered 1 to 10 and followed by:
-A. ...
-B. ...
-C. ...
-D. ...
-Answer: <Correct option letter>
-
-Begin below:
-"""
-
-    inputs = phi_tokenizer(prompt, return_tensors="pt").to(phi_model.device)
-    outputs = phi_model.generate(**inputs, max_new_tokens=700)
-    response = phi_tokenizer.decode(outputs[0], skip_special_tokens=True)
-    response = response.split("Begin below:")[-1].strip()
-
-    updated_history = history + [
-        {"role": "user", "content": query},
-        {"role": "assistant", "content": response},
-    ]
-    return updated_history
+    return history, memory
