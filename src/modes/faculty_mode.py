@@ -642,6 +642,34 @@ def faculty_pipeline(
 
     return history, memory
 
+# =====================================================================
+# Gradio / main_app-friendly chat handler
+# =====================================================================
+
+def faculty_chat_handler(
+    query: str,
+    history=None,
+    memory=None,
+):
+    """
+    Thin wrapper so main_app.py can treat faculty mode as a chat handler.
+
+    Expected behavior:
+    - history: list of {"role": "...", "content": "..."} messages
+    - memory:  list of past QA pairs for disambiguation
+    - Returns: (updated_history, updated_memory)
+    """
+    if history is None:
+        history = []
+    if memory is None:
+        memory = []
+
+    updated_history, updated_memory = faculty_pipeline(
+        query=query,
+        history=history,
+        memory=memory,
+    )
+    return updated_history, updated_memory
 
 # =====================================================================
 # DEBUG CLI
