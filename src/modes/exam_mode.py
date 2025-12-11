@@ -155,3 +155,27 @@ Begin below:
         {"role": "assistant", "content": response},
     ]
     return updated_history
+
+# ------------------------------------------------------------------
+# main_app-friendly chat handler
+# ------------------------------------------------------------------
+
+def exam_chat_handler(
+    query: str,
+    history=None,
+    memory=None,
+):
+    """
+    Thin wrapper so main_app.py can treat exam mode like other modes.
+
+    - history: list of {"role": "...", "content": "..."}
+    - memory:  currently unused, but kept for consistency
+    - Returns: (updated_history, memory)
+    """
+    if history is None:
+        history = []
+    if memory is None:
+        memory = []
+
+    updated_history = exam_qa_pipeline(query, history)
+    return updated_history, memory
