@@ -6,7 +6,7 @@ from pathlib import Path
 
 from modes.faculty_mode import init_faculty_mode, faculty_chat_handler
 from modes.research_mode import init_research_mode, research_chat_handler
-from modes.exam_mode import exam_chat_handler  # if you have it
+from modes.exam_mode import init_qa_mode, exam_chat_handler  # if you have it
 
 
 BASE_DIR = Path(__file__).resolve().parent
