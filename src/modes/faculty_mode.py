@@ -455,41 +455,79 @@ def retrieve_faculty_layered(query: str) -> List[Dict[str, Any]]:
 # MEMORY + PRONOUN RESOLUTION
 # =====================================================================
 
-def update_memory(
-    memory: List[Dict[str, str]],
-    query: str,
-    answer: str,
-    max_length: int = MAX_MEMORY,
-) -> List[Dict[str, str]]:
+def update_memory(memory, query, answer, max_length=5):
+    if memory is None:
+        memory = []
     memory.append({"user": query, "assistant": answer})
     return memory[-max_length:]
 
 
+
 def is_ambiguous_query(query: str) -> bool:
-    pronouns = ["him", "her", "he", "she", "his", "they", "them"]
-    return any(p in query.lower().split() for p in pronouns)
-
-
-def resolve_query_via_memory(
-    query: str,
-    memory: List[Dict[str, str]],
-    metadata_list: List[Dict[str, Any]],
-) -> Optional[Dict[str, Any]]:
-    """
-    If the query is ambiguous (pronouns) and we have memory,
-    scan memory from newest to oldest and return the most recently
-    mentioned professor (full metadata dict). Otherwise return None.
-    """
-    if not is_ambiguous_query(query) or not memory:
+    pronouns = {"him", "her", "he", "she", "his", "they", "them", "their"}
+    toks = set(query.lower().split())
+    return len(pronouns & toks) > 0
+    
+def find_prof_by_name(query: str, metadata) -> dict | None:
+    q = norm_name(query)
+    if not q:
         return None
 
-    for turn in reversed(memory):
-        hay = f"{turn.get('user','')} {turn.get('assistant','')}".lower()
-        for prof in metadata_list:
-            if prof["name"].lower() in hay:
-                print(f"🔁 Ambiguity resolved via memory → using: {prof['name']}")
-                return prof
+    # 1) Exact normalized name match
+    for prof in metadata:
+        pn = norm_name(prof.get("name", ""))
+        if pn and pn == q:
+            return prof
 
+    # 2) Token-based: require ALL name tokens to appear in query
+    q_raw = query.lower()
+    for prof in metadata:
+        name = prof.get("name", "")
+        name_tokens = [t for t in norm_name(name).split() if t]
+        if not name_tokens:
+            continue
+        if all(tok in q_raw for tok in name_tokens):
+            return prof
+
+    return None
+    
+def bm25_retrieve_faculty(query: str):
+    q_tokens = query.lower().split()
+    scores = np.array(faculty_bm25.get_scores(q_tokens), dtype=np.float32)
+
+    positive_idxs = np.where(scores > 0)[0]
+    if len(positive_idxs) == 0:
+        return []
+
+    # sort by score descending
+    sorted_idxs = positive_idxs[np.argsort(scores[positive_idxs])[::-1]]
+    return [metadata[int(i)] for i in sorted_idxs]
+
+def vector_retrieve_faculty(query: str, top_k: int = 5):
+    q_embed = bert_model.encode([query], convert_to_numpy=True)
+    D, I = faiss_index.search(q_embed, k=min(top_k, faiss_index.ntotal))
+    results = []
+    for idx in I[0]:
+        if idx == -1:
+            continue
+        results.append(metadata[int(idx)])
+    return results
+
+def resolve_query_via_last_memory(memory, metadata):
+    """
+    When ambiguous, look ONLY at the last memory element.
+    Find a professor name mentioned there; return that prof dict or None.
+    """
+    if not memory:
+        return None
+
+    last = memory[-1]
+    hay = f"{last.get('user','')} {last.get('assistant','')}".lower()
+
+    for prof in metadata:
+        if prof.get("name", "").lower() in hay:
+            print(f"🔁 Ambiguity resolved from LAST memory → {prof['name']}")
+            return prof
     return None
 
 
@@ -557,90 +595,109 @@ Answer:"""
 # FACULTY PIPELINE
 # =====================================================================
 
-def faculty_pipeline(
-    query: str,
-    history: Optional[List[Dict[str, str]]] = None,
-    memory: Optional[List[Dict[str, str]]] = None,
-) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
-    """
-    Main Faculty Research pipeline.
-
-    Steps:
-    1) If query is ambiguous (pronouns), try resolving via memory
-       to lock onto a specific professor.
-    2) If resolved, skip retrieval and just use that professor's data.
-    3) Otherwise, use layered retrieval (BM25 -> FAISS fallback).
-    4) Build context and send to Phi for generation.
-    5) Update memory and history.
-
-    Returns:
-        updated_history, updated_memory
-    """
-    global faculty_metadata, phi_model, phi_tokenizer
+def faculty_pipeline(query, history=None, memory=None):
+    global phi_model, phi_tokenizer
 
     if history is None:
         history = []
     if memory is None:
         memory = []
 
-    if phi_model is None or phi_tokenizer is None or not faculty_metadata:
-        raise RuntimeError("Faculty Mode not initialized. Call init_faculty_mode() first.")
-
     print(f"\n🧠 Incoming Faculty Query: {query}")
 
-    matched_prof: Optional[Dict[str, Any]] = None
-
-    # 1) Ambiguous pronoun → try memory
+    # ---------------------------------------------------------
+    # A) Ambiguous query → resolve ONLY from last memory element
+    # ---------------------------------------------------------
     if is_ambiguous_query(query):
-        matched_prof = resolve_query_via_memory(query, memory, faculty_metadata)
-
-    # 2) If resolved, skip retrieval
-    if matched_prof:
-        print(f"🎯 Ambiguous query resolved via memory: {matched_prof['name']} (skip BM25/FAISS)")
-        top_chunks = [matched_prof]
-        name_path = True
+        matched_prof = resolve_query_via_last_memory(memory, metadata)
+        if matched_prof:
+            top_chunks = [matched_prof]
+            print(f"🎯 Using memory-locked professor: {matched_prof['name']}")
+            mode_used = "memory_name_lock"
+        else:
+            top_chunks = []
+            mode_used = "ambiguous_unresolved"
     else:
-        # 3) Layered retrieval
-        top_chunks = retrieve_faculty_layered(query)
-        name_path = False
+        top_chunks = []
+        mode_used = "normal"
 
-    # Log retrieved chunks
-    print("\n📥 Retrieved Faculty Context Chunks:\n")
-    for idx, chunk in enumerate(top_chunks[:5]):
-        print(f"--- Chunk {idx+1} ---")
-        print(f"Name: {chunk['name']}")
-        print(f"Department: {chunk['department']}")
-        print(f"Email: {chunk['email']}")
-        print(f"Courses: {chunk.get('courses_taught', [])}")
-        print(f"Content:\n{chunk['content'][:500]}...\n")
+    # ---------------------------------------------------------
+    # B) If not memory-locked, try DIRECT NAME retrieval first
+    # ---------------------------------------------------------
+    if not top_chunks:
+        matched_prof = find_prof_by_name(query, metadata)
+        if matched_prof:
+            top_chunks = [matched_prof]
+            print(f"🎯 Direct name retrieval hit: {matched_prof['name']}")
+            mode_used = "direct_name"
 
+    # ---------------------------------------------------------
+    # C) If not a specific person → BM25 retrieval
+    # ---------------------------------------------------------
+    suggestion_only = False
+    if not top_chunks:
+        bm25_hits = bm25_retrieve_faculty(query)
+        if bm25_hits:
+            top_chunks = bm25_hits
+            print(f"📥 BM25 hits: {len(top_chunks)}")
+            mode_used = "bm25"
+        else:
+            # ---------------------------------------------------------
+            # D) If BM25 empty → vector fallback with “did you mean”
+            # ---------------------------------------------------------
+            top_chunks = vector_retrieve_faculty(query, top_k=5)
+            mode_used = "vector_fallback"
+            suggestion_only = True
+            print("⚠️ BM25 returned no hits. Using vector fallback suggestions.")
+
+    # If nothing found even in vector
+    if not top_chunks:
+        answer = "No matching faculty found. Try using a professor name or department."
+        history = history + [{"role": "user", "content": query}, {"role": "assistant", "content": answer}]
+        memory = update_memory(memory, query, answer, max_length=5)
+        return history, memory
+
+    # ---------------------------------------------------------
+    # E) If vector fallback, ask confirmation instead of Phi
+    # ---------------------------------------------------------
+    if suggestion_only:
+        options = []
+        for i, prof in enumerate(top_chunks[:5], 1):
+            options.append(f"{i}) {prof['name']} — {prof['designation']}, {prof['department']}")
+
+        answer = (
+            "These are the top matches I found, did you mean any of these?\n\n"
+            + "\n".join(options)
+            + "\n\nReply with the number (1-5) or type the full name."
+        )
+
+        history = history + [{"role": "user", "content": query}, {"role": "assistant", "content": answer}]
+        memory = update_memory(memory, query, answer, max_length=5)
+        return history, memory
+
+    # ---------------------------------------------------------
+    # F) Otherwise, generate response via Phi-2 using context
+    # ---------------------------------------------------------
     context = truncate(build_context(top_chunks))
-    include_memory = not name_path
+    prompt = f"""You are a helpful academic assistant. Use the context to answer accurately.
+Only respond based on the faculty data. Do not make up facts.
 
-    prompt = build_memory_prompt(
-        memory,
-        context,
-        query,
-        include_memory=include_memory,
-    )
+Context:
+{context}
 
-    print(f"\n🧩 include_memory_in_prompt = {include_memory} and 📤 Final Prompt Sent to Phi:")
-    print(prompt)
+Question: {query}
 
-    # Generate with Phi
+Answer:"""
+
     inputs = phi_tokenizer(prompt, return_tensors="pt").to(phi_model.device)
     outputs = phi_model.generate(**inputs, max_new_tokens=300)
     raw_output = phi_tokenizer.decode(outputs[0], skip_special_tokens=True)
-    answer = raw_output.split("Answer:", 1)[-1].strip()
+    answer = raw_output.split("Answer:")[-1].strip()
 
-    # Update memory + history
-    memory = update_memory(memory, query, answer)
-    history = history + [
-        {"role": "user", "content": query},
-        {"role": "assistant", "content": answer},
-    ]
-
+    history = history + [{"role": "user", "content": query}, {"role": "assistant", "content": answer}]
+    memory = update_memory(memory, query, answer, max_length=5)
     return history, memory
+
 
 # =====================================================================
 # Gradio / main_app-friendly chat handler
