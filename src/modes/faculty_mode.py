@@ -565,7 +565,9 @@ def _layer1_filter_candidates(query: str) -> Tuple[str, List[int]]:
 
     # 1) Professor direct hit
     prof_ids = _layer1_find_professors(query)
+
     if prof_ids:
+        dbg_layer1(query, "professor", prof_ids)
         return "professor", prof_ids
 
     # 2) Department / designation / course matches
@@ -610,8 +612,10 @@ def _layer1_filter_candidates(query: str) -> Tuple[str, List[int]]:
             cands |= token_hits
 
     if cands:
+        dbg_layer1(query, "metadata_subset", sorted(cands))
         return "metadata_subset", sorted(cands)
-
+        
+    dbg_layer1(query, "none", [])
     return "none", []
 
 # =====================================================================
@@ -732,6 +736,7 @@ def retrieve_faculty_new(query: str) -> Tuple[str, List[Dict[str, Any]]]:
         raise RuntimeError("Faculty metadata is empty. Did you call init_faculty_mode()?")
 
     reason, layer1_ids = _layer1_filter_candidates(query)
+    dbg_layer1(query, reason, layer1_ids)
 
     # A) Professor direct
     if reason == "professor" and layer1_ids:
@@ -747,7 +752,10 @@ def retrieve_faculty_new(query: str) -> Tuple[str, List[Dict[str, Any]]]:
 
     # C) Global BM25 + CE
     bm_ids = _bm25_rank_ids(query, candidate_ids=None)
+    dbg_bm25(query, layer1_ids, bm_ids)  # pass None when global
+
     ce_ids = _cross_encoder_rerank(query, bm_ids)
+    dbg_ce(query, (bm_ids if bm_ids else layer1_ids), ce_ids)
     chunks = [faculty_metadata[i] for i in ce_ids]
     return ("global_bm25_ce" if chunks else "none"), chunks
 
