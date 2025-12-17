@@ -53,35 +53,46 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 DEVICE: str = "cuda" if torch.cuda.is_available() else "cpu"
 
 EMBED_MODEL_ID_DEFAULT: str = "sentence-transformers/all-MiniLM-L6-v2"
+RERANKER_ID_DEFAULT: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+
 PHI_MODEL_ID_DEFAULT: str = "microsoft/phi-2"
 PHI_MODEL_ID_SMALL: str = "microsoft/phi-1_5"
 
-# Embedding / index paths (set by init_faculty_mode)
-EMB_PATH: str = ""
-FAISS_PATH: str = ""
-METADATA_PATH: str = ""
-
 # Data + models
 faculty_metadata: List[Dict[str, Any]] = []  # each contains "content" field
-faculty_embeddings: Optional[np.ndarray] = None
-faculty_faiss_index: Optional[faiss.Index] = None
-bert_model: Optional[SentenceTransformer] = None
 faculty_bm25: Optional[BM25Okapi] = None
+reranker = None  # CrossEncoder
 
 phi_model: Optional[AutoModelForCausalLM] = None
 phi_tokenizer: Optional[AutoTokenizer] = None
 
-# Indexes and canonical sets
-INDEX_NAME = defaultdict(list)       # norm_name(name)      -> [idx,...]
-INDEX_DEPARTMENT = defaultdict(list) # norm_text(dept)      -> [idx,...]
-INDEX_KEYWORD = defaultdict(list)    # norm_text(keyword)   -> [idx,...]
+# Layer-1 Filter Indexes (requested)
+INDEX_PROFESSORS   = defaultdict(set)  # norm_name(full_name) -> {idx,...}
+INDEX_DEPARTMENTS  = defaultdict(set)  # norm_text(dept)      -> {idx,...}
+INDEX_COURSES_EXACT = defaultdict(set) # norm_text(course)    -> {idx,...}
+INDEX_COURSES_TOKEN = defaultdict(set) # token               -> {idx,...}
+INDEX_DESIGNATIONS = defaultdict(set)  # norm_text(desig)     -> {idx,...}
 
-ALL_NAMES = set()
+# Optional helper (fast name matching)
+INDEX_PROF_TOKENS  = defaultdict(set)  # token -> {idx,...}
+
+# Canonical sets (debug / future UI)
+ALL_PROFESSORS  = set()
 ALL_DEPARTMENTS = set()
-ALL_KEYWORDS = set()
+ALL_COURSES     = set()
+ALL_DESIGNATIONS = set()
 
-# Memory settings
-MAX_MEMORY = 10
+# Memory settings (as per your new spec)
+MAX_MEMORY = 5
+
+# Stopwords for robust course-token matching
+COURSE_STOPWORDS = {
+    "and","or","of","the","a","an","to","in","for","with","on","at","by",
+    "i","ii","iii","iv",
+    "intro","introduction","advanced","fundamentals","principles",
+    "seminar","topics","special","studies","lab","laboratory"
+}
+
 
 
 # =====================================================================
@@ -276,6 +287,7 @@ def build_faculty_bm25(metadata_list: List[Dict[str, Any]]) -> BM25Okapi:
     return BM25Okapi(corpus_tokens)
 
 
+
 # =====================================================================
 # INITIALIZATION
 # =====================================================================
@@ -334,6 +346,18 @@ def init_faculty_mode(
     print("\n[Build] Faculty BM25 corpus...")
     faculty_bm25 = build_faculty_bm25(faculty_metadata)
     print("[Build] Faculty BM25 ready.")
+    
+    # Build Layer-1 indexes
+    print("\n[Build] Layer-1 indexes (prof/department/course/designation)...")
+    build_layer1_indexes(faculty_metadata)
+    print("✅ Layer-1 indexes ready.")
+    
+    # Load CrossEncoder reranker
+    from sentence_transformers import CrossEncoder
+    print(f"\n🧠 Loading CrossEncoder reranker: {RERANKER_ID_DEFAULT} (device={DEVICE})")
+    global reranker
+    reranker = CrossEncoder(RERANKER_ID_DEFAULT, device=DEVICE)
+    print("✅ Reranker ready.")
 
     # Load Phi model
     if phi_model_id is not None:
@@ -356,6 +380,179 @@ def init_faculty_mode(
     )
     print("✅ Faculty Mode initialized (emb_store + BM25 + Phi ready).")
 
+
+# ====================================================================
+
+# Layer-1 Filter
+
+# =====================================================================
+
+def _tokenize(s: str) -> List[str]:
+    s = norm_text(s)
+    s = re.sub(r"[^a-z0-9\s]", " ", s)
+    s = re.sub(r"\s+", " ", s).strip()
+    return s.split() if s else []
+
+
+def _course_tokens(course: str) -> List[str]:
+    toks = _tokenize(course)
+    return [t for t in toks if t not in COURSE_STOPWORDS and len(t) >= 3]
+
+
+def build_layer1_indexes(metadata_list: List[Dict[str, Any]]) -> None:
+    """
+    Build Layer-1 indexes:
+    - professors, departments, courses (exact + token), designations
+    """
+    global INDEX_PROFESSORS, INDEX_DEPARTMENTS, INDEX_COURSES_EXACT, INDEX_COURSES_TOKEN, INDEX_DESIGNATIONS, INDEX_PROF_TOKENS
+    global ALL_PROFESSORS, ALL_DEPARTMENTS, ALL_COURSES, ALL_DESIGNATIONS
+
+    # reset
+    INDEX_PROFESSORS.clear()
+    INDEX_DEPARTMENTS.clear()
+    INDEX_COURSES_EXACT.clear()
+    INDEX_COURSES_TOKEN.clear()
+    INDEX_DESIGNATIONS.clear()
+    INDEX_PROF_TOKENS.clear()
+
+    ALL_PROFESSORS.clear()
+    ALL_DEPARTMENTS.clear()
+    ALL_COURSES.clear()
+    ALL_DESIGNATIONS.clear()
+
+    for idx, prof in enumerate(metadata_list):
+        name = prof.get("name","") or ""
+        dept = prof.get("department","") or ""
+        desig = prof.get("designation","") or ""
+        courses = prof.get("courses_taught", []) or []
+
+        # Professors
+        n_norm = norm_name(name)
+        if n_norm:
+            INDEX_PROFESSORS[n_norm].add(idx)
+            ALL_PROFESSORS.add(name)
+
+            for t in _tokenize(n_norm):
+                if len(t) >= 2:
+                    INDEX_PROF_TOKENS[t].add(idx)
+
+        # Departments
+        d_norm = norm_text(dept)
+        if d_norm:
+            INDEX_DEPARTMENTS[d_norm].add(idx)
+            ALL_DEPARTMENTS.add(dept)
+
+        # Designations
+        z_norm = norm_text(desig)
+        if z_norm:
+            INDEX_DESIGNATIONS[z_norm].add(idx)
+            ALL_DESIGNATIONS.add(desig)
+
+        # Courses (robust)
+        for c in courses:
+            if not isinstance(c, str):
+                continue
+            c = c.strip()
+            if not c:
+                continue
+            ALL_COURSES.add(c)
+
+            c_norm = norm_text(c)
+            INDEX_COURSES_EXACT[c_norm].add(idx)
+
+            toks = _course_tokens(c)
+            for t in toks:
+                INDEX_COURSES_TOKEN[t].add(idx)
+
+
+def _layer1_find_professors(query: str) -> List[int]:
+    """
+    Direct name retrieval:
+    - If query contains multiple tokens that match a professor's name tokens,
+      we return those prof IDs.
+    """
+    q = norm_name(query)
+    q_tokens = set(_tokenize(q))
+
+    # Quick token-based candidate union
+    token_cands = set()
+    for t in q_tokens:
+        token_cands |= INDEX_PROF_TOKENS.get(t, set())
+
+    if not token_cands:
+        return []
+
+    # Strengthen: require >=2 overlapping tokens with that prof name (unless query has only 1 token)
+    min_overlap = 2 if len(q_tokens) >= 2 else 1
+    out = []
+    for idx in token_cands:
+        p_name = faculty_metadata[idx].get("name","")
+        p_tokens = set(_tokenize(norm_name(p_name)))
+        if len(p_tokens & q_tokens) >= min_overlap:
+            out.append(idx)
+
+    # stable order
+    return sorted(set(out))
+
+
+def _layer1_filter_candidates(query: str) -> Tuple[str, List[int]]:
+    """
+    Return (reason, candidate_ids) from Layer-1 indexes.
+    Reason is one of: "professor" | "metadata_subset" | "none"
+    """
+    q_norm = norm_text(query)
+    q_tokens = set(_tokenize(q_norm))
+
+    # 1) Professor direct hit
+    prof_ids = _layer1_find_professors(query)
+    if prof_ids:
+        return "professor", prof_ids
+
+    # 2) Department / designation / course matches
+    cands = set()
+
+    # department: match by phrase-in-query OR token overlap with full dept phrase
+    for dept_norm, ids in INDEX_DEPARTMENTS.items():
+        if dept_norm and dept_norm in q_norm:
+            cands |= ids
+
+    for desig_norm, ids in INDEX_DESIGNATIONS.items():
+        if desig_norm and desig_norm in q_norm:
+            cands |= ids
+
+    # courses:
+    # - exact phrase
+    for course_norm, ids in INDEX_COURSES_EXACT.items():
+        if course_norm and course_norm in q_norm:
+            cands |= ids
+
+    # - token index (robust): require >=2 meaningful course tokens from query if possible
+    q_course_tokens = [t for t in q_tokens if t not in COURSE_STOPWORDS and len(t) >= 3]
+    token_hits = set()
+    for t in q_course_tokens:
+        token_hits |= INDEX_COURSES_TOKEN.get(t, set())
+
+    if token_hits:
+        # enforce “>=2 token” evidence when query has enough tokens
+        if len(q_course_tokens) >= 2:
+            refined = []
+            qt = set(q_course_tokens)
+            for idx in token_hits:
+                prof_courses = faculty_metadata[idx].get("courses_taught", []) or []
+                best_overlap = 0
+                for c in prof_courses:
+                    toks = set(_course_tokens(c if isinstance(c, str) else ""))
+                    best_overlap = max(best_overlap, len(toks & qt))
+                if best_overlap >= 2:
+                    refined.append(idx)
+            cands |= set(refined)
+        else:
+            cands |= token_hits
+
+    if cands:
+        return "metadata_subset", sorted(cands)
+
+    return "none", []
 
 # =====================================================================
 # RETRIEVAL HELPERS
@@ -415,40 +612,85 @@ def rerank_results(query: str, chunks: List[Dict[str, Any]]) -> List[Dict[str, A
     return [x[1] for x in priority]
 
 
-def retrieve_faculty_layered(query: str) -> List[Dict[str, Any]]:
+def _bm25_rank_ids(query: str, candidate_ids: Optional[List[int]] = None) -> List[int]:
     """
-    Layered retrieval for faculty:
-    1) BM25 over metadata-only corpus for ALL faculty.
-    2) If BM25 has hits, rerank and return them.
-    3) If BM25 is empty, fallback to FAISS semantic search over ALL faculty, then rerank.
+    Returns BM25-ranked ids (descending) with score > 0.
+    If candidate_ids is provided, we only consider those ids.
     """
-    if faculty_bm25 is None or faculty_faiss_index is None or bert_model is None:
-        raise RuntimeError("Faculty Mode not initialized. Call init_faculty_mode() first.")
-
-    print(f"\n🧠 Faculty layered retrieve: {query!r}")
-
-    # 1) BM25
-    q_tokens = query.lower().split()
+    if faculty_bm25 is None:
+        raise RuntimeError("faculty_bm25 is not initialized.")
+    q_tokens = _tokenize(query)
     scores = np.array(faculty_bm25.get_scores(q_tokens), dtype=np.float32)
-    positive_idxs = np.where(scores > 0)[0]
 
-    if len(positive_idxs) > 0:
-        sorted_positive = positive_idxs[np.argsort(scores[positive_idxs])[::-1]]
-        bm25_chunks = [faculty_metadata[int(i)] for i in sorted_positive]
+    if candidate_ids is None:
+        pos = np.where(scores > 0)[0]
+    else:
+        cand = np.array(list(set(candidate_ids)), dtype=np.int64)
+        pos = cand[scores[cand] > 0]
 
-        print(f"📥 BM25 hits: {len(bm25_chunks)} (metadata-only)")
-        reranked = rerank_results(query, bm25_chunks)
-        return reranked if reranked else bm25_chunks
+    if len(pos) == 0:
+        return []
 
-    # 2) FAISS fallback
-    print("⚠️ BM25 returned no hits. Falling back to FAISS semantic search.")
-    q_embed = bert_model.encode([query], convert_to_numpy=True)
-    k_all = faculty_faiss_index.ntotal
-    D, I = faculty_faiss_index.search(q_embed, k=k_all)
-    faiss_chunks = [faculty_metadata[int(i)] for i in I[0]]
+    # sort by score desc
+    pos = pos[np.argsort(scores[pos])[::-1]]
+    return [int(i) for i in pos]
 
-    reranked = rerank_results(query, faiss_chunks)
-    return reranked if reranked else faiss_chunks
+
+def _cross_encoder_rerank(query: str, ids: List[int]) -> List[int]:
+    """
+    CrossEncoder rerank over the provided ids.
+    Keep only positive rerank scores (>0).
+    """
+    if reranker is None:
+        raise RuntimeError("reranker is not initialized.")
+
+    if not ids:
+        return []
+
+    pairs = [(query, faculty_metadata[i]["content"]) for i in ids]
+    scores = reranker.predict(pairs)
+
+    scored = [(int(i), float(s)) for i, s in zip(ids, scores)]
+    scored = [(i, s) for (i, s) in scored if s > 0.0]  # keep positive only
+
+    scored.sort(key=lambda x: x[1], reverse=True)
+    return [i for i, _ in scored]
+
+
+def retrieve_faculty_new(query: str) -> Tuple[str, List[Dict[str, Any]]]:
+    """
+    New retrieval:
+    1) Layer-1 indexes:
+       - professor → direct candidates
+       - else subset candidates → BM25(subset) → CrossEncoder
+    2) If no Layer-1 candidates → BM25(global) → CrossEncoder
+    3) If still empty → return []
+    Returns: (path, chunks)
+      path in {"direct_professor", "subset_bm25_ce", "global_bm25_ce", "none"}
+    """
+    if not faculty_metadata:
+        raise RuntimeError("Faculty metadata is empty. Did you call init_faculty_mode()?")
+
+    reason, layer1_ids = _layer1_filter_candidates(query)
+
+    # A) Professor direct
+    if reason == "professor" and layer1_ids:
+        chunks = [faculty_metadata[i] for i in layer1_ids]
+        return "direct_professor", chunks
+
+    # B) Subset path (dept/course/designation)
+    if reason == "metadata_subset" and layer1_ids:
+        bm_ids = _bm25_rank_ids(query, candidate_ids=layer1_ids)
+        ce_ids = _cross_encoder_rerank(query, bm_ids if bm_ids else layer1_ids)
+        chunks = [faculty_metadata[i] for i in ce_ids]
+        return ("subset_bm25_ce" if chunks else "none"), chunks
+
+    # C) Global BM25 + CE
+    bm_ids = _bm25_rank_ids(query, candidate_ids=None)
+    ce_ids = _cross_encoder_rerank(query, bm_ids)
+    chunks = [faculty_metadata[i] for i in ce_ids]
+    return ("global_bm25_ce" if chunks else "none"), chunks
+
 
 
 # =====================================================================
@@ -470,27 +712,19 @@ def is_ambiguous_query(query: str) -> bool:
     return any(p in query.lower().split() for p in pronouns)
 
 
-def resolve_query_via_memory(
-    query: str,
+def resolve_query_via_memory_last_turn(
     memory: List[Dict[str, str]],
-    metadata_list: List[Dict[str, Any]],
-) -> Optional[Dict[str, Any]]:
+) -> List[int]:
     """
-    If the query is ambiguous (pronouns) and we have memory,
-    scan memory from newest to oldest and return the most recently
-    mentioned professor (full metadata dict). Otherwise return None.
+    Only inspect memory[-1] (last saved turn), extract professor ids if names appear.
     """
-    if not is_ambiguous_query(query) or not memory:
-        return None
+    if not memory:
+        return []
 
-    for turn in reversed(memory):
-        hay = f"{turn.get('user','')} {turn.get('assistant','')}".lower()
-        for prof in metadata_list:
-            if prof["name"].lower() in hay:
-                print(f"🔁 Ambiguity resolved via memory → using: {prof['name']}")
-                return prof
+    last = memory[-1]
+    hay = f"{last.get('user','')} {last.get('assistant','')}"
+    return _layer1_find_professors(hay)
 
-    return None
 
 
 def truncate(text: str, max_words: int = 400) -> str:
@@ -504,6 +738,44 @@ def build_context(top_chunks: List[Dict[str, Any]]) -> str:
             for m in top_chunks
         ]
     )
+def _clean_model_answer(text: str) -> str:
+    """
+    Prevent the model from emitting fake multi-turn Q/A blocks.
+    Keep only the first answer segment and strip any "Question:" echoes.
+    """
+    t = text.strip()
+
+    # Keep after "Answer:" if present
+    if "Answer:" in t:
+        t = t.split("Answer:", 1)[1].strip()
+
+    # Stop if it starts inventing a new QA
+    for stop in ["\nQuestion:", "\nQ:", "\nUser:", "\nAssistant:"]:
+        if stop in t:
+            t = t.split(stop, 1)[0].strip()
+
+    # first paragraph only (optional)
+    t = t.split("\n\n", 1)[0].strip()
+    return t
+
+
+def build_strict_prompt(context: str, query: str) -> str:
+    """
+    Stronger instruction: answer only once; never create extra Q/A.
+    """
+    return f"""You are a helpful academic assistant.
+
+Rules (strict):
+- Use ONLY the provided faculty context. If the answer is not in the context, say: "I don't have that information in the faculty dataset."
+- Answer the user's question ONCE. Do NOT create follow-up questions or additional Q/A.
+- Do NOT invent courses, departments, projects, or research topics.
+
+Faculty Context:
+{context}
+
+User Question: {query}
+
+Answer:"""
 
 
 def build_memory_prompt(
@@ -562,21 +834,7 @@ def faculty_pipeline(
     history: Optional[List[Dict[str, str]]] = None,
     memory: Optional[List[Dict[str, str]]] = None,
 ) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
-    """
-    Main Faculty Research pipeline.
-
-    Steps:
-    1) If query is ambiguous (pronouns), try resolving via memory
-       to lock onto a specific professor.
-    2) If resolved, skip retrieval and just use that professor's data.
-    3) Otherwise, use layered retrieval (BM25 -> FAISS fallback).
-    4) Build context and send to Phi for generation.
-    5) Update memory and history.
-
-    Returns:
-        updated_history, updated_memory
-    """
-    global faculty_metadata, phi_model, phi_tokenizer
+    global phi_model, phi_tokenizer
 
     if history is None:
         history = []
@@ -588,59 +846,55 @@ def faculty_pipeline(
 
     print(f"\n🧠 Incoming Faculty Query: {query}")
 
-    matched_prof: Optional[Dict[str, Any]] = None
-
-    # 1) Ambiguous pronoun → try memory
+    # 1) Ambiguous → memory[-1] name-lock
     if is_ambiguous_query(query):
-        matched_prof = resolve_query_via_memory(query, memory, faculty_metadata)
+        prof_ids = resolve_query_via_memory_last_turn(memory)
+        if prof_ids:
+            print(f"🎯 Ambiguous query resolved via memory[-1] → {prof_ids}")
+            top_chunks = [faculty_metadata[i] for i in prof_ids]
+            context = truncate(build_context(top_chunks))
+            prompt = build_strict_prompt(context, query)
 
-    # 2) If resolved, skip retrieval
-    if matched_prof:
-        print(f"🎯 Ambiguous query resolved via memory: {matched_prof['name']} (skip BM25/FAISS)")
-        top_chunks = [matched_prof]
-        name_path = True
-    else:
-        # 3) Layered retrieval
-        top_chunks = retrieve_faculty_layered(query)
-        name_path = False
+            inputs = phi_tokenizer(prompt, return_tensors="pt").to(phi_model.device)
+            outputs = phi_model.generate(**inputs, max_new_tokens=280)
+            raw = phi_tokenizer.decode(outputs[0], skip_special_tokens=True)
+            answer = _clean_model_answer(raw)
 
-    # Log retrieved chunks
-    print("\n📥 Retrieved Faculty Context Chunks:\n")
-    for idx, chunk in enumerate(top_chunks[:5]):
-        print(f"--- Chunk {idx+1} ---")
-        print(f"Name: {chunk['name']}")
-        print(f"Department: {chunk['department']}")
-        print(f"Email: {chunk['email']}")
-        print(f"Courses: {chunk.get('courses_taught', [])}")
-        print(f"Content:\n{chunk['content'][:500]}...\n")
+            memory = update_memory(memory, query, answer, max_length=MAX_MEMORY)
+            history = history + [
+                {"role": "user", "content": query},
+                {"role": "assistant", "content": answer},
+            ]
+            return history, memory
 
-    context = truncate(build_context(top_chunks))
-    include_memory = not name_path
+    # 2) Not ambiguous → Layer-1 indexes → subset/global BM25+CE → or none
+    path, chunks = retrieve_faculty_new(query)
+    print(f"🧭 Retrieval path: {path}")
 
-    prompt = build_memory_prompt(
-        memory,
-        context,
-        query,
-        include_memory=include_memory,
-    )
+    if not chunks:
+        answer = "I couldn’t find anything related to your query in the faculty dataset. Please try a different query (e.g., a professor name, department, course, or designation)."
+        memory = update_memory(memory, query, answer, max_length=MAX_MEMORY)
+        history = history + [
+            {"role": "user", "content": query},
+            {"role": "assistant", "content": answer},
+        ]
+        return history, memory
 
-    print(f"\n🧩 include_memory_in_prompt = {include_memory} and 📤 Final Prompt Sent to Phi:")
-    print(prompt)
+    context = truncate(build_context(chunks))
+    prompt = build_strict_prompt(context, query)
 
-    # Generate with Phi
     inputs = phi_tokenizer(prompt, return_tensors="pt").to(phi_model.device)
-    outputs = phi_model.generate(**inputs, max_new_tokens=300)
-    raw_output = phi_tokenizer.decode(outputs[0], skip_special_tokens=True)
-    answer = raw_output.split("Answer:", 1)[-1].strip()
+    outputs = phi_model.generate(**inputs, max_new_tokens=280)
+    raw = phi_tokenizer.decode(outputs[0], skip_special_tokens=True)
+    answer = _clean_model_answer(raw)
 
-    # Update memory + history
-    memory = update_memory(memory, query, answer)
+    memory = update_memory(memory, query, answer, max_length=MAX_MEMORY)
     history = history + [
         {"role": "user", "content": query},
         {"role": "assistant", "content": answer},
     ]
-
     return history, memory
+
 
 # =====================================================================
 # Gradio / main_app-friendly chat handler
