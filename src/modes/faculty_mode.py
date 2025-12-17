@@ -706,18 +706,33 @@ def retrieve_faculty_new(query: str) -> Tuple[str, List[Dict[str, Any]]]:
     # B) Subset path (dept/course/designation)
     if reason == "metadata_subset" and layer1_ids:
         bm_ids = _bm25_rank_ids(query, candidate_ids=layer1_ids)
-        ce_ids = _cross_encoder_rerank(query, bm_ids if bm_ids else layer1_ids)
-        chunks = [faculty_metadata[i] for i in ce_ids]
-        return ("subset_bm25_ce" if chunks else "none"), chunks
+        dbg_bm25(query, layer1_ids, bm_ids)
+    
+        base_ids = bm_ids if bm_ids else layer1_ids
+        ce_ids = _cross_encoder_rerank(query, base_ids)
+        dbg_ce(query, base_ids, ce_ids)
+    
+        # ✅ IMPORTANT FIX:
+        # If CrossEncoder keeps nothing (scores <= 0), DO NOT fail.
+        # Just return the Layer-1 candidates (or BM25-ranked list if available).
+        final_ids = ce_ids if ce_ids else base_ids
+    
+        chunks = [faculty_metadata[i] for i in final_ids]
+        return "subset_bm25_ce", chunks
 
     # C) Global BM25 + CE
     bm_ids = _bm25_rank_ids(query, candidate_ids=None)
     dbg_bm25(query, layer1_ids, bm_ids)  # pass None when global
 
+    if not bm_ids:
+        return "none", []
+    
     ce_ids = _cross_encoder_rerank(query, bm_ids)
-    dbg_ce(query, (bm_ids if bm_ids else layer1_ids), ce_ids)
-    chunks = [faculty_metadata[i] for i in ce_ids]
-    return ("global_bm25_ce" if chunks else "none"), chunks
+    dbg_ce(query, bm_ids, ce_ids)
+    
+    final_ids = ce_ids if ce_ids else bm_ids  # ✅ fallback
+    chunks = [faculty_metadata[i] for i in final_ids]
+    return "global_bm25_ce", chunks
 
 
 
