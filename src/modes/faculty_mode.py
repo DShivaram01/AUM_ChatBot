@@ -638,26 +638,24 @@ def rerank_results(query: str, chunks: List[Dict[str, Any]]) -> List[Dict[str, A
 
 def _bm25_rank_ids(query: str, candidate_ids: Optional[List[int]] = None) -> List[int]:
     """
-    Returns BM25-ranked ids (descending) with score > 0.
-    If candidate_ids is provided, we only consider those ids.
+    Returns BM25-ranked ids (descending).
+    No score>0 filtering (BM25 can be 0 for valid matches).
     """
     if faculty_bm25 is None:
         raise RuntimeError("faculty_bm25 is not initialized.")
+
     q_tokens = _tokenize(query)
     scores = np.array(faculty_bm25.get_scores(q_tokens), dtype=np.float32)
 
     if candidate_ids is None:
-        pos = np.where(scores > 0)[0]
+        ids = np.arange(len(scores), dtype=np.int64)
     else:
-        cand = np.array(list(set(candidate_ids)), dtype=np.int64)
-        pos = cand[scores[cand] > 0]
+        ids = np.array(list(set(candidate_ids)), dtype=np.int64)
 
-    if len(pos) == 0:
-        return []
+    # sort all candidates by score desc (even if 0)
+    ids = ids[np.argsort(scores[ids])[::-1]]
+    return [int(i) for i in ids]
 
-    # sort by score desc
-    pos = pos[np.argsort(scores[pos])[::-1]]
-    return [int(i) for i in pos]
 
 
 def _cross_encoder_rerank(query: str, ids: List[int]) -> List[int]:
