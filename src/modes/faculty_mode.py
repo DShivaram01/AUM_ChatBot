@@ -223,68 +223,28 @@ def _load_faculty_store() -> None:
 
 def build_faculty_bm25(metadata_list: List[Dict[str, Any]]) -> BM25Okapi:
     """
-    Build BM25 over metadata-only for each faculty:
-    - name
-    - designation
-    - department
-    - research interests
-    - research keywords
-    - courses taught
-    - recent publications
-    - ongoing projects
-    Also populates INDEX_NAME, INDEX_DEPARTMENT, INDEX_KEYWORD and canonical sets.
+    Build BM25 over metadata-only for each faculty.
+    Does NOT build Layer-1 indexes (those are built in build_layer1_indexes()).
     """
-    global ALL_NAMES, ALL_DEPARTMENTS, ALL_KEYWORDS
-
     corpus_tokens: List[List[str]] = []
 
-    for idx, prof in enumerate(metadata_list):
-        name   = prof.get("name", "") or ""
-        desig  = prof.get("designation", "") or ""
-        dept   = prof.get("department", "") or ""
-        r_int  = prof.get("research_interests", "") or ""
-        r_keys = " ".join(prof.get("research_keywords", []) or [])
+    for prof in metadata_list:
+        name    = prof.get("name", "") or ""
+        desig   = prof.get("designation", "") or ""
+        dept    = prof.get("department", "") or ""
+        r_int   = prof.get("research_interests", "") or ""
+        r_keys  = " ".join(prof.get("research_keywords", []) or [])
         courses = " ".join(prof.get("courses_taught", []) or [])
-        pubs   = " ".join(prof.get("recent_publications", []) or [])
-        proj   = prof.get("ongoing_projects", "") or ""
+        pubs    = " ".join(prof.get("recent_publications", []) or [])
+        proj    = prof.get("ongoing_projects", "") or ""
 
-        combined = " ".join(
-            [
-                name,
-                desig,
-                dept,
-                r_int,
-                r_keys,
-                courses,
-                pubs,
-                proj,
-            ]
-        )
+        combined = " ".join([name, desig, dept, r_int, r_keys, courses, pubs, proj])
 
         tokens = combined.lower().split()
         corpus_tokens.append(tokens)
 
-        # Small indexes for meta lookups
-        n_norm = norm_name(name)
-        if n_norm:
-            ALL_NAMES.add(name)
-            INDEX_NAME[n_norm].append(idx)
-
-        d_norm = norm_text(dept)
-        if d_norm:
-            ALL_DEPARTMENTS.add(dept)
-            INDEX_DEPARTMENT[d_norm].append(idx)
-
-        for kw in prof.get("research_keywords", []) or []:
-            kw = kw.strip()
-            if not kw:
-                continue
-            ALL_KEYWORDS.add(kw)
-            kw_norm = norm_text(kw)
-            if kw_norm:
-                INDEX_KEYWORD[kw_norm].append(idx)
-
     return BM25Okapi(corpus_tokens)
+
 
 
 
@@ -346,7 +306,7 @@ def init_faculty_mode(
     print("\n[Build] Faculty BM25 corpus...")
     faculty_bm25 = build_faculty_bm25(faculty_metadata)
     print("[Build] Faculty BM25 ready.")
-    
+
     # Build Layer-1 indexes
     print("\n[Build] Layer-1 indexes (prof/department/course/designation)...")
     build_layer1_indexes(faculty_metadata)
