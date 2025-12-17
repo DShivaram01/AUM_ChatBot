@@ -381,6 +381,66 @@ def init_faculty_mode(
     print("✅ Faculty Mode initialized (emb_store + BM25 + Phi ready).")
 
 
+# =====================================================================
+# DEBUG HELPERS (drop-in)
+# =====================================================================
+
+DEBUG = True  # flip to False to silence debug logs
+
+
+def dbg(msg: str) -> None:
+    if DEBUG:
+        print(msg)
+
+
+def dbg_layer1(query: str, reason: str, ids: list[int]) -> None:
+    if not DEBUG:
+        return
+    dbg("\n=== Layer-1 Filter Debug ===")
+    dbg(f"Query   : {query!r}")
+    dbg(f"Reason  : {reason}")
+    dbg(f"IDs     : {len(ids)}")
+    if ids:
+        # show up to 5 names
+        preview = ids[:5]
+        names = []
+        for i in preview:
+            try:
+                names.append(faculty_metadata[i].get("name", f"idx={i}"))
+            except Exception:
+                names.append(f"idx={i}")
+        dbg("Preview : " + " | ".join(names))
+    dbg("============================")
+
+
+def dbg_bm25(query: str, ids_in: list[int] | None, ids_out: list[int]) -> None:
+    if not DEBUG:
+        return
+    scope = "GLOBAL" if ids_in is None else f"SUBSET({len(ids_in)})"
+    dbg("\n=== BM25 Debug ===")
+    dbg(f"Scope   : {scope}")
+    dbg(f"Query   : {query!r}")
+    dbg(f"Out IDs : {len(ids_out)}")
+    if ids_out:
+        preview = ids_out[:5]
+        names = [faculty_metadata[i].get("name", f"idx={i}") for i in preview]
+        dbg("Top5    : " + " | ".join(names))
+    dbg("==================")
+
+
+def dbg_ce(query: str, ids_in: list[int], ids_out: list[int]) -> None:
+    if not DEBUG:
+        return
+    dbg("\n=== CrossEncoder Debug ===")
+    dbg(f"Query   : {query!r}")
+    dbg(f"In IDs  : {len(ids_in)}")
+    dbg(f"Keep(>0): {len(ids_out)}")
+    if ids_out:
+        preview = ids_out[:5]
+        names = [faculty_metadata[i].get("name", f"idx={i}") for i in preview]
+        dbg("Top5    : " + " | ".join(names))
+    dbg("==========================")
+
 # ====================================================================
 
 # Layer-1 Filter
