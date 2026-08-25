@@ -1,0 +1,31 @@
+{
+  "name": "aum-chatbot-client",
+  "version": "0.1.0",
+  "description": "Laptop client for the AUM research + housing chatbot. Talks to api_server.py over HTTP.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "edu.aum.chatbot-client",
+    "productName": "AUM Chatbot",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!dist/**"
+    ],
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Education"
+    }
+  }
+}

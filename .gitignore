@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+logs/
+data/emb_store/
+data/scratch/
+.hf_cache/
+.env
+desktop/client/node_modules/
+desktop/client/dist/

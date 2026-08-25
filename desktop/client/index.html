@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>AUM Chatbot</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="app">
+
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="aum_chatbot_final_logo.png" alt="AUM Chatbot logo" class="brand-mark" />
+        <div class="brand-text">
+          <h1>AUM Chatbot</h1>
+        </div>
+      </div>
+
+      <button id="newChatBtn" class="new-chat-btn">+ New chat</button>
+      <button id="newProjectBtn" class="new-project-btn">+ New project</button>
+      <form id="projectCreator" class="project-creator hidden">
+        <label class="sr-only" for="projectNameInput">Project folder name</label>
+        <input id="projectNameInput" type="text" maxlength="80" placeholder="Project folder name" />
+        <div class="project-creator-actions">
+          <button type="submit" class="project-create-btn">Create</button>
+          <button type="button" id="cancelProjectBtn" class="project-cancel-btn">Cancel</button>
+        </div>
+      </form>
+
+      <label class="temp-toggle">
+        <input type="checkbox" id="tempToggle" />
+        <span>Temporary chat (won't be saved)</span>
+      </label>
+
+      <div class="chat-list-wrap">
+        <div id="pinnedSection" class="chat-section hidden">
+          <p class="chat-section-label">Pinned</p>
+          <div id="pinnedList" class="chat-list"></div>
+        </div>
+        <div id="projectsSection" class="chat-section">
+          <p class="chat-section-label">Projects</p>
+          <div id="projectList" class="project-list"></div>
+        </div>
+        <div id="chatsSection" class="chat-section">
+          <p class="chat-section-label">Chats</p>
+          <div id="chatList" class="chat-list"></div>
+        </div>
+      </div>
+
+      <div class="sidebar-foot">
+        <label class="open-ended-toggle" for="openEndedToggle">
+          <input type="checkbox" id="openEndedToggle" />
+          <span>Open-ended mode</span>
+        </label>
+        <p id="modeHint" class="mode-hint" aria-live="polite">
+          Answers are grounded in AUM's research records and housing policy — not general knowledge.
+        </p>
+      </div>
+    </aside>
+
+    <main class="chat">
+      <div id="messages" class="messages">
+        <div class="empty-state">
+          <p class="empty-title">What can I help with?</p>
+          <div class="topic-cards">
+            <button class="topic-card" data-topic="cos">
+              <span class="topic-card-title">Research</span>
+              <span class="topic-card-sub">AUM's research projects and symposium</span>
+            </button>
+            <button class="topic-card" data-topic="housing">
+              <span class="topic-card-title">Housing &amp; Community</span>
+              <span class="topic-card-sub">Residence hall policies and standards</span>
+            </button>
+          </div>
+          <p class="empty-sub">Or just type your question below.</p>
+        </div>
+      </div>
+
+      <form id="composer" class="composer">
+        <input id="questionInput" type="text" autocomplete="off"
+               placeholder="Ask a question…" />
+        <button type="submit" id="sendBtn">Ask</button>
+      </form>
+    </main>
+
+  </div>
+
+  <div id="feedbackModal" class="feedback-modal hidden" role="dialog" aria-modal="true" aria-labelledby="feedbackTitle">
+    <div class="feedback-dialog">
+      <h2 id="feedbackTitle">Share feedback</h2>
+      <p id="feedbackConsent" class="feedback-consent">
+        With your permission, this message and the AUM Chatbot response will be logged to help improve answer accuracy. No account or personal identity is attached beyond what you choose to type.
+      </p>
+      <fieldset class="feedback-scope">
+        <legend>What should be included?</legend>
+        <label><input type="radio" name="feedbackScope" value="single" checked /> Just this message</label>
+        <label><input type="radio" name="feedbackScope" value="conversation" /> My whole conversation</label>
+      </fieldset>
+      <label class="feedback-comment-label" for="feedbackComment">Optional comment</label>
+      <textarea id="feedbackComment" rows="4" placeholder="Tell us what worked or what could be improved."></textarea>
+      <p id="feedbackStatus" class="feedback-status" aria-live="polite"></p>
+      <div class="feedback-actions">
+        <button type="button" id="feedbackCancel" class="feedback-cancel">Cancel</button>
+        <button type="button" id="feedbackConfirm" class="feedback-confirm">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
