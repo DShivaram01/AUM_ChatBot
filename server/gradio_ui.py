@@ -76,6 +76,11 @@ def cos_chat(message, history, pending_cands):
         sel_n = int(sel_m.group(1))
         if 1 <= sel_n <= len(pending_cands):
             selected = pending_cands[sel_n - 1]
+            if selected.get("_person_choice"):
+                yield from cos_chat(
+                    f"projects associated with {selected['_person_choice']}", history, []
+                )
+                return
             selected["_selection_n"] = sel_n
             m = selected["meta"]
             logger.info(f"[{qid}] User selected #{sel_n}: {m.get('title','')[:50]}")
@@ -94,6 +99,16 @@ def cos_chat(message, history, pending_cands):
         return
 
     qinfo = classify_query(message)
+    if qinfo.get("person_ambiguous"):
+        names = qinfo["person_hints"]
+        choices = [{"_person_choice": name} for name in names]
+        prompt = (
+            "I found multiple people matching that name. Please choose one:\n\n"
+            + "\n".join(f"{i}. {name}" for i, name in enumerate(names, 1))
+            + "\n\nReply with a number to continue."
+        )
+        yield prompt, choices, "", qid
+        return
     cands = retrieve_cos_rrf(
         message, qinfo, embedder, cos_index, cos_EMB,
         cos_META, cos_TEXTS, cos_bm25, reranker, query_id=qid,

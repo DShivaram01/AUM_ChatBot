@@ -61,6 +61,14 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 RERANK_THRESHOLD = 0.0
 RRF_K            = 60    # standard RRF constant
 SIGMA            = 0.8   # relative-threshold multiplier (backend.py:697)
+# Cross-encoder scores are logits.  A relative spread alone cannot distinguish
+# uniformly irrelevant candidates from a useful result, so every grounded
+# response also needs to clear this absolute evidence floor.
+EVIDENCE_SCORE_FLOOR = -2.0
+# Housing uses normalized embedding cosine similarity rather than cross-encoder
+# logits, so it needs a calibrated floor in its own score scale while using the
+# same evidence-gate mechanism.
+HOUSING_EVIDENCE_SCORE_FLOOR = 0.35
 
 # ---- NOT FOUND IN backend.py ----
 # No RAM-checking logic exists anywhere in the ~2227-line source file

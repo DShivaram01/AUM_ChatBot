@@ -170,6 +170,15 @@ def _non_retrieval_answer(topic: str) -> tuple[str, str] | None:
 _generate_lock = asyncio.Lock()
 
 
+def _sse_event(data: str, event: str | None = None) -> str:
+    """Encode one SSE event without allowing embedded newlines to end it."""
+    lines = []
+    if event:
+        lines.append(f"event: {event}")
+    lines.extend(f"data: {line}" for line in str(data).splitlines() or [""])
+    return "\n".join(lines) + "\n\n"
+
+
 async def _resolve_topic(req: "ChatRequest") -> str:
     """
     Decides which pipeline (cos_chat/housing_chat) handles this request.
@@ -367,9 +376,9 @@ async def ask_stream(req: ChatRequest) -> StreamingResponse:
                 delta = text[len(last_sent):] if text.startswith(last_sent) else text
                 last_sent = text
                 if delta:
-                    yield f"data: {delta}\n\n"
+                    yield _sse_event(delta)
 
-        yield f"event: done\ndata: {json.dumps({'query_id': query_id})}\n\n"
+        yield _sse_event(json.dumps({'query_id': query_id}), event="done")
 
     return StreamingResponse(token_stream(), media_type="text/event-stream")
 

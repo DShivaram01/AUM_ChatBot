@@ -161,18 +161,11 @@ _LIST_RE = re.compile(
 )
 
 _DEPT_PATTERNS = [
-    (re.compile(r"\b(math(?:ematics)?)\b",              re.IGNORECASE), "mathematics"),
-    (re.compile(r"\b(biol(?:ogy)?)\b",                  re.IGNORECASE), "biology"),
-    (re.compile(r"\b(chem(?:istry)?)\b",                re.IGNORECASE), "chemistry"),
-    (re.compile(r"\b(physics?)\b",                      re.IGNORECASE), "physics"),
-    (re.compile(r"\b(computer\s+science|comp\s+sci)\b", re.IGNORECASE), "computer science"),
-    (re.compile(r"\b(nursing)\b",                       re.IGNORECASE), "nursing"),
-    (re.compile(r"\b(psychology|psych)\b",              re.IGNORECASE), "psychology"),
-    (re.compile(r"\b(english)\b",                       re.IGNORECASE), "english"),
-    (re.compile(r"\b(history)\b",                       re.IGNORECASE), "history"),
-    (re.compile(r"\b(business)\b",                      re.IGNORECASE), "business"),
-    (re.compile(r"\b(environmental)\b",                 re.IGNORECASE), "environmental"),
-    (re.compile(r"\b(geology)\b",                       re.IGNORECASE), "geology"),
+    (re.compile(r"\b(math(?:ematics)?)\b", re.IGNORECASE), "Mathematics"),
+    (re.compile(r"\b(biol(?:ogy)?|environmental\s+science)\b", re.IGNORECASE), "Biology and Environmental Science"),
+    (re.compile(r"\b(chem(?:istry)?)\b", re.IGNORECASE), "Chemistry"),
+    (re.compile(r"\b(computer\s+science|comp\s+sci)\b", re.IGNORECASE), "Computer Science and Computer Information Systems"),
+    (re.compile(r"\b(psychology|psych)\b", re.IGNORECASE), "Psychology"),
 ]
 
 _STOPWORDS = {
@@ -227,13 +220,15 @@ def classify_query(query: str) -> dict:
     ]
     q_clean = " ".join(q_clean_tokens)
 
-    matched_names = query_name_index(q_clean)
+    matched_scored = query_name_index(q_clean, with_scores=True)
+    matched_names = [name for name, _score in matched_scored]
 
     if matched_names:
         result["person_hints"] = matched_names
         result["person_hint"]  = matched_names[0]
         result["type"]         = "TYPE_PERSON"
         result["is_broad"]     = False   # person overrides broad
+        result["person_ambiguous"] = len(matched_names) > 1
 
     return result
 
@@ -406,9 +401,7 @@ def run_smoke_tests(cos_meta):
     this explicitly after data load, instead of it firing as a side effect
     of importing this module.
     """
-    from pipeline.retrieval import build_name_index, query_name_index
-
-    build_name_index(cos_meta)
+    from pipeline.retrieval import query_name_index
 
     _name_tests = [
         ("bhattacharya",            True,  "last name only"),

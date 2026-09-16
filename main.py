@@ -58,6 +58,9 @@ def load_everything():
     else:
         logger.warning("[Housing] PDF not found - Housing tab will show error")
 
+    # Build the runtime name index during normal ingest/startup. Smoke tests
+    # validate it afterwards; they no longer create application state.
+    retrieval.build_name_index(cos_META)
     run_smoke_tests(cos_META)
 
     gradio_ui.init_gradio_ui(

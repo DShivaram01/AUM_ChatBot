@@ -38,18 +38,20 @@ from pipeline.memory import logger
 from pipeline.classifier import QueryTrace, RetrievalCandidate, SESSION_TRACES
 
 SIGMA = config.SIGMA
+EVIDENCE_SCORE_FLOOR = config.EVIDENCE_SCORE_FLOOR
+HOUSING_EVIDENCE_SCORE_FLOOR = config.HOUSING_EVIDENCE_SCORE_FLOOR
 
 
 # ── Relative threshold helper (backend.py:701-708) ────────────────────
 
-def _relative_threshold(cands, top_n=10):
+def _relative_threshold(cands, top_n=10, absolute_floor=EVIDENCE_SCORE_FLOOR):
     scores = [c["rerank"] for c in cands[:top_n] if c.get("rerank") is not None]
     if not scores:
         return False, 0.0, 0.0, 0.0
     top  = scores[0]
     mean = float(np.mean(scores))
     std  = float(np.std(scores)) if len(scores) > 1 else 0.0
-    return top >= mean + SIGMA * std, top, mean, std
+    return (top >= absolute_floor and top >= mean + SIGMA * std), top, mean, std
 
 
 # ── LLM streaming generation (backend.py:1041-1101) ────────────────────
@@ -136,8 +138,11 @@ def _cos_cite(meta):
     return f'({year}, "{_trunc(title, 55)}", {pres})'
 
 def _housing_cite(chunk):
+    start_page = chunk.get("page", "?")
+    end_page = chunk.get("page_end", start_page)
+    page = str(start_page) if end_page == start_page else f"{start_page}-{end_page}"
     return (f"(AUM Housing Policy, "
-            f"section {chunk.get('section','General')}, p.{chunk.get('page','?')})")
+            f"section {chunk.get('section','General')}, p.{page})")
 
 
 # ── Template: numbered list (backend.py:1138-1162) ─────────────────────
@@ -358,7 +363,7 @@ def build_cos_answer_streaming(
         top  = scores[0]
         mean = float(np.mean(scores))
         std  = float(np.std(scores)) if len(scores) > 1 else 0.0
-        is_strong = top >= mean + SIGMA * std
+        is_strong, top, mean, std = _relative_threshold(cands)
     else:
         top = mean = std = 0.0
         is_strong = False
@@ -369,7 +374,18 @@ def build_cos_answer_streaming(
     trace.threshold_cutoff = mean + SIGMA * std
     trace.threshold_passed = is_strong
 
-    if qinfo["is_broad"] or not is_strong:
+    if not is_strong:
+        msg = (
+            "I could not find sufficiently relevant COS symposium projects matching your query.\n"
+            "Try asking about a specific department, year, mentor, or project title."
+        )
+        trace.response_state = "not_found"
+        trace.final_answer = msg
+        SESSION_TRACES.append(trace)
+        yield msg, None, trace
+        return
+
+    if qinfo["is_broad"]:
         logger.info(f"[{query_id}] STATE 2: list (broad={qinfo['is_broad']} strong={is_strong})")
         trace.response_state = "list"
         list_text, stored = _format_chooser_list(cands, qinfo)
@@ -438,7 +454,17 @@ def build_housing_answer_streaming(
         ))
     trace.faiss_hits = len(trace.candidates)
 
-    if not hits:
+    is_strong, top, mean, std = _relative_threshold(
+        [{"rerank": hit.get("score")} for hit in hits],
+        absolute_floor=HOUSING_EVIDENCE_SCORE_FLOOR,
+    )
+    trace.threshold_top = top
+    trace.threshold_mean = mean
+    trace.threshold_std = std
+    trace.threshold_cutoff = max(HOUSING_EVIDENCE_SCORE_FLOOR, mean + SIGMA * std)
+    trace.threshold_passed = is_strong
+
+    if not hits or not is_strong:
         msg = (
             "I could not find relevant information in the AUM Housing "
             "and Community Standards.\n"

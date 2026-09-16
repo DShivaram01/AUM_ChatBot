@@ -42,6 +42,36 @@ def norm_text(s):
         return ""
     return re.sub(r"\s+", " ", s.lower().strip())
 
+
+DEPARTMENT_CANONICAL_NAMES = (
+    "Biology and Environmental Science",
+    "Chemistry",
+    "Computer Science and Computer Information Systems",
+    "Mathematics",
+    "Psychology",
+)
+
+
+def canonicalize_departments(raw_department):
+    """Normalize source spellings at ingest time into the five COS departments.
+
+    A record may genuinely span more than one department, so the normalized
+    value is a list rather than an unsafe substring-derived single label.
+    """
+    value = norm_text(raw_department)
+    found = []
+    aliases = (
+        ("Biology and Environmental Science", ("biology", "environmental science", "marine science")),
+        ("Chemistry", ("chemistry",)),
+        ("Computer Science and Computer Information Systems", ("computer science", "computer sciences", "computer information systems", "computer and computer information systems")),
+        ("Mathematics", ("mathematics",)),
+        ("Psychology", ("psychology",)),
+    )
+    for canonical, terms in aliases:
+        if any(term in value for term in terms):
+            found.append(canonical)
+    return found
+
 def norm_name(name):
     if not name:
         return ""
@@ -91,7 +121,13 @@ def load_jsonl(path):
         for line in f:
             line = line.strip()
             if line:
-                rows.append(json.loads(line))
+                row = json.loads(line)
+                meta = row.setdefault("metadata", {})
+                departments = canonicalize_departments(meta.get("department", ""))
+                meta["departments"] = departments
+                if departments:
+                    meta["department"] = " / ".join(departments)
+                rows.append(row)
     logger.info(f"[JSONL] Loaded {len(rows)} rows from {path}")
     return rows
 
@@ -127,14 +163,17 @@ def _check_manifest(model_id, text_hash):
         logger.warning(f"[Manifest] Error: {e}")
         return False
 
-def _texts_hash(texts):
-    return hashlib.md5(json.dumps(texts).encode()).hexdigest()
+def _texts_hash(texts, metadata=None):
+    """Fingerprint all retrieval-visible corpus fields, not just abstracts."""
+    return hashlib.md5(json.dumps(
+        {"texts": texts, "metadata": metadata}, sort_keys=True
+    ).encode()).hexdigest()
 
 def build_cos_store(rows, embedder):
     IDS   = [r["id"]       for r in rows]
     TEXTS = [r["text"]     for r in rows]
     META  = [r["metadata"] for r in rows]
-    th    = _texts_hash(TEXTS)
+    th    = _texts_hash(TEXTS, META)
     required = ["embeddings.npy","faiss_ip.index","ids.json","metadata.json","texts.json"]
     files_ok = all(os.path.exists(f"{SCRATCH}/{fn}") for fn in required)
 
@@ -176,6 +215,7 @@ def _is_section_heading(line):
     if not line or len(line) > 90:
         return False
     patterns = [
+        r"^HRL\.\d{4}\b",
         r"^(section|article|part|chapter)\s+\d",
         r"^§\s*\d",
         r"^\d+\.\s+[A-Z]",
@@ -184,6 +224,16 @@ def _is_section_heading(line):
     ]
     return any(re.match(p, line, re.IGNORECASE) for p in patterns)
 
+
+def _is_housing_boilerplate(line):
+    normalized = re.sub(r"\s+", " ", line).strip().lower()
+    return (
+        not normalized
+        or normalized == "table of contents"
+        or normalized.startswith("aum housing and residence life contractual obligations")
+        or re.match(r"^page \d+( of \d+)?$", normalized) is not None
+    )
+
 def extract_housing_chunks(pdf_path):
     try:
         import pdfplumber
@@ -191,40 +241,62 @@ def extract_housing_chunks(pdf_path):
         raise ImportError("Run: pip install pdfplumber")
 
     sections = []
-    cur_sec, cur_pg, cur_lines = "General", 1, []
+    cur_sec, cur_lines = "General", []
+    seen_policy_heading = False
 
-    def flush(sec, pg, lines):
-        text = " ".join(lines).strip()
+    def flush(sec, lines):
+        text = " ".join(line for _, line in lines).strip()
         if len(text) > 60:
-            sections.append({"text": text, "section": sec, "page": pg})
+            pages = sorted({page for page, _ in lines})
+            sections.append({"text": text, "section": sec, "page": pages[0],
+                             "page_end": pages[-1], "_lines": lines})
 
     with pdfplumber.open(pdf_path) as pdf:
         logger.info(f"[Housing] PDF has {len(pdf.pages)} pages")
         for pnum, page in enumerate(pdf.pages, 1):
             for line in (page.extract_text() or "").split("\n"):
                 line = line.strip()
-                if not line:
+                if _is_housing_boilerplate(line):
                     continue
                 if _is_section_heading(line):
-                    flush(cur_sec, cur_pg, cur_lines)
-                    cur_sec, cur_pg, cur_lines = line, pnum, []
-                else:
-                    cur_lines.append(line)
-    flush(cur_sec, cur_pg, cur_lines)
+                    # The table of contents contains HRL headings too; its
+                    # dot leaders make it unambiguously non-policy content.
+                    if line.startswith("HRL.") and ". ." not in line and "..." not in line:
+                        flush(cur_sec, cur_lines)
+                        cur_sec, cur_lines = line, []
+                        seen_policy_heading = True
+                elif seen_policy_heading:
+                    cur_lines.append((pnum, line))
+    flush(cur_sec, cur_lines)
 
     chunks = []
     for sec in sections:
-        text = sec["text"]
-        if len(text) <= 700:
-            chunks.append({**sec, "source": "AUM Housing Policy"})
-        else:
-            start = 0
-            while start < len(text):
-                ct = text[start:min(start+600, len(text))].strip()
-                if len(ct) > 60:
-                    chunks.append({"text": ct, "section": sec["section"],
-                                   "page": sec["page"], "source": "AUM Housing Policy"})
-                start += 520
+        # Split on extracted lines, not raw character offsets, so each chunk's
+        # citation reflects the pages that actually supplied its text.
+        current = []
+        current_chars = 0
+
+        def add_chunk(lines):
+            text = " ".join(line for _, line in lines).strip()
+            if len(text) <= 60:
+                return
+            pages = sorted({page for page, _ in lines})
+            chunks.append({
+                "text": text, "section": sec["section"],
+                "page": pages[0], "page_end": pages[-1],
+                "source": "AUM Housing Policy", "_chunk_version": 3,
+            })
+
+        for page, line in sec["_lines"]:
+            if current and current_chars + len(line) + 1 > 600:
+                add_chunk(current)
+                # Keep a small semantic overlap while retaining its own page
+                # attribution in the next chunk.
+                current = current[-2:]
+                current_chars = sum(len(existing) + 1 for _, existing in current)
+            current.append((page, line))
+            current_chars += len(line) + 1
+        add_chunk(current)
     return chunks
 
 def load_or_build_housing(pdf_path, embedder):
@@ -235,10 +307,12 @@ def load_or_build_housing(pdf_path, embedder):
     if all(os.path.exists(p) for p in [cc, he, hi]):
         logger.info("[Housing] Loading cached index...")
         with open(cc) as f: chunks = json.load(f)
-        H_EMB   = np.load(he)
-        H_index = faiss.read_index(hi)
-        logger.info(f"[Housing] {len(chunks)} chunks, {H_index.ntotal} vectors")
-        return H_index, H_EMB, chunks
+        if chunks and all(chunk.get("_chunk_version") == 3 for chunk in chunks):
+            H_EMB   = np.load(he)
+            H_index = faiss.read_index(hi)
+            logger.info(f"[Housing] {len(chunks)} chunks, {H_index.ntotal} vectors")
+            return H_index, H_EMB, chunks
+        logger.info("[Housing] Cached chunks predate heading/page fix; rebuilding")
 
     logger.info("[Housing] Building from PDF...")
     if not os.path.exists(pdf_path):
@@ -262,6 +336,11 @@ def load_or_build_housing(pdf_path, embedder):
 
 # ── BM25 index (backend.py:658-682) ──────────────────────────────────
 
+def bm25_tokenize(text):
+    """Stable tokenization for both BM25 indexing and query scoring."""
+    return re.findall(r"[a-z0-9]+", (text or "").lower())
+
+
 def build_bm25(meta_list, texts_list):
     corpus = []
     for meta, text in zip(meta_list, texts_list):
@@ -277,13 +356,13 @@ def build_bm25(meta_list, texts_list):
             " ".join(meta.get("keywords",        []) or []),
             abstract,
         ])
-        corpus.append(combined.lower().split())
+        corpus.append(bm25_tokenize(combined))
     bm = BM25Okapi(corpus)
     logger.info(f"[BM25] Built - {len(corpus)} documents")
     return bm
 
 def bm25_search(bm25_index, query, top_k=60):
-    tokens = query.lower().split()
+    tokens = bm25_tokenize(query)
     scores = np.array(bm25_index.get_scores(tokens), dtype=np.float32)
     idxs   = np.argsort(scores)[::-1][:min(top_k, len(scores))]
     return idxs, scores
@@ -334,6 +413,8 @@ def _index_one_name(raw_name: str):
 
 def build_name_index(meta_list):
     """Build NAME_INDEX from all mentor and presenter fields in corpus."""
+    for bucket in NAME_INDEX.values():
+        bucket.clear()
     for meta in meta_list:
         mentor_raw = meta.get("mentor", "") or ""
         for part in re.split(r"\band\b|&|,", mentor_raw, flags=re.IGNORECASE):
@@ -356,7 +437,7 @@ def build_name_index(meta_list):
     )
 
 
-def query_name_index(query_text: str):
+def query_name_index(query_text: str, with_scores=False):
     """
     Scan query_text against NAME_INDEX.
     Returns list of CANONICAL matched name strings, best match first.
@@ -431,13 +512,19 @@ def query_name_index(query_text: str):
     if not matched:
         return []
 
+    # A full name must not be diluted by a same-surname match.  Preserve a
+    # tie only when the query is genuinely ambiguous (usually a bare surname).
+    top_score = max(matched.values())
+
     seen_norm = set()
     results   = []
-    for canon, score in sorted(matched.items(), key=lambda x: -x[1]):
+    for canon, score in sorted(matched.items(), key=lambda x: (-x[1], x[0])):
+        if score != top_score:
+            continue
         norm = canon.lower().strip()
         if norm not in seen_norm and len(norm) >= 3:
             seen_norm.add(norm)
-            results.append(canon)
+            results.append((canon, score) if with_scores else canon)
 
     return results
 
@@ -452,9 +539,9 @@ def query_name_index(query_text: str):
 def _exact_person_cands(person_hints, META_LIST, TEXTS_LIST):
     """
     Exact metadata scan for person queries.
-    Search priority:
-      1. mentor field + lead_presenters (primary — most relevant)
-      2. other_authors (fallback — only if primary finds nothing)
+    Search mentor, presenter, and co-author fields for every query, then rank
+    the merged result set.  Co-author matches must not disappear merely
+    because another record matched a primary field.
     """
     def _norm_hint(h):
         n = re.sub(r"\b(dr\.?|prof\.?|professor|ms\.?|mr\.?)\b", "",
@@ -507,7 +594,7 @@ def _exact_person_cands(person_hints, META_LIST, TEXTS_LIST):
             )
             return first_ok and last_ok
 
-    def _scan_fields(include_other_authors: bool):
+    def _scan_fields():
         project_scores = {}
         for idx, meta in enumerate(META_LIST):
             mentor_raw = meta.get("mentor", "") or ""
@@ -518,8 +605,7 @@ def _exact_person_cands(person_hints, META_LIST, TEXTS_LIST):
             ]
             primary_names = mentor_parts + (meta.get("lead_presenters", []) or [])
 
-            if include_other_authors:
-                primary_names += (meta.get("other_authors", []) or [])
+            primary_names += (meta.get("other_authors", []) or [])
 
             matched_hints = 0
             for hint in norm_hints:
@@ -531,11 +617,7 @@ def _exact_person_cands(person_hints, META_LIST, TEXTS_LIST):
 
         return project_scores
 
-    scores = _scan_fields(include_other_authors=False)
-
-    if not scores:
-        logger.info("[ExactPerson] No primary matches — trying other_authors fallback")
-        scores = _scan_fields(include_other_authors=True)
+    scores = _scan_fields()
 
     if not scores:
         return []
@@ -666,7 +748,7 @@ def retrieve_cos_rrf(
         logger.info(f"[{query_id}] Year filter {qinfo['year_hint']}: {len(all_idxs)} remain")
     if qinfo["dept_hint"]:
         all_idxs = {i for i in all_idxs
-                    if qinfo["dept_hint"] in norm_text(META_LIST[i].get("department", ""))}
+                    if qinfo["dept_hint"] in META_LIST[i].get("departments", [])}
         logger.info(f"[{query_id}] Dept filter '{qinfo['dept_hint']}': {len(all_idxs)} remain")
 
     if not all_idxs:
