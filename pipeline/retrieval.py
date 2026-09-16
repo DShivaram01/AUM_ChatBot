@@ -205,98 +205,128 @@ def build_cos_store(rows, embedder):
     return index, EMB, IDS, META, TEXTS
 
 
-# ── Housing PDF chunking + index (backend.py:563-649) ────────────────
-# _is_section_heading and extract_housing_chunks aren't in the task's
-# explicit file list, but load_or_build_housing() calls them directly --
-# they have to live here too or load_or_build_housing() can't work.
+# ── Housing PDF chunking + index ─────────────────────────────────────
+# Housing policies are extracted as page-aware Markdown.  The Markdown
+# headings are produced by pymupdf4llm's layout-aware PDF parser; this avoids
+# treating arbitrary raw text lines (including the table of contents) as a
+# policy heading.
 
-def _is_section_heading(line):
-    line = line.strip()
-    if not line or len(line) > 90:
-        return False
-    patterns = [
-        r"^HRL\.\d{4}\b",
-        r"^(section|article|part|chapter)\s+\d",
-        r"^§\s*\d",
-        r"^\d+\.\s+[A-Z]",
-        r"^[IVX]{1,5}\.\s+[A-Z]",
-        r"^[A-Z][A-Z\s\-]{5,}$",
-    ]
-    return any(re.match(p, line, re.IGNORECASE) for p in patterns)
+_HRL_MARKDOWN_HEADING_RE = re.compile(
+    r"^\s{0,3}#{1,6}\s+(?:\*\*)?(HRL\.\d{4}\b.*?)(?:\*\*)?\s*$",
+    re.IGNORECASE,
+)
+_MAJOR_MARKDOWN_HEADING_RE = re.compile(r"^\s{0,3}#{1,2}\s+")
 
 
 def _is_housing_boilerplate(line):
-    normalized = re.sub(r"\s+", " ", line).strip().lower()
+    normalized = re.sub(r"[`*_#|]", "", line)
+    normalized = re.sub(r"\s+", " ", normalized).strip().lower()
     return (
         not normalized
         or normalized == "table of contents"
         or normalized.startswith("aum housing and residence life contractual obligations")
         or re.match(r"^page \d+( of \d+)?$", normalized) is not None
+        or normalized.replace("-", "") == ""
     )
 
+def _markdown_text_blocks(page_markdown, page_number):
+    """Yield clean Markdown text blocks while retaining their source page."""
+    block = []
+    for raw_line in page_markdown.splitlines():
+        line = raw_line.strip()
+        if not line:
+            if block:
+                yield page_number, " ".join(block)
+                block = []
+            continue
+        if _is_housing_boilerplate(line):
+            continue
+        # Table rows are TOC artifacts in this document. Content tables can
+        # later be handled as structured Markdown rather than line fragments.
+        if line.startswith("|") and line.endswith("|"):
+            continue
+        block.append(line)
+    if block:
+        yield page_number, " ".join(block)
+
+
+def _append_housing_chunk(chunks, section, blocks):
+    """Emit page-attributed chunks at paragraph boundaries, never raw offsets."""
+    current = []
+    current_chars = 0
+
+    def flush():
+        text = "\n\n".join(text for _, text in current).strip()
+        if len(text) <= 60:
+            return
+        pages = sorted({page for page, _ in current})
+        chunks.append({
+            "text": text,
+            "section": section,
+            "page": pages[0],
+            "page_end": pages[-1],
+            "source": "AUM Housing Policy",
+            "_chunk_version": 4,
+        })
+
+    for page, text in blocks:
+        # The parser preserves paragraph boundaries, so a normal chunk does
+        # not cut through a sentence as the former character slicer could.
+        if current and current_chars + len(text) + 2 > 700:
+            flush()
+            current = []
+            current_chars = 0
+        current.append((page, text))
+        current_chars += len(text) + 2
+    flush()
+
+
 def extract_housing_chunks(pdf_path):
+    """Convert a policy PDF into page-aware HRL Markdown chunks.
+
+    The generic ``pdf_path -> chunk records`` interface can be reused by a
+    future document-ingestion feature without coupling that feature to Housing.
+    """
     try:
-        import pdfplumber
+        import pymupdf4llm
     except ImportError:
-        raise ImportError("Run: pip install pdfplumber")
+        raise ImportError("Install pymupdf4llm==1.28.2 to extract Housing PDFs")
 
-    sections = []
-    cur_sec, cur_lines = "General", []
-    seen_policy_heading = False
-
-    def flush(sec, lines):
-        text = " ".join(line for _, line in lines).strip()
-        if len(text) > 60:
-            pages = sorted({page for page, _ in lines})
-            sections.append({"text": text, "section": sec, "page": pages[0],
-                             "page_end": pages[-1], "_lines": lines})
-
-    with pdfplumber.open(pdf_path) as pdf:
-        logger.info(f"[Housing] PDF has {len(pdf.pages)} pages")
-        for pnum, page in enumerate(pdf.pages, 1):
-            for line in (page.extract_text() or "").split("\n"):
-                line = line.strip()
-                if _is_housing_boilerplate(line):
-                    continue
-                if _is_section_heading(line):
-                    # The table of contents contains HRL headings too; its
-                    # dot leaders make it unambiguously non-policy content.
-                    if line.startswith("HRL.") and ". ." not in line and "..." not in line:
-                        flush(cur_sec, cur_lines)
-                        cur_sec, cur_lines = line, []
-                        seen_policy_heading = True
-                elif seen_policy_heading:
-                    cur_lines.append((pnum, line))
-    flush(cur_sec, cur_lines)
-
+    pages = pymupdf4llm.to_markdown(str(pdf_path), page_chunks=True)
+    logger.info(f"[Housing] Markdown extraction produced {len(pages)} pages")
     chunks = []
-    for sec in sections:
-        # Split on extracted lines, not raw character offsets, so each chunk's
-        # citation reflects the pages that actually supplied its text.
-        current = []
-        current_chars = 0
-
-        def add_chunk(lines):
-            text = " ".join(line for _, line in lines).strip()
-            if len(text) <= 60:
-                return
-            pages = sorted({page for page, _ in lines})
-            chunks.append({
-                "text": text, "section": sec["section"],
-                "page": pages[0], "page_end": pages[-1],
-                "source": "AUM Housing Policy", "_chunk_version": 3,
-            })
-
-        for page, line in sec["_lines"]:
-            if current and current_chars + len(line) + 1 > 600:
-                add_chunk(current)
-                # Keep a small semantic overlap while retaining its own page
-                # attribution in the next chunk.
-                current = current[-2:]
-                current_chars = sum(len(existing) + 1 for _, existing in current)
-            current.append((page, line))
-            current_chars += len(line) + 1
-        add_chunk(current)
+    section = None
+    section_blocks = []
+    for page in pages:
+        page_number = int(page["metadata"]["page_number"])
+        lines = page["text"].splitlines()
+        body_lines = []
+        for line in lines:
+            match = _HRL_MARKDOWN_HEADING_RE.match(line)
+            if match:
+                if section:
+                    for block in _markdown_text_blocks("\n".join(body_lines), page_number):
+                        section_blocks.append(block)
+                    _append_housing_chunk(chunks, section, section_blocks)
+                section = re.sub(r"\s+", " ", match.group(1)).strip()
+                section_blocks = []
+                body_lines = []
+            elif section and _MAJOR_MARKDOWN_HEADING_RE.match(line):
+                # A new top-level Markdown section ends the final HRL policy
+                # even when the source document does not introduce another
+                # HRL code afterwards (for example, Medical Services).
+                for block in _markdown_text_blocks("\n".join(body_lines), page_number):
+                    section_blocks.append(block)
+                _append_housing_chunk(chunks, section, section_blocks)
+                section = None
+                section_blocks = []
+                body_lines = []
+            elif section:
+                body_lines.append(line)
+        if section:
+            section_blocks.extend(_markdown_text_blocks("\n".join(body_lines), page_number))
+    if section:
+        _append_housing_chunk(chunks, section, section_blocks)
     return chunks
 
 def load_or_build_housing(pdf_path, embedder):
@@ -307,12 +337,12 @@ def load_or_build_housing(pdf_path, embedder):
     if all(os.path.exists(p) for p in [cc, he, hi]):
         logger.info("[Housing] Loading cached index...")
         with open(cc) as f: chunks = json.load(f)
-        if chunks and all(chunk.get("_chunk_version") == 3 for chunk in chunks):
+        if chunks and all(chunk.get("_chunk_version") == 4 for chunk in chunks):
             H_EMB   = np.load(he)
             H_index = faiss.read_index(hi)
             logger.info(f"[Housing] {len(chunks)} chunks, {H_index.ntotal} vectors")
             return H_index, H_EMB, chunks
-        logger.info("[Housing] Cached chunks predate heading/page fix; rebuilding")
+        logger.info("[Housing] Cached chunks predate Markdown extraction; rebuilding")
 
     logger.info("[Housing] Building from PDF...")
     if not os.path.exists(pdf_path):

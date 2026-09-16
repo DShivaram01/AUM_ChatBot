@@ -6,3 +6,9 @@ The checksum manifest preserves the unchanged Desktop baseline. Two repository-o
 2. models/loader.py prefers FlashAttention when installed and explicitly falls back to PyTorch SDPA when it is unavailable.
 
 These changes do not alter the Desktop baseline. They are required so a fresh lab clone can run at an arbitrary filesystem location and does not fail solely because an optional CUDA extension is absent.
+
+## Post-baseline dependencies
+
+- `pymupdf4llm==1.28.2` was added after the frozen Desktop baseline for
+  page-aware Markdown extraction of Housing policy PDFs. It brings in PyMuPDF
+  (AGPL-licensed) and is a new capability, not a baseline deviation.

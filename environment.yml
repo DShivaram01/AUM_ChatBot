@@ -16,6 +16,9 @@ dependencies:
       - uvicorn==0.46.0
       - gradio==6.13.0
       - pdfplumber==0.11.9
+      # pymupdf4llm depends on AGPL-licensed PyMuPDF; review that license
+      # before redistributing this environment outside the project.
+      - pymupdf4llm==1.28.2
       - rank-bm25==0.2.2
       - sentencepiece==0.2.2
       - protobuf==7.35.1

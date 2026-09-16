@@ -35,6 +35,8 @@ def test_housing_chunks_use_actual_hrl_sections_and_pages_without_toc():
     assert min(chunk["page"] for chunk in by_code["HRL.0012"]) == 16
     assert min(chunk["page"] for chunk in by_code["HRL.0042"]) == 24
     assert all("table of contents" not in chunk["text"].lower() for chunk in chunks)
+    assert {chunk["_chunk_version"] for chunk in chunks} == {4}
+    assert all(not chunk["text"].lstrip().startswith("|") for chunk in chunks)
 
 
 def test_name_disambiguation_keeps_full_name_and_flags_bare_surname():
