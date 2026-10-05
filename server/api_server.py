@@ -51,6 +51,7 @@ from pydantic import BaseModel
 
 from pipeline.answer import generate_streaming
 from pipeline.classifier import classify_topic, get_trace, next_query_id
+from core.runtime_lock import RuntimeLock, RuntimeLockError
 import config
 import server.gradio_ui as gradio_ui
 
@@ -278,6 +279,7 @@ app.add_middleware(
 
 _startup_lock = asyncio.Lock()
 _model_loaded = False
+_runtime_lock: RuntimeLock | None = None
 
 
 @app.on_event("startup")
@@ -286,10 +288,20 @@ async def load_models_once() -> None:
     Load embedding model, FAISS indices, reranker, and the LLM exactly once
     when the server process starts -- NOT per-request.
     """
-    global _model_loaded
+    global _model_loaded, _runtime_lock
     async with _startup_lock:
         if _model_loaded:
             return
+        if os.environ.get("AUM_LOAD_LLM", "1") != "1":
+            log.info("AUM_LOAD_LLM is disabled; skipping model initialization")
+            return
+        lock = RuntimeLock(Path(config.BASE_DIR) / "aum_chatbot_runtime.lock")
+        try:
+            lock.acquire()
+        except RuntimeLockError:
+            # Do not start a second model copy if a different API process owns
+            # the runtime. The configured fixed port will direct clients to it.
+            raise
         # Lazy import: main.py doesn't import server/api_server.py, so
         # this doesn't create a cycle, but importing it at call time
         # (rather than at module top) keeps this file loadable on its own
@@ -297,11 +309,24 @@ async def load_models_once() -> None:
         # full model-loading import chain just to define the FastAPI app.
         from main import load_everything
 
-        log.info("Loading models and data...")
-        await asyncio.to_thread(load_everything)
-        assert hasattr(gradio_ui, "cos_chat") and hasattr(gradio_ui, "housing_chat")
-        _model_loaded = True
-        log.info("Models loaded. Server ready.")
+        try:
+            log.info("Loading models and data...")
+            await asyncio.to_thread(load_everything)
+            assert hasattr(gradio_ui, "cos_chat") and hasattr(gradio_ui, "housing_chat")
+            _model_loaded = True
+            _runtime_lock = lock
+            log.info("Models loaded. Server ready.")
+        except Exception:
+            lock.release()
+            raise
+
+
+@app.on_event("shutdown")
+async def release_runtime_lock() -> None:
+    global _runtime_lock
+    if _runtime_lock is not None:
+        _runtime_lock.release()
+        _runtime_lock = None
 
 
 @app.get("/api/health")
@@ -426,18 +451,22 @@ async def feedback(req: FeedbackRequest) -> dict[str, str]:
 
 
 if __name__ == "__main__":
-    import uvicorn
     import socket
+    import uvicorn
 
-    def find_free_port(preferred: int = 8000) -> int:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    def assert_port_available(host: str, port: int) -> None:
+        """Fail before lifespan startup can allocate another GPU model copy."""
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             try:
-                s.bind(("0.0.0.0", preferred))
-                return preferred
-            except OSError:
-                s.bind(("0.0.0.0", 0))
-                return s.getsockname()[1]
+                sock.bind((host, port))
+            except OSError as exc:
+                raise SystemExit(
+                    f"AUM API endpoint {host}:{port} is unavailable. "
+                    "Check /api/health and reuse the existing runtime."
+                ) from exc
 
-    port = find_free_port()
-    log.info(f"Starting AUM API server on 0.0.0.0:{port}")
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    host = os.environ.get("AUM_API_HOST", "127.0.0.1")
+    port = int(os.environ.get("AUM_API_PORT", "8000"))
+    assert_port_available(host, port)
+    log.info(f"Starting AUM API server on fixed endpoint {host}:{port}")
+    uvicorn.run(app, host=host, port=port)
