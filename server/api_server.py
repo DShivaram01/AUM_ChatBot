@@ -378,7 +378,9 @@ async def ask_stream(req: ChatRequest) -> StreamingResponse:
                 if delta:
                     yield _sse_event(delta)
 
-        yield _sse_event(json.dumps({'query_id': query_id}), event="done")
+        yield _sse_event(
+            json.dumps({'query_id': query_id, 'topic_used': topic_used}), event="done"
+        )
 
     return StreamingResponse(token_stream(), media_type="text/event-stream")
 

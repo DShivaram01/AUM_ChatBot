@@ -454,14 +454,19 @@ def build_housing_answer_streaming(
         ))
     trace.faiss_hits = len(trace.candidates)
 
+    has_rerank_scores = bool(hits) and all("rerank" in hit for hit in hits)
+    evidence_scores = [
+        {"rerank": hit.get("rerank", hit.get("score"))} for hit in hits
+    ]
     is_strong, top, mean, std = _relative_threshold(
-        [{"rerank": hit.get("score")} for hit in hits],
-        absolute_floor=HOUSING_EVIDENCE_SCORE_FLOOR,
+        evidence_scores,
+        absolute_floor=EVIDENCE_SCORE_FLOOR if has_rerank_scores else HOUSING_EVIDENCE_SCORE_FLOOR,
     )
     trace.threshold_top = top
     trace.threshold_mean = mean
     trace.threshold_std = std
-    trace.threshold_cutoff = max(HOUSING_EVIDENCE_SCORE_FLOOR, mean + SIGMA * std)
+    evidence_floor = EVIDENCE_SCORE_FLOOR if has_rerank_scores else HOUSING_EVIDENCE_SCORE_FLOOR
+    trace.threshold_cutoff = max(evidence_floor, mean + SIGMA * std)
     trace.threshold_passed = is_strong
 
     if not hits or not is_strong:

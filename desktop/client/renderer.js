@@ -364,6 +364,41 @@ function addReactionControls(card, query_id) {
   card.appendChild(controls);
 }
 
+async function consumeSSE(response, onDelta) {
+  if (!response.body) throw new Error('streaming is not supported by this response');
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let eventName = 'message';
+  let dataLines = [];
+  let donePayload = null;
+
+  const dispatch = () => {
+    if (!dataLines.length) return;
+    const data = dataLines.join('\n');
+    if (eventName === 'done') donePayload = JSON.parse(data);
+    else onDelta(data);
+    eventName = 'message';
+    dataLines = [];
+  };
+
+  while (true) {
+    const { value, done } = await reader.read();
+    buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
+    const lines = buffer.split(/\r?\n/);
+    buffer = done ? '' : lines.pop();
+    for (const line of lines) {
+      if (!line) { dispatch(); continue; }
+      if (line.startsWith('event:')) eventName = line.slice(6).trim();
+      else if (line.startsWith('data:')) dataLines.push(line.slice(5).replace(/^ /, ''));
+    }
+    if (done) break;
+  }
+  dispatch();
+  if (!donePayload) throw new Error('stream ended without a completion event');
+  return donePayload;
+}
+
 function selectedFeedbackScope() {
   return document.querySelector('input[name="feedbackScope"]:checked').value;
 }
@@ -461,7 +496,7 @@ composer.addEventListener('submit', async (e) => {
   const pendingCard = addCard({ text: '…', who: 'bot', pending: true, skipStore: true });
 
   try {
-    const res = await fetch(`${serverUrl}/api/ask`, {
+    const res = await fetch(`${serverUrl}/api/ask/stream`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       // GENERAL is explicit and only selected through the visible opt-in toggle.
@@ -470,27 +505,31 @@ composer.addEventListener('submit', async (e) => {
         topic: openEndedToggle.checked ? 'general' : currentTopic,
         session_id: activeChat.id,
       }),
+      // The streaming endpoint keeps the same deliberate safety margin.
       // TASK 18 (2026-08-24): raised from 30s -- correct against the old
       // Phi-3 backend this was tested with, but not against Mistral. Real
       // Mistral answers currently measure ~10s (see workspace.md Entry
       // 017), but the ORIGINAL 124-134s figure that motivated this whole
       // investigation was never fully explained, so 180s is a deliberate
       // safety margin, not a claim that answers actually take that long.
-      // The real fix is still switching to /api/ask/stream (not done here
-      // -- this is the minimal change to unblock manual testing today).
       signal: AbortSignal.timeout(180000),
     });
     if (!res.ok) throw new Error(`server returned ${res.status}`);
-    const data = await res.json();
+    let streamedAnswer = '';
+    const data = await consumeSSE(res, (delta) => {
+      streamedAnswer += delta;
+      pendingCard.lastChild.textContent = streamedAnswer;
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    });
 
     pendingCard.classList.remove('pending');
     pendingCard.classList.add(`topic-${data.topic_used}`);
     pendingCard.querySelector('.card-meta').textContent = labelForTopic(data.topic_used, false);
-    pendingCard.lastChild.textContent = data.answer;
+    pendingCard.lastChild.textContent = streamedAnswer;
     addReactionControls(pendingCard, data.query_id);
 
     activeChat.messages.push({
-      who: 'bot', text: data.answer, topic: data.topic_used, query_id: data.query_id || null,
+      who: 'bot', text: streamedAnswer, topic: data.topic_used, query_id: data.query_id || null,
     });
   } catch (err) {
     const errText = `Couldn't reach the server (${err.message}). Please try again in a moment.`;

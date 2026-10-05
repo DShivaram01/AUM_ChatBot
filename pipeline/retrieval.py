@@ -831,7 +831,7 @@ def retrieve_cos_rrf(
 
 
 def retrieve_housing_logged(query, embedder, H_index, H_EMB,
-                            housing_chunks, query_id, top_k=4):
+                            housing_chunks, query_id, top_k=4, reranker=None):
     logger.info(f"[{query_id}] == HOUSING RETRIEVAL ==")
     logger.info(f"[{query_id}] Query: {repr(query)}")
     if H_index is None:
@@ -839,7 +839,8 @@ def retrieve_housing_logged(query, embedder, H_index, H_EMB,
         return []
     t0    = _time.time()
     q_vec = embedder.encode([query], convert_to_numpy=True, normalize_embeddings=True)
-    D, I  = H_index.search(q_vec, top_k)
+    candidate_k = max(top_k * 3, top_k)
+    D, I  = H_index.search(q_vec, candidate_k)
     logger.info(f"[{query_id}] Housing search: {(_time.time()-t0)*1000:.1f}ms")
     results = []
     for rank, idx in enumerate(I[0]):
@@ -851,4 +852,16 @@ def retrieve_housing_logged(query, embedder, H_index, H_EMB,
             f"section={chunk.get('section','')[:45]}  page={chunk.get('page','')}"
         )
         results.append({"chunk": chunk, "score": score})
+    if reranker is not None and results:
+        pairs = [(query, result["chunk"]["text"]) for result in results]
+        rerank_scores = reranker.predict(pairs)
+        for result, rerank_score in zip(results, rerank_scores):
+            result["rerank"] = float(rerank_score)
+        results.sort(key=lambda result: result["rerank"], reverse=True)
+        results = results[:top_k]
+        logger.info(
+            f"[{query_id}] Housing rerank selected {len(results)} of {len(pairs)} candidates"
+        )
+    else:
+        results = results[:top_k]
     return results

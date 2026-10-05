@@ -300,6 +300,26 @@ _GENERAL_AUM_HINT_WORDS = {
     "parking", "library", "bookstore", "commencement", "scholarship",
 }
 
+_COS_INTENT_WORDS = {
+    "research", "project", "projects", "study", "studies", "paper", "papers",
+    "abstract", "mentor", "presenter", "presenters", "symposium", "author",
+    "authors", "publication", "published", "lab", "cos",
+}
+_GENERAL_TASK_WORDS = {
+    "write", "rewrite", "explain", "code", "program", "python", "javascript",
+    "debug", "summarize", "summarise", "translate", "recipe", "poem", "email",
+}
+
+
+def _has_cos_person_intent(query: str) -> bool:
+    tokens = set(re.findall(r"[a-z]+", query.lower()))
+    return bool(tokens & _COS_INTENT_WORDS) and not bool(tokens & _GENERAL_TASK_WORDS)
+
+
+def _has_reliable_aum_evidence(query: str) -> bool:
+    normalized = " ".join(re.findall(r"[a-z]+", query.lower()))
+    return "aum" in normalized.split() or "auburn montgomery" in normalized
+
 _TOPIC_ROUTER_PROMPT = (
     "<s>[INST] You are a routing classifier for an AUM academic assistant. "
     "Reply with exactly one of these five labels, and nothing else:\n"
@@ -362,7 +382,7 @@ def classify_topic(query: str, embedder, cos_index, H_index, housing_ok: bool,
     because no authoritative general-AUM collection is connected.
     """
     qinfo = classify_query(query)
-    if qinfo.get("person_hints"):
+    if qinfo.get("person_hints") and _has_cos_person_intent(query):
         logger.info(f"[classify_topic] '{query[:60]}' -> cos (person match: {qinfo['person_hints'][:2]})")
         return "cos"
 
@@ -370,7 +390,11 @@ def classify_topic(query: str, embedder, cos_index, H_index, housing_ok: bool,
         try:
             decoded = _classify_topic_llm(query, llm_tok, llm_model)
             labels = {"general_aum", "out_of_scope", "housing", "general", "cos"}
-            topic = re.sub(r"[^a-z_]", "", decoded)
+            match = re.search(r"\b(general_aum|out_of_scope|housing|general|cos)\b", decoded)
+            topic = match.group(1) if match else ""
+            if topic == "general_aum" and not _has_reliable_aum_evidence(query):
+                logger.info("[classify_topic] GENERAL_AUM rejected without AUM evidence")
+                topic = "general"
             if topic in labels:
                 logger.info(
                     f"[classify_topic] '{query[:60]}' -> {topic} "
@@ -388,6 +412,9 @@ def classify_topic(query: str, embedder, cos_index, H_index, housing_ok: bool,
             )
 
     topic = _classify_topic_fallback(query, embedder, cos_index, H_index, housing_ok)
+    if topic == "general_aum" and not _has_reliable_aum_evidence(query):
+        logger.info("[classify_topic] fallback GENERAL_AUM rejected without AUM evidence")
+        topic = "general"
     logger.info(f"[classify_topic] '{query[:60]}' -> {topic} (fallback)")
     return topic
 

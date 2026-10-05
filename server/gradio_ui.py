@@ -138,7 +138,7 @@ def housing_chat(message, history, _pending):
 
     started = time.time()
     hits = retrieve_housing_logged(
-        message, embedder, H_index, H_EMB, housing_chunks, query_id=qid
+        message, embedder, H_index, H_EMB, housing_chunks, query_id=qid, reranker=reranker
     )
     search_ms = (time.time() - started) * 1000
     for partial, trace in build_housing_answer_streaming(
