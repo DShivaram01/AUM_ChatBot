@@ -8,3 +8,4 @@ data/scratch/
 .env
 desktop/client/node_modules/
 desktop/client/dist/
+aum_chatbot_runtime.lock
