@@ -44,7 +44,7 @@ from typing import Literal, AsyncGenerator
 # the project root doesn't hit this (cwd is already on sys.path).
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -351,6 +351,48 @@ async def health() -> dict:
         "pipeline_wired": PIPELINE_READY,
     }
 
+
+
+def _document_error(exc: Exception) -> HTTPException:
+    if isinstance(exc, PermissionError):
+        return HTTPException(403, str(exc))
+    if isinstance(exc, KeyError):
+        return HTTPException(404, str(exc.args[0]))
+    return HTTPException(400, str(exc))
+
+
+@app.post("/api/documents")
+async def upload_document(session_id: str = Form(...), file: UploadFile = File(...)) -> dict:
+    try:
+        content = await file.read()
+        return await asyncio.to_thread(
+            get_assistant_service().ingest_document,
+            file.filename or "upload.pdf", content, session_id,
+        )
+    except (ValueError, KeyError, PermissionError) as exc:
+        raise _document_error(exc) from exc
+
+
+@app.get("/api/documents")
+async def list_documents(session_id: str) -> list[dict]:
+    return get_assistant_service().list_documents(session_id)
+
+
+@app.get("/api/documents/{document_id}")
+async def get_document(document_id: str, session_id: str) -> dict:
+    try:
+        return get_assistant_service().get_document(document_id, session_id)
+    except (ValueError, KeyError, PermissionError) as exc:
+        raise _document_error(exc) from exc
+
+
+@app.delete("/api/documents/{document_id}")
+async def delete_document(document_id: str, session_id: str) -> dict[str, str]:
+    try:
+        get_assistant_service().delete_document(document_id, session_id)
+        return {"status": "deleted"}
+    except (ValueError, KeyError, PermissionError) as exc:
+        raise _document_error(exc) from exc
 
 @app.post("/api/ask", response_model=ChatResponse)
 async def ask(req: ChatRequest) -> ChatResponse:

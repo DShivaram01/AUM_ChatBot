@@ -7,6 +7,7 @@ import time
 from collections.abc import Iterator
 
 import config
+from core.document_service import DocumentService
 from core.runtime_manager import RuntimeManager
 from pipeline.answer import (
     build_cos_answer_streaming,
@@ -27,6 +28,23 @@ class AssistantService:
     def __init__(self, runtime: RuntimeManager, *, debug: bool = False):
         self.runtime = runtime
         self.debug = debug
+        self.documents = DocumentService(runtime.embedder)
+
+    def ingest_document(self, filename: str, content: bytes, session_id: str) -> dict:
+        document = self.documents.ingest(filename, content, session_id)
+        return self.documents.describe(document)
+
+    def get_document(self, document_id: str, session_id: str) -> dict:
+        return self.documents.metadata(document_id, session_id)
+
+    def list_documents(self, session_id: str) -> list[dict]:
+        return self.documents.list(session_id)
+
+    def retrieve_document(self, document_id: str, session_id: str, query: str) -> list[dict]:
+        return self.documents.retrieve(document_id, session_id, query)
+
+    def delete_document(self, document_id: str, session_id: str) -> None:
+        self.documents.delete(document_id, session_id)
 
     def classify_topic(self, question: str, routing_path: list[str] | None = None) -> str:
         r = self.runtime
