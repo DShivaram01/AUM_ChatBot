@@ -17,135 +17,24 @@ after loading models/data -- the smallest change that lets the split work.
 """
 
 import os
-import time
-
 import gradio as gr
 
-import config
-from pipeline.memory import logger
-from pipeline.classifier import classify_query, next_query_id, SESSION_TRACES, get_trace
-from pipeline.retrieval import retrieve_cos_rrf, retrieve_housing_logged
-from pipeline.answer import build_cos_answer_streaming, build_housing_answer_streaming, render_trace_md
+from pipeline.memory import logger, _log_path
+from pipeline.classifier import SESSION_TRACES, get_trace
+from pipeline.answer import render_trace_md
+from core.orchestrator import get_assistant_service
 
 DEBUG_MODE = os.environ.get("AUM_DEBUG_MODE", "true").lower() == "true"
 
-# ── Runtime state, populated by init_gradio_ui() (see module docstring) ──
-embedder = reranker = llm_tok = llm_model = None
-cos_index = cos_EMB = cos_META = cos_TEXTS = cos_bm25 = None
-H_index = H_EMB = housing_chunks = None
-housing_ok = False
-_log_path = ""
-
-
-def init_gradio_ui(
-    *, embedder_, reranker_, llm_tok_, llm_model_,
-    cos_index_, cos_EMB_, cos_META_, cos_TEXTS_, cos_bm25_,
-    H_index_, H_EMB_, housing_chunks_, housing_ok_,
-    log_path_,
-):
-    """Must be called once, after models + data are loaded, before
-    _build_gradio_demo() / launch()."""
-    global embedder, reranker, llm_tok, llm_model
-    global cos_index, cos_EMB, cos_META, cos_TEXTS, cos_bm25
-    global H_index, H_EMB, housing_chunks, housing_ok, _log_path
-
-    embedder, reranker, llm_tok, llm_model = embedder_, reranker_, llm_tok_, llm_model_
-    cos_index, cos_EMB, cos_META, cos_TEXTS, cos_bm25 = (
-        cos_index_, cos_EMB_, cos_META_, cos_TEXTS_, cos_bm25_
-    )
-    H_index, H_EMB, housing_chunks, housing_ok = H_index_, H_EMB_, housing_chunks_, housing_ok_
-    _log_path = log_path_
-
-
-import re as _re
-_SELECTION_RE = _re.compile(r"^\s*(\d{1,2})\s*$")
-
 
 def cos_chat(message, history, pending_cands):
-    message = message.strip()
-    qid = next_query_id("COS")
-    logger.info(f"\n{'='*65}")
-    logger.info(f"[{qid}] NEW COS QUERY: {repr(message)}")
-
-    if not message:
-        yield "Please type a question about AUM research projects.", pending_cands, "", qid
-        return
-
-    sel_m = _SELECTION_RE.match(message)
-    if sel_m and pending_cands:
-        sel_n = int(sel_m.group(1))
-        if 1 <= sel_n <= len(pending_cands):
-            selected = pending_cands[sel_n - 1]
-            if selected.get("_person_choice"):
-                yield from cos_chat(
-                    f"projects associated with {selected['_person_choice']}", history, []
-                )
-                return
-            selected["_selection_n"] = sel_n
-            m = selected["meta"]
-            logger.info(f"[{qid}] User selected #{sel_n}: {m.get('title','')[:50]}")
-            fake_qinfo = {
-                "type": "TYPE_TOPIC", "person_hints": [], "person_hint": None,
-                "year_hint": None, "dept_hint": None, "is_broad": False,
-            }
-            for partial, _, trace in build_cos_answer_streaming(
-                f"Tell me about: {m.get('title','')}", [], fake_qinfo,
-                llm_tok, llm_model, qid, selected_cand=selected,
-            ):
-                debug_md = render_trace_md(trace) if DEBUG_MODE else ""
-                yield partial, [], debug_md, qid
-            return
-        yield f"Please enter a number between 1 and {len(pending_cands)}.", pending_cands, "", qid
-        return
-
-    qinfo = classify_query(message)
-    if qinfo.get("person_ambiguous"):
-        names = qinfo["person_hints"]
-        choices = [{"_person_choice": name} for name in names]
-        prompt = (
-            "I found multiple people matching that name. Please choose one:\n\n"
-            + "\n".join(f"{i}. {name}" for i, name in enumerate(names, 1))
-            + "\n\nReply with a number to continue."
-        )
-        yield prompt, choices, "", qid
-        return
-    cands = retrieve_cos_rrf(
-        message, qinfo, embedder, cos_index, cos_EMB,
-        cos_META, cos_TEXTS, cos_bm25, reranker, query_id=qid,
-    )
-    new_pending = []
-    for partial, returned_cands, trace in build_cos_answer_streaming(
-        message, cands, qinfo, llm_tok, llm_model, qid
-    ):
-        if returned_cands is not None:
-            new_pending = returned_cands
-        debug_md = render_trace_md(trace) if DEBUG_MODE else ""
-        yield partial, new_pending, debug_md, qid
+    """Debug-client adapter; AssistantService owns chat execution."""
+    yield from get_assistant_service().cos_chat(message, history, pending_cands)
 
 
-def housing_chat(message, history, _pending):
-    message = message.strip()
-    qid = next_query_id("HSG")
-    logger.info(f"\n{'='*65}")
-    logger.info(f"[{qid}] NEW HOUSING QUERY: {repr(message)}")
-
-    if not message:
-        yield "Please type a question about AUM Housing policy.", [], "", qid
-        return
-    if not housing_ok:
-        yield f"Housing PDF not found: {config.HOUSING_PDF}", [], "", qid
-        return
-
-    started = time.time()
-    hits = retrieve_housing_logged(
-        message, embedder, H_index, H_EMB, housing_chunks, query_id=qid, reranker=reranker
-    )
-    search_ms = (time.time() - started) * 1000
-    for partial, trace in build_housing_answer_streaming(
-        message, hits, llm_tok, llm_model, qid, search_ms=search_ms
-    ):
-        debug_md = render_trace_md(trace) if DEBUG_MODE else ""
-        yield partial, [], debug_md, qid
+def housing_chat(message, history, pending_cands):
+    """Debug-client adapter; AssistantService owns chat execution."""
+    yield from get_assistant_service().housing_chat(message, history, pending_cands)
 
 
 # ── Gradio UI (backend.py:2059-2204) ───────────────────────────────────

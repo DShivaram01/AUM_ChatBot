@@ -20,7 +20,7 @@ Real changes beyond import paths (see workspace.md TASK 11 log entry):
     so the caller must pass them. gradio_ui holds the loaded objects as
     module globals (set by init_gradio_ui()), same as backend.py did.
   - backend.cos_chat / backend.housing_chat / backend._SELECTION_RE ->
-    gradio_ui.cos_chat / gradio_ui.housing_chat / gradio_ui._SELECTION_RE.
+    gradio_ui.cos_chat / gradio_ui.housing_chat / get_assistant_service().selection_re.
 """
 
 import os
@@ -49,17 +49,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
-from pipeline.answer import generate_streaming
 from pipeline.classifier import (
     QueryTrace,
-    classify_topic,
     get_trace,
     next_query_id,
     store_trace,
 )
 from core.runtime_lock import RuntimeLock, RuntimeLockError
 import config
-import server.gradio_ui as gradio_ui
+from core.orchestrator import get_assistant_service
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("aum_api")
@@ -129,25 +127,15 @@ _GENERAL_PROMPT = (
 
 
 def _run_general_sync(question: str) -> tuple[str, str]:
-    query_id = next_query_id("GP")
-    prompt = _GENERAL_PROMPT.format(question=question)
     answer = ""
-    for partial in generate_streaming(
-        prompt, gradio_ui.llm_tok, gradio_ui.llm_model,
-        query_id=query_id, max_new_tokens=350,
-    ):
+    query_id = ""
+    for partial, _, _, query_id in get_assistant_service().general_chat(question):
         answer = partial
     return answer.strip(), query_id
 
 
 def _run_general_stream_sync(question: str):
-    query_id = next_query_id("GP")
-    prompt = _GENERAL_PROMPT.format(question=question)
-    for partial in generate_streaming(
-        prompt, gradio_ui.llm_tok, gradio_ui.llm_model,
-        query_id=query_id, max_new_tokens=350,
-    ):
-        yield partial, None, "", query_id
+    yield from get_assistant_service().general_chat(question)
 
 
 def _non_retrieval_answer(
@@ -208,13 +196,13 @@ async def _resolve_topic(req: "ChatRequest") -> tuple[str, str]:
     Decides which pipeline (cos_chat/housing_chat) handles this request.
     An explicit topic always wins. For "auto": if this session has a
     pending COS selection list and the message is a bare number reply
-    (matches gradio_ui._SELECTION_RE, e.g. "3"), that always routes to
+    (matches get_assistant_service().selection_re, e.g. "3"), that always routes to
     "cos".
     """
     if req.topic != "auto":
         return req.topic, "explicit client topic"
     pending = _session_pending.get(req.session_id, []) if req.session_id else []
-    if pending and gradio_ui._SELECTION_RE.match(req.question.strip()):
+    if pending and get_assistant_service().selection_re.match(req.question.strip()):
         log.info(
             f"[routing] '{req.question[:40]}' -> cos "
             f"(pending COS selection for session, overriding auto-classify)"
@@ -222,9 +210,7 @@ async def _resolve_topic(req: "ChatRequest") -> tuple[str, str]:
         return "cos", "pending COS selection"
     routing_steps: list[str] = []
     inferred_topic = await asyncio.to_thread(
-        classify_topic, req.question,
-        gradio_ui.embedder, gradio_ui.cos_index, gradio_ui.H_index, gradio_ui.housing_ok,
-        gradio_ui.llm_tok, gradio_ui.llm_model, routing_steps,
+        get_assistant_service().classify_topic, req.question, routing_steps,
     )
     routing_path = " -> ".join(routing_steps) or "classifier route unavailable"
     # GENERAL is an opt-in capability. The classifier may recognize a general
@@ -249,9 +235,9 @@ def _run_chat_sync(
 
     pending = _session_pending.get(session_id, []) if session_id else []
     gen = (
-        gradio_ui.housing_chat(question, [], [])
+        get_assistant_service().housing_chat(question, [], [])
         if topic == "housing"
-        else gradio_ui.cos_chat(question, [], pending)
+        else get_assistant_service().cos_chat(question, [], pending)
     )
     final_answer = ""
     query_id = ""
@@ -282,9 +268,9 @@ def _run_chat_stream_sync(
 
     pending = _session_pending.get(session_id, []) if session_id else []
     gen = (
-        gradio_ui.housing_chat(question, [], [])
+        get_assistant_service().housing_chat(question, [], [])
         if topic == "housing"
-        else gradio_ui.cos_chat(question, [], pending)
+        else get_assistant_service().cos_chat(question, [], pending)
     )
     new_pending = pending
     try:
@@ -341,7 +327,7 @@ async def load_models_once() -> None:
         try:
             log.info("Loading models and data...")
             await asyncio.to_thread(load_everything)
-            assert hasattr(gradio_ui, "cos_chat") and hasattr(gradio_ui, "housing_chat")
+            assert get_assistant_service().runtime.ready
             _model_loaded = True
             _runtime_lock = lock
             log.info("Models loaded. Server ready.")

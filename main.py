@@ -10,12 +10,16 @@ server/api_server.py imports load_everything() from here (lazily, at
 FastAPI startup) instead of duplicating this sequence -- see its docstring.
 """
 
+import os
+
 import config
 from pipeline.memory import logger, _log_path
 from pipeline import retrieval
 from pipeline.classifier import run_smoke_tests
 from models import loader
-import server.gradio_ui as gradio_ui
+from core.assistant_service import AssistantService
+from core.orchestrator import set_assistant_service
+from core.runtime_manager import RuntimeManager
 
 _loaded = False
 
@@ -63,15 +67,19 @@ def load_everything():
     retrieval.build_name_index(cos_META)
     run_smoke_tests(cos_META)
 
-    gradio_ui.init_gradio_ui(
-        embedder_=embedder, reranker_=reranker, llm_tok_=llm_tok, llm_model_=llm_model,
-        cos_index_=cos_index, cos_EMB_=cos_EMB, cos_META_=cos_META, cos_TEXTS_=cos_TEXTS, cos_bm25_=cos_bm25,
-        H_index_=H_index, H_EMB_=H_EMB, housing_chunks_=housing_chunks, housing_ok_=housing_ok,
-        log_path_=_log_path,
+    runtime = RuntimeManager(
+        embedder=embedder, reranker=reranker, llm_tok=llm_tok, llm_model=llm_model,
+        cos_index=cos_index, cos_embeddings=cos_EMB, cos_metadata=cos_META,
+        cos_texts=cos_TEXTS, cos_bm25=cos_bm25, housing_index=H_index,
+        housing_embeddings=H_EMB, housing_chunks=housing_chunks, housing_ok=housing_ok,
     )
+    set_assistant_service(AssistantService(
+        runtime, debug=os.environ.get("AUM_DEBUG_MODE", "true").lower() == "true"
+    ))
     _loaded = True
 
 
 if __name__ == "__main__":
     load_everything()
+    from server import gradio_ui
     gradio_ui.launch()
