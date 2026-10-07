@@ -50,7 +50,13 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from pipeline.answer import generate_streaming
-from pipeline.classifier import classify_topic, get_trace, next_query_id
+from pipeline.classifier import (
+    QueryTrace,
+    classify_topic,
+    get_trace,
+    next_query_id,
+    store_trace,
+)
 from core.runtime_lock import RuntimeLock, RuntimeLockError
 import config
 import server.gradio_ui as gradio_ui
@@ -144,14 +150,31 @@ def _run_general_stream_sync(question: str):
         yield partial, None, "", query_id
 
 
-def _non_retrieval_answer(topic: str) -> tuple[str, str] | None:
-    if topic == "general_aum":
-        return _GENERAL_AUM_RESPONSE, next_query_id("G")
-    if topic == "out_of_scope":
-        return _OUT_OF_SCOPE_RESPONSE, next_query_id("O")
-    if topic == "open_ended_disabled":
-        return _OPEN_ENDED_MODE_REQUIRED_RESPONSE, next_query_id("M")
-    return None
+def _non_retrieval_answer(
+    topic: str, question: str, routing_path: str,
+) -> tuple[str, str] | None:
+    responses = {
+        "general_aum": (_GENERAL_AUM_RESPONSE, "G"),
+        "out_of_scope": (_OUT_OF_SCOPE_RESPONSE, "O"),
+        "open_ended_disabled": (_OPEN_ENDED_MODE_REQUIRED_RESPONSE, "M"),
+    }
+    response = responses.get(topic)
+    if response is None:
+        return None
+
+    answer, prefix = response
+    query_id = next_query_id(prefix)
+    store_trace(QueryTrace(
+        query_id=query_id,
+        query=question,
+        tab="non_retrieval",
+        timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        intent_type=topic,
+        routing_path=routing_path,
+        response_state="non_retrieval",
+        final_answer=answer,
+    ))
+    return answer, query_id
 
 # TASK 14: serializes every model.generate() call this process makes.
 # Without this, two overlapping requests can both call generate() on the
@@ -180,7 +203,7 @@ def _sse_event(data: str, event: str | None = None) -> str:
     return "\n".join(lines) + "\n\n"
 
 
-async def _resolve_topic(req: "ChatRequest") -> str:
+async def _resolve_topic(req: "ChatRequest") -> tuple[str, str]:
     """
     Decides which pipeline (cos_chat/housing_chat) handles this request.
     An explicit topic always wins. For "auto": if this session has a
@@ -189,34 +212,38 @@ async def _resolve_topic(req: "ChatRequest") -> str:
     "cos".
     """
     if req.topic != "auto":
-        return req.topic
+        return req.topic, "explicit client topic"
     pending = _session_pending.get(req.session_id, []) if req.session_id else []
     if pending and gradio_ui._SELECTION_RE.match(req.question.strip()):
         log.info(
             f"[routing] '{req.question[:40]}' -> cos "
             f"(pending COS selection for session, overriding auto-classify)"
         )
-        return "cos"
+        return "cos", "pending COS selection"
+    routing_steps: list[str] = []
     inferred_topic = await asyncio.to_thread(
         classify_topic, req.question,
         gradio_ui.embedder, gradio_ui.cos_index, gradio_ui.H_index, gradio_ui.housing_ok,
-        gradio_ui.llm_tok, gradio_ui.llm_model,
+        gradio_ui.llm_tok, gradio_ui.llm_model, routing_steps,
     )
+    routing_path = " -> ".join(routing_steps) or "classifier route unavailable"
     # GENERAL is an opt-in capability. The classifier may recognize a general
     # request, but only the UI's explicit topic="general" may invoke Mistral's
     # pretrained-knowledge answer path.
     if inferred_topic == "general":
         log.info("[routing] general request held in grounded mode; Open-ended mode required")
-        return "open_ended_disabled"
-    return inferred_topic
+        return "open_ended_disabled", routing_path + "; open-ended mode disabled"
+    return inferred_topic, routing_path
 
 
-def _run_chat_sync(topic: str, question: str, session_id: str | None) -> tuple[str, str]:
+def _run_chat_sync(
+    topic: str, question: str, session_id: str | None, routing_path: str = "",
+) -> tuple[str, str]:
     """Run a retrieval pipeline, GENERAL model answer, or static capability response."""
     if topic == "general":
         return _run_general_sync(question)
 
-    static_result = _non_retrieval_answer(topic)
+    static_result = _non_retrieval_answer(topic, question, routing_path)
     if static_result is not None:
         return static_result
 
@@ -239,13 +266,15 @@ def _run_chat_sync(topic: str, question: str, session_id: str | None) -> tuple[s
     return final_answer, query_id
 
 
-def _run_chat_stream_sync(topic: str, question: str, session_id: str | None):
+def _run_chat_stream_sync(
+    topic: str, question: str, session_id: str | None, routing_path: str = "",
+):
     """Same as _run_chat_sync but yields partial results for the SSE endpoint."""
     if topic == "general":
         yield from _run_general_stream_sync(question)
         return
 
-    static_result = _non_retrieval_answer(topic)
+    static_result = _non_retrieval_answer(topic, question, routing_path)
     if static_result is not None:
         answer, query_id = static_result
         yield answer, None, "", query_id
@@ -349,8 +378,10 @@ async def ask(req: ChatRequest) -> ChatResponse:
     start = time.time()
 
     async with _generate_lock:
-        topic_used = await _resolve_topic(req)
-        answer, query_id = await asyncio.to_thread(_run_chat_sync, topic_used, req.question, req.session_id)
+        topic_used, routing_path = await _resolve_topic(req)
+        answer, query_id = await asyncio.to_thread(
+            _run_chat_sync, topic_used, req.question, req.session_id, routing_path,
+        )
 
     sources: list[str] = []
 
@@ -371,7 +402,7 @@ async def ask_stream(req: ChatRequest) -> StreamingResponse:
 
     async def token_stream() -> AsyncGenerator[str, None]:
         async with _generate_lock:
-            topic_used = await _resolve_topic(req)
+            topic_used, routing_path = await _resolve_topic(req)
 
             import queue
             import threading
@@ -381,7 +412,9 @@ async def ask_stream(req: ChatRequest) -> StreamingResponse:
 
             def producer():
                 try:
-                    for item in _run_chat_stream_sync(topic_used, req.question, req.session_id):
+                    for item in _run_chat_stream_sync(
+                        topic_used, req.question, req.session_id, routing_path,
+                    ):
                         q.put((item[0], item[3]))
                 except Exception as exc:
                     log.exception("Pipeline error during streaming")

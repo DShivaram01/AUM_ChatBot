@@ -75,6 +75,7 @@ class QueryTrace:
 
     # ── Classification ────────────────────────────────────────────
     intent_type:  str   = ""
+    routing_path: str   = ""          # classifier decision path / abstention reason
     person_hint:  Optional[str] = None
     year_hint:    Optional[int] = None
     dept_hint:    Optional[str] = None
@@ -138,6 +139,11 @@ def get_trace(query_id: str) -> Optional[QueryTrace]:
         if t.query_id == query_id:
             return t
     return None
+
+
+def store_trace(trace: QueryTrace) -> None:
+    """Store a trace in the shared feedback/inspector trace store."""
+    SESSION_TRACES.append(trace)
 
 logger.info("[Trace] QueryTrace ready. SESSION_TRACES initialized.")
 
@@ -311,9 +317,47 @@ _GENERAL_TASK_WORDS = {
 }
 
 
+def _bounded_edit_distance(left: str, right: str, maximum: int) -> int:
+    """Return edit distance, stopping once it exceeds ``maximum``."""
+    if abs(len(left) - len(right)) > maximum:
+        return maximum + 1
+
+    previous = list(range(len(right) + 1))
+    for left_index, left_char in enumerate(left, 1):
+        current = [left_index]
+        row_minimum = left_index
+        for right_index, right_char in enumerate(right, 1):
+            cost = left_char != right_char
+            current.append(min(
+                previous[right_index] + 1,
+                current[right_index - 1] + 1,
+                previous[right_index - 1] + cost,
+            ))
+            row_minimum = min(row_minimum, current[-1])
+        if row_minimum > maximum:
+            return maximum + 1
+        previous = current
+    return previous[-1]
+
+
+def _is_cos_intent_token(token: str) -> bool:
+    if token in _COS_INTENT_WORDS:
+        return True
+    # A person match is already required by the caller. Permit two edits only
+    # for longer intent words so "reserach" is recovered without making
+    # short labels such as "lab" overly permissive.
+    return any(
+        _bounded_edit_distance(token, intent, 2 if len(intent) >= 6 else 1)
+        <= (2 if len(intent) >= 6 else 1)
+        for intent in _COS_INTENT_WORDS
+    )
+
+
 def _has_cos_person_intent(query: str) -> bool:
     tokens = set(re.findall(r"[a-z]+", query.lower()))
-    return bool(tokens & _COS_INTENT_WORDS) and not bool(tokens & _GENERAL_TASK_WORDS)
+    return any(_is_cos_intent_token(token) for token in tokens) and not bool(
+        tokens & _GENERAL_TASK_WORDS
+    )
 
 
 def _has_reliable_aum_evidence(query: str) -> bool:
@@ -372,7 +416,7 @@ def _classify_topic_fallback(query: str, embedder, cos_index, H_index, housing_o
 
 
 def classify_topic(query: str, embedder, cos_index, H_index, housing_ok: bool,
-                   llm_tok=None, llm_model=None) -> str:
+                   llm_tok=None, llm_model=None, routing_path: list[str] | None = None) -> str:
     """
     Route automatic-topic requests to COS, Housing, GENERAL_AUM, GENERAL,
     or OUT_OF_SCOPE. COS person-name matches remain a hard override.
@@ -383,8 +427,13 @@ def classify_topic(query: str, embedder, cos_index, H_index, housing_ok: bool,
     """
     qinfo = classify_query(query)
     if qinfo.get("person_hints") and _has_cos_person_intent(query):
+        if routing_path is not None:
+            routing_path.append("person-name match with COS intent")
         logger.info(f"[classify_topic] '{query[:60]}' -> cos (person match: {qinfo['person_hints'][:2]})")
         return "cos"
+
+    if qinfo.get("person_hints") and routing_path is not None:
+        routing_path.append("person-intent gate rejected")
 
     if llm_tok is not None and llm_model is not None:
         try:
@@ -394,7 +443,11 @@ def classify_topic(query: str, embedder, cos_index, H_index, housing_ok: bool,
             topic = match.group(1) if match else ""
             if topic == "general_aum" and not _has_reliable_aum_evidence(query):
                 logger.info("[classify_topic] GENERAL_AUM rejected without AUM evidence")
+                if routing_path is not None:
+                    routing_path.append("Mistral-router label=general_aum; evidence-gate rejected")
                 topic = "general"
+            elif topic and routing_path is not None:
+                routing_path.append(f"Mistral-router label={topic}")
             if topic in labels:
                 logger.info(
                     f"[classify_topic] '{query[:60]}' -> {topic} "
@@ -414,7 +467,11 @@ def classify_topic(query: str, embedder, cos_index, H_index, housing_ok: bool,
     topic = _classify_topic_fallback(query, embedder, cos_index, H_index, housing_ok)
     if topic == "general_aum" and not _has_reliable_aum_evidence(query):
         logger.info("[classify_topic] fallback GENERAL_AUM rejected without AUM evidence")
+        if routing_path is not None:
+            routing_path.append("fallback label=general_aum; evidence-gate rejected")
         topic = "general"
+    if routing_path is not None and not routing_path:
+        routing_path.append(f"conservative fallback label={topic}")
     logger.info(f"[classify_topic] '{query[:60]}' -> {topic} (fallback)")
     return topic
 
