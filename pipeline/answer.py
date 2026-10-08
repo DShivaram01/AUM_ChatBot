@@ -40,6 +40,7 @@ from pipeline.classifier import QueryTrace, RetrievalCandidate, SESSION_TRACES
 SIGMA = config.SIGMA
 EVIDENCE_SCORE_FLOOR = config.EVIDENCE_SCORE_FLOOR
 HOUSING_EVIDENCE_SCORE_FLOOR = config.HOUSING_EVIDENCE_SCORE_FLOOR
+DOCUMENT_EVIDENCE_SCORE_FLOOR = config.DOCUMENT_EVIDENCE_SCORE_FLOOR
 
 
 # ── Relative threshold helper (backend.py:701-708) ────────────────────

@@ -12,6 +12,7 @@ import config
 from core.document_service import DocumentService
 from core.runtime_manager import RuntimeManager
 from pipeline.answer import (
+    DOCUMENT_EVIDENCE_SCORE_FLOOR,
     HOUSING_EVIDENCE_SCORE_FLOOR,
     SIGMA,
     _relative_threshold,
@@ -215,10 +216,10 @@ class AssistantService:
 
         evidence_scores = [{"rerank": hit["score"]} for hit in hits]
         is_strong, top, mean, std = _relative_threshold(
-            evidence_scores, absolute_floor=HOUSING_EVIDENCE_SCORE_FLOOR,
+            evidence_scores, absolute_floor=DOCUMENT_EVIDENCE_SCORE_FLOOR,
         )
         trace.threshold_top, trace.threshold_mean, trace.threshold_std = top, mean, std
-        trace.threshold_cutoff = max(HOUSING_EVIDENCE_SCORE_FLOOR, mean + SIGMA * std)
+        trace.threshold_cutoff = max(DOCUMENT_EVIDENCE_SCORE_FLOOR, mean + SIGMA * std)
         trace.threshold_passed = is_strong
 
         if not hits or not is_strong:
@@ -277,7 +278,7 @@ class AssistantService:
 
         context_chunks: list[str] = []
         evidence_map: dict[int, str] = {}
-        require_evidence = source_mode in ("aum", "document")
+        require_evidence = source_mode in ("housing", "document")
 
         if source_mode == "document":
             if not document_ids:
@@ -296,7 +297,7 @@ class AssistantService:
                 context_chunks.append(hit["text"])
                 evidence_map[i] = hit["chunk_id"]
 
-        elif source_mode == "aum":
+        elif source_mode == "housing":
             r = self.runtime
             if not r.housing_ok:
                 return {"error": "No AUM source is available to build a grounded quiz right now."}

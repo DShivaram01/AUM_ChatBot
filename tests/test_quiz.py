@@ -93,9 +93,9 @@ def test_quiz_document_mode_requires_attached_document():
     assert "error" in result and "attach a document" in result["error"]
 
 
-def test_quiz_aum_mode_uses_housing_evidence_and_rejects_without_housing():
+def test_quiz_housing_mode_uses_housing_evidence_and_rejects_without_housing():
     service = AssistantService(RuntimeManager(embedder=WordOverlapEmbedder(), housing_ok=False))
-    result = service.quiz("guest policy", 2, "aum")
+    result = service.quiz("guest policy", 2, "housing")
     assert "error" in result  # no housing index available in this unit test
 
 

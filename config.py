@@ -69,6 +69,14 @@ EVIDENCE_SCORE_FLOOR = -2.0
 # logits, so it needs a calibrated floor in its own score scale while using the
 # same evidence-gate mechanism.
 HOUSING_EVIDENCE_SCORE_FLOOR = 0.35
+# Document QA (Task 35) uses the same cosine-similarity scale as Housing, so
+# this starts equal to HOUSING_EVIDENCE_SCORE_FLOOR -- but uploaded documents
+# vary far more in writing style, length, topic, and chunk structure than the
+# single fixed Housing policy PDF, so this is deliberately a separate,
+# independently-tunable constant rather than an alias (Task 41, external
+# review 2026-10-07). Not yet recalibrated from real data -- that belongs
+# with the labeled-dataset work (Task 42), not an anecdotal guess.
+DOCUMENT_EVIDENCE_SCORE_FLOOR = 0.35
 
 # ---- NOT FOUND IN backend.py ----
 # No RAM-checking logic exists anywhere in the ~2227-line source file

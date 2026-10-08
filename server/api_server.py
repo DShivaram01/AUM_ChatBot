@@ -95,7 +95,7 @@ class FeedbackRequest(BaseModel):
 class QuizRequest(BaseModel):
     topic: str
     count: int = 10
-    source_mode: Literal["pretrained", "aum", "document"] = "pretrained"
+    source_mode: Literal["pretrained", "housing", "document"] = "pretrained"
     document_ids: list[str] | None = None
     session_id: str | None = None
 

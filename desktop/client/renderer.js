@@ -230,7 +230,7 @@ removeAttachmentBtn.addEventListener('click', async () => {
 
 const QUIZ_SOURCE_LABELS = {
   pretrained: 'Quiz source: Mistral pretrained knowledge',
-  aum: 'Quiz source: AUM Housing policy',
+  housing: 'Quiz source: AUM Housing policy',
   document: 'Quiz source: your attached document',
 };
 
