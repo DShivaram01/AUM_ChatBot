@@ -77,6 +77,29 @@ class DocumentService:
             for score, position in zip(scores[0], positions[0]) if position >= 0
         ]
 
+    def retrieve_chunks(self, document_id, session_id, query, limit=5):
+        """Internal retrieval that includes chunk text, for answer generation
+        only. Never return this directly from a public endpoint -- retrieve()
+        above is the metadata-only shape safe for external responses."""
+        document = self.store.get(document_id, session_id)
+        query_embedding = self.embedder.encode(
+            [query], convert_to_numpy=True, normalize_embeddings=True,
+        ).astype(np.float32)
+        scores, positions = document.index.search(query_embedding, min(limit, len(document.chunks)))
+        return [
+            {
+                "chunk_id": document.chunks[position].chunk_id,
+                "document_id": document_id,
+                "filename": document.source.original_filename,
+                "page": document.chunks[position].page,
+                "page_end": document.chunks[position].page_end,
+                "heading_path": list(document.chunks[position].heading_path),
+                "score": float(score),
+                "text": document.chunks[position].text,
+            }
+            for score, position in zip(scores[0], positions[0]) if position >= 0
+        ]
+
     def list(self, session_id):
         return [self.describe(document) for document in self.store.list(session_id)]
 

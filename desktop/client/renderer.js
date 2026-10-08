@@ -22,6 +22,12 @@ const feedbackComment = document.getElementById('feedbackComment');
 const feedbackStatus = document.getElementById('feedbackStatus');
 const feedbackCancel = document.getElementById('feedbackCancel');
 const feedbackConfirm = document.getElementById('feedbackConfirm');
+const attachBtn = document.getElementById('attachBtn');
+const documentFileInput = document.getElementById('documentFileInput');
+const attachmentRow = document.getElementById('attachmentRow');
+const attachmentChip = document.getElementById('attachmentChip');
+const removeAttachmentBtn = document.getElementById('removeAttachmentBtn');
+const attachmentStatus = document.getElementById('attachmentStatus');
 
 let pendingFeedback = null;
 
@@ -118,20 +124,99 @@ function startNewChat() {
     project_id: null,
     temporary: tempToggle.checked,
     createdAt: Date.now(),
+    documentIds: [],
+    attachedDocuments: [],
   };
   currentTopic = 'auto';
   renderActiveChatMessages();
   renderChatList();
+  renderAttachmentRow();
 }
 
 function switchToChat(id) {
   const found = chats.find((c) => c.id === id);
   if (!found) return;
   activeChat = found;
+  if (!activeChat.documentIds) activeChat.documentIds = [];
+  if (!activeChat.attachedDocuments) activeChat.attachedDocuments = [];
   currentTopic = 'auto';
   renderActiveChatMessages();
   renderChatList();
+  renderAttachmentRow();
 }
+
+// ---------- Document attachment (Task 35: grounded document Q&A) ----------
+// One PDF per chat for this first pass. The chat's own id doubles as the
+// server-side document session_id, so an attached document is private to
+// this one chat -- matching the per-session privacy scope the backend
+// already enforces (core/document_service.py / stores/document_store.py).
+
+function renderAttachmentRow() {
+  const docs = (activeChat && activeChat.attachedDocuments) || [];
+  if (!docs.length) {
+    attachmentRow.classList.add('hidden');
+    attachmentChip.textContent = '';
+    return;
+  }
+  attachmentRow.classList.remove('hidden');
+  attachmentChip.textContent = `📄 ${docs[0].filename} — ask questions about this document`;
+}
+
+function setAttachmentStatus(text) {
+  if (!text) {
+    attachmentStatus.classList.add('hidden');
+    attachmentStatus.textContent = '';
+    return;
+  }
+  attachmentStatus.classList.remove('hidden');
+  attachmentStatus.textContent = text;
+}
+
+attachBtn.addEventListener('click', () => {
+  ensureActiveChat();
+  documentFileInput.click();
+});
+
+documentFileInput.addEventListener('change', async () => {
+  const file = documentFileInput.files[0];
+  documentFileInput.value = '';
+  if (!file) return;
+  ensureActiveChat();
+  setAttachmentStatus(`Uploading ${file.name}…`);
+  try {
+    const form = new FormData();
+    form.append('session_id', activeChat.id);
+    form.append('file', file);
+    const res = await fetch(`${serverUrl}/api/documents`, { method: 'POST', body: form });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.detail || `server returned ${res.status}`);
+    }
+    const metadata = await res.json();
+    activeChat.documentIds = [metadata.document_id];
+    activeChat.attachedDocuments = [{ document_id: metadata.document_id, filename: metadata.filename }];
+    renderAttachmentRow();
+    setAttachmentStatus(`Attached — ${metadata.pages} page(s), ready for questions.`);
+    await saveActiveChatIfNeeded();
+  } catch (err) {
+    setAttachmentStatus(`Couldn't attach ${file.name}: ${err.message}`);
+  }
+});
+
+removeAttachmentBtn.addEventListener('click', async () => {
+  if (!activeChat || !activeChat.documentIds || !activeChat.documentIds.length) return;
+  const [documentId] = activeChat.documentIds;
+  activeChat.documentIds = [];
+  activeChat.attachedDocuments = [];
+  renderAttachmentRow();
+  setAttachmentStatus('');
+  await saveActiveChatIfNeeded();
+  // Best-effort server-side cleanup; the document also auto-expires after
+  // 24h regardless, so a failure here is not user-visible or data-unsafe.
+  fetch(`${serverUrl}/api/documents/${documentId}?session_id=${encodeURIComponent(activeChat.id)}`, {
+    method: 'DELETE',
+  }).catch(() => {});
+});
 
 function ensureActiveChat() {
   if (!activeChat) startNewChat();
@@ -476,6 +561,7 @@ function labelForTopic(topic, pending) {
   if (topic === 'housing') return 'Housing & Community Standards';
   if (topic === 'general') return 'Open-ended · Mistral';
   if (topic === 'open_ended_disabled') return 'Grounded AUM mode';
+  if (topic === 'document') return 'Your document';
   return 'AUM Chatbot';
 }
 
@@ -504,6 +590,10 @@ composer.addEventListener('submit', async (e) => {
         question,
         topic: openEndedToggle.checked ? 'general' : currentTopic,
         session_id: activeChat.id,
+        // An attached document always wins server-side (see api_server.py
+        // _resolve_topic), so this is sent regardless of the mode toggle.
+        document_ids: activeChat.documentIds && activeChat.documentIds.length
+          ? activeChat.documentIds : undefined,
       }),
       // The streaming endpoint keeps the same deliberate safety margin.
       // TASK 18 (2026-08-24): raised from 30s -- correct against the old

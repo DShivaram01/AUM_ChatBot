@@ -69,11 +69,15 @@ class ChatRequest(BaseModel):
     question: str
     topic: Literal["cos", "housing", "general", "auto"] = "auto"
     session_id: str | None = None
+    document_ids: list[str] | None = None
 
 
 class ChatResponse(BaseModel):
     answer: str
-    topic_used: Literal["cos", "housing", "general_aum", "general", "open_ended_disabled", "out_of_scope"]
+    topic_used: Literal[
+        "cos", "housing", "general_aum", "general",
+        "open_ended_disabled", "out_of_scope", "document",
+    ]
     query_id: str
     sources: list[str] = []
     latency_ms: int
@@ -194,11 +198,14 @@ def _sse_event(data: str, event: str | None = None) -> str:
 async def _resolve_topic(req: "ChatRequest") -> tuple[str, str]:
     """
     Decides which pipeline (cos_chat/housing_chat) handles this request.
-    An explicit topic always wins. For "auto": if this session has a
-    pending COS selection list and the message is a bare number reply
+    An attached document always wins (explicit document-grounded request).
+    Otherwise an explicit topic always wins. For "auto": if this session has
+    a pending COS selection list and the message is a bare number reply
     (matches get_assistant_service().selection_re, e.g. "3"), that always routes to
     "cos".
     """
+    if req.document_ids:
+        return "document", "explicit document selection"
     if req.topic != "auto":
         return req.topic, "explicit client topic"
     pending = _session_pending.get(req.session_id, []) if req.session_id else []
@@ -224,6 +231,7 @@ async def _resolve_topic(req: "ChatRequest") -> tuple[str, str]:
 
 def _run_chat_sync(
     topic: str, question: str, session_id: str | None, routing_path: str = "",
+    document_ids: list[str] | None = None,
 ) -> tuple[str, str]:
     """Run a retrieval pipeline, GENERAL model answer, or static capability response."""
     if topic == "general":
@@ -235,7 +243,9 @@ def _run_chat_sync(
 
     pending = _session_pending.get(session_id, []) if session_id else []
     gen = (
-        get_assistant_service().housing_chat(question, [], [])
+        get_assistant_service().document_chat(question, document_ids or [], session_id)
+        if topic == "document"
+        else get_assistant_service().housing_chat(question, [], [])
         if topic == "housing"
         else get_assistant_service().cos_chat(question, [], pending)
     )
@@ -254,6 +264,7 @@ def _run_chat_sync(
 
 def _run_chat_stream_sync(
     topic: str, question: str, session_id: str | None, routing_path: str = "",
+    document_ids: list[str] | None = None,
 ):
     """Same as _run_chat_sync but yields partial results for the SSE endpoint."""
     if topic == "general":
@@ -268,7 +279,9 @@ def _run_chat_stream_sync(
 
     pending = _session_pending.get(session_id, []) if session_id else []
     gen = (
-        get_assistant_service().housing_chat(question, [], [])
+        get_assistant_service().document_chat(question, document_ids or [], session_id)
+        if topic == "document"
+        else get_assistant_service().housing_chat(question, [], [])
         if topic == "housing"
         else get_assistant_service().cos_chat(question, [], pending)
     )
@@ -409,6 +422,7 @@ async def ask(req: ChatRequest) -> ChatResponse:
         topic_used, routing_path = await _resolve_topic(req)
         answer, query_id = await asyncio.to_thread(
             _run_chat_sync, topic_used, req.question, req.session_id, routing_path,
+            req.document_ids,
         )
 
     sources: list[str] = []
@@ -442,6 +456,7 @@ async def ask_stream(req: ChatRequest) -> StreamingResponse:
                 try:
                     for item in _run_chat_stream_sync(
                         topic_used, req.question, req.session_id, routing_path,
+                        req.document_ids,
                     ):
                         q.put((item[0], item[3]))
                 except Exception as exc:

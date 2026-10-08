@@ -367,6 +367,53 @@ body {
   background: var(--panel);
 }
 
+.attach-btn {
+  flex: none;
+  font-size: 16px;
+  padding: 0 12px;
+  border: 1px solid var(--hairline);
+  border-radius: 5px;
+  background: var(--panel-soft);
+  cursor: pointer;
+}
+.attach-btn:hover { border-color: var(--accent); }
+
+.attachment-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 40px;
+  margin-top: 10px;
+}
+.attachment-row.hidden { display: none; }
+
+.attachment-chip {
+  font-size: 13px;
+  padding: 4px 10px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  color: var(--accent);
+  background: rgba(240, 78, 41, 0.08);
+}
+
+.attachment-remove {
+  border: none;
+  background: none;
+  color: var(--text-muted, #999);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px 6px;
+}
+.attachment-remove:hover { color: var(--accent); }
+
+.attachment-status {
+  padding: 0 40px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-muted, #999);
+}
+.attachment-status.hidden { display: none; }
+
 #questionInput {
   flex: 1;
   font-family: var(--sans);
