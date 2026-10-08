@@ -28,7 +28,7 @@ import faiss
 from rank_bm25 import BM25Okapi
 
 import config
-from pipeline.memory import logger
+from pipeline.memory import logger, query_fingerprint
 
 SCRATCH   = config.SCRATCH
 EMB_STORE = config.EMB_STORE
@@ -697,7 +697,7 @@ def retrieve_cos_rrf(
 
     t_start = _time.time()
     logger.info(f"[{query_id}] == RETRIEVAL START ==")
-    logger.info(f"[{query_id}] Query: {repr(query)}")
+    logger.info(f"[{query_id}] Query fp={query_fingerprint(query)}")
     logger.info(
         f"[{query_id}] Intent: {qinfo['type']} | "
         f"names={qinfo.get('person_hints',[])} "
@@ -833,7 +833,7 @@ def retrieve_cos_rrf(
 def retrieve_housing_logged(query, embedder, H_index, H_EMB,
                             housing_chunks, query_id, top_k=4, reranker=None):
     logger.info(f"[{query_id}] == HOUSING RETRIEVAL ==")
-    logger.info(f"[{query_id}] Query: {repr(query)}")
+    logger.info(f"[{query_id}] Query fp={query_fingerprint(query)}")
     if H_index is None:
         logger.error(f"[{query_id}] H_index is None")
         return []

@@ -1,10 +1,16 @@
-"""Task 38: evaluation sanitizer, bounded trace cache, and sink behavior."""
+"""Task 38: evaluation sanitizer, bounded trace cache, and sink behavior.
+Task 45 additions: EvaluationService.record_event()'s sink-failure
+isolation, and the same guarantee for /api/feedback's missing-trace
+fallback path."""
 
 import json
 import tempfile
 from pathlib import Path
 
+from fastapi.testclient import TestClient
+
 from evaluation.sanitizer import session_hash, trace_to_event
+from evaluation.schemas import EvaluationEvent
 from evaluation.service import EvaluationService
 from evaluation.sinks.local_dev import LocalDevSink
 from pipeline.classifier import QueryTrace, RetrievalCandidate, SESSION_TRACES
@@ -79,6 +85,73 @@ def test_evaluation_service_tolerates_none_trace():
         service = EvaluationService(sinks=[LocalDevSink(path)])
         service.record_trace(None, session_id="s1")  # must not raise
         assert not path.exists()
+
+
+def test_record_event_isolates_a_failing_sink_from_a_working_one():
+    class BrokenSink:
+        def record(self, event):
+            raise RuntimeError("simulated sink outage")
+
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "events.jsonl"
+        working = LocalDevSink(path)
+        service = EvaluationService(sinks=[BrokenSink(), working])
+        # Must not raise, and the working sink must still receive the event
+        # even though the sink ordered before it failed.
+        service.record_event(EvaluationEvent(
+            event_id="e1", timestamp_utc="2026-10-08T00:00:00+00:00",
+            query_id="Q9001", session_hash="", activity="ask", source_mode="",
+        ))
+        lines = path.read_text().splitlines()
+        assert len(lines) == 1
+        assert json.loads(lines[0])["query_id"] == "Q9001"
+
+
+def test_feedback_endpoint_missing_trace_survives_a_broken_sink_with_utc_timestamp():
+    """Task 45 (external review 2026-10-08): this fallback path used to call
+    sink.record() directly in its own unprotected loop, bypassing
+    EvaluationService's isolation -- a broken sink turned a feedback
+    submission into an unhandled exception instead of a 200 with the
+    failure merely logged. It also used a naive (non-UTC) timestamp."""
+    import server.api_server as api_server
+    from core.assistant_service import AssistantService
+    from core.orchestrator import set_assistant_service
+    from core.runtime_manager import RuntimeManager
+
+    class BrokenSink:
+        def record(self, event):
+            raise RuntimeError("simulated sink outage")
+
+    class CapturingSink:
+        def __init__(self):
+            self.events = []
+
+        def record(self, event):
+            self.events.append(event)
+
+    set_assistant_service(AssistantService(RuntimeManager()))
+    capturing = CapturingSink()
+    original_sinks = api_server._evaluation_service.sinks
+    api_server._evaluation_service.sinks = [BrokenSink(), capturing]
+    try:
+        client = TestClient(api_server.app)
+        response = client.post("/api/feedback", json={
+            "reaction": "down", "scope": "single",
+            # query_id deliberately not in SESSION_TRACES -- forces the
+            # missing-trace fallback path.
+            "query_id": "Q-definitely-not-cached-9999",
+            "session_id": "test-session",
+        })
+    finally:
+        api_server._evaluation_service.sinks = original_sinks
+
+    assert response.status_code == 200, response.text
+    assert len(capturing.events) == 1
+    event = capturing.events[0]
+    assert event.query_id == "Q-definitely-not-cached-9999"
+    assert event.feedback == "down"
+    # A naive isoformat() string has no "+" offset and doesn't end in "Z".
+    assert "+" in event.timestamp_utc or event.timestamp_utc.endswith("Z")
 
 
 def test_session_traces_is_bounded():

@@ -31,7 +31,7 @@ from typing import List, Dict, Any, Optional
 
 import torch
 
-from pipeline.memory import logger
+from pipeline.memory import logger, query_fingerprint
 from pipeline.retrieval import query_name_index
 
 
@@ -300,7 +300,7 @@ def _classify_topic_heuristic(query: str, embedder, cos_index, H_index, housing_
 
     topic = "housing" if housing_adj > cos_adj else "cos"
     logger.info(
-        f"[classify_topic:heuristic] '{query[:60]}' -> {topic} "
+        f"[classify_topic:heuristic] fp={query_fingerprint(query)} -> {topic} "
         f"(cos_top1={cos_score:.3f}+{BIAS*cos_hits:.2f} "
         f"housing_top1={housing_score:.3f}+{BIAS*housing_hits:.2f})"
     )
@@ -449,7 +449,7 @@ def classify_topic(query: str, embedder, cos_index, H_index, housing_ok: bool,
     if qinfo.get("person_hints") and _has_cos_person_intent(query):
         if routing_path is not None:
             routing_path.append("person-name match with COS intent")
-        logger.info(f"[classify_topic] '{query[:60]}' -> cos (person match: {qinfo['person_hints'][:2]})")
+        logger.info(f"[classify_topic] fp={query_fingerprint(query)} -> cos (person match: {qinfo['person_hints'][:2]})")
         return "cos"
 
     if qinfo.get("person_hints") and routing_path is not None:
@@ -468,13 +468,13 @@ def classify_topic(query: str, embedder, cos_index, H_index, housing_ok: bool,
                 routing_path.append(f"Mistral-router label={topic}")
             if topic in _TOPIC_LABELS:
                 logger.info(
-                    f"[classify_topic] '{query[:60]}' -> {topic} "
+                    f"[classify_topic] fp={query_fingerprint(query)} -> {topic} "
                     f"(Mistral router, raw={decoded!r})"
                 )
                 return topic
             logger.warning(
                 f"[classify_topic] Mistral router gave unparseable output {decoded!r} "
-                f"for '{query[:60]}' -- using conservative fallback"
+                f"for fp={query_fingerprint(query)} -- using conservative fallback"
             )
         except Exception as exc:
             logger.warning(
@@ -490,7 +490,7 @@ def classify_topic(query: str, embedder, cos_index, H_index, housing_ok: bool,
         topic = "general"
     if routing_path is not None and not routing_path:
         routing_path.append(f"conservative fallback label={topic}")
-    logger.info(f"[classify_topic] '{query[:60]}' -> {topic} (fallback)")
+    logger.info(f"[classify_topic] fp={query_fingerprint(query)} -> {topic} (fallback)")
     return topic
 
 

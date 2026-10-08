@@ -10,6 +10,7 @@ buffer in memory and are only guaranteed to reach disk if the process exits
 cleanly.
 """
 
+import hashlib
 import logging
 from datetime import datetime
 
@@ -44,6 +45,25 @@ logger.propagate = False
 
 logger.info("AUM-Chatbot v4.1 session started")
 logger.info(f"Log file: {_log_path}")
+
+
+def query_fingerprint(text: str) -> str:
+    """A short, non-reversible stand-in for raw query/question text in log
+    lines (Task 44, external review 2026-10-08). Several log call sites
+    across pipeline/classifier.py, pipeline/semantic_router.py, and
+    server/api_server.py used to embed the literal query text (sometimes
+    the complete, untruncated text) to make a routing/retrieval decision
+    debuggable after the fact -- but that bypassed Task 38's entire
+    redaction effort, which only ever covered the /api/feedback persistence
+    path, not the ordinary application logger. This still lets the same
+    query be correlated across multiple log lines within one request
+    (same input -> same fingerprint) without the log file itself ever
+    containing what was actually asked. Routing/retrieval happens before a
+    query_id is minted (query_id is assigned per-domain, after routing
+    decides which domain handles the request), so this is a content
+    fingerprint, not a request identifier -- callers that already have a
+    query_id should log that too, not use this as a substitute for it."""
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()[:10]
 
 
 def format_history(history, max_turns=4, max_chars=1000):

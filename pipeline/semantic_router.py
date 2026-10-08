@@ -24,7 +24,7 @@ from __future__ import annotations
 import numpy as np
 
 from pipeline.classifier import _classify_topic_llm, _has_reliable_aum_evidence, parse_topic_label
-from pipeline.memory import logger
+from pipeline.memory import logger, query_fingerprint
 
 # ---- Example sentences per label ---------------------------------------
 # Deliberately phrased close to real user queries (see the TASK 42 gold
@@ -200,7 +200,7 @@ def classify_topic_semantic(
             f"matched={result['matched_example']!r}"
         )
     logger.info(
-        f"[semantic_router] '{query[:60]}' -> {label} "
+        f"[semantic_router] fp={query_fingerprint(query)} -> {label} "
         f"(margin={result['margin']:.3f}, matched={result['matched_example'][:60]!r})"
     )
     return label
@@ -238,7 +238,7 @@ def classify_topic_hybrid(
                     "(confident, no Mistral call)"
                 )
         logger.info(
-            f"[hybrid_router] '{query[:60]}' -> {label} "
+            f"[hybrid_router] fp={query_fingerprint(query)} -> {label} "
             f"(confident semantic, margin={result['margin']:.3f})"
         )
         return label
@@ -258,12 +258,12 @@ def classify_topic_hybrid(
                 if routing_path is not None:
                     routing_path.append(f"hybrid Mistral-router label={topic}")
                 logger.info(
-                    f"[hybrid_router] '{query[:60]}' -> {topic} (Mistral router, raw={decoded!r})"
+                    f"[hybrid_router] fp={query_fingerprint(query)} -> {topic} (Mistral router, raw={decoded!r})"
                 )
                 return topic
             logger.warning(
                 f"[hybrid_router] Mistral router gave unparseable output {decoded!r} "
-                f"for '{query[:60]}' -- using semantic top label"
+                f"for fp={query_fingerprint(query)} -- using semantic top label"
             )
         except Exception as exc:
             logger.warning(

@@ -30,7 +30,7 @@ import uuid
 import asyncio
 import logging
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Literal, AsyncGenerator
 
@@ -54,6 +54,7 @@ from pipeline.classifier import (
     next_query_id,
     store_trace,
 )
+from pipeline.memory import query_fingerprint
 from core.runtime_lock import RuntimeLock, RuntimeLockError
 import config
 from core.orchestrator import get_assistant_service
@@ -230,7 +231,7 @@ async def _resolve_topic(req: "ChatRequest") -> tuple[str, str]:
     pending = _session_pending.get(req.session_id, []) if req.session_id else []
     if pending and get_assistant_service().selection_re.match(req.question.strip()):
         log.info(
-            f"[routing] '{req.question[:40]}' -> cos "
+            f"[routing] fp={query_fingerprint(req.question)} -> cos "
             f"(pending COS selection for session, overriding auto-classify)"
         )
         return "cos", "pending COS selection"
@@ -565,17 +566,24 @@ async def feedback(req: FeedbackRequest) -> dict[str, str]:
         # The trace was evicted (bounded SESSION_TRACES cache, or a server
         # restart) -- still record the feedback signal itself rather than
         # silently dropping it, just without the metadata a trace would add.
-        for sink in _evaluation_service.sinks:
-            sink.record(EvaluationEvent(
-                event_id=str(uuid.uuid4()),
-                timestamp_utc=datetime.now().isoformat(timespec="seconds"),
-                query_id=req.query_id,
-                session_hash=session_hash(req.session_id),
-                activity="ask",
-                source_mode="",
-                feedback=req.reaction,
-                feedback_comment=req.comment,
-            ))
+        # Task 45 (external review 2026-10-08): this used to loop over
+        # _evaluation_service.sinks and call sink.record() directly, which
+        # skipped record_trace()/record_event()'s per-sink try/except --
+        # a broken sink here would have turned this feedback submission
+        # into an unhandled exception instead of a logged, isolated
+        # failure. It also stamped a naive (non-UTC) timestamp while every
+        # other EvaluationEvent uses an explicit UTC offset. Both fixed by
+        # routing through the same record_event() the normal path uses.
+        _evaluation_service.record_event(EvaluationEvent(
+            event_id=str(uuid.uuid4()),
+            timestamp_utc=datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            query_id=req.query_id,
+            session_hash=session_hash(req.session_id),
+            activity="ask",
+            source_mode="",
+            feedback=req.reaction,
+            feedback_comment=req.comment,
+        ))
 
     return {"status": "ok"}
 
