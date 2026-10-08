@@ -25,6 +25,7 @@ those domains; otherwise fallback routing is GENERAL_AUM or GENERAL.
 """
 
 import re
+from collections import deque
 from dataclasses import dataclass, field
 from typing import List, Dict, Any, Optional
 
@@ -132,7 +133,13 @@ class QueryTrace:
 
 
 # ── Session trace store (backend.py:288-297) ─────────────────────────
-SESSION_TRACES: List[QueryTrace] = []
+# Task 38 (external review, workspace.md Entry 055): this was an unbounded
+# list for the life of the process. Bounded to the most recent 500 traces --
+# enough for the Gradio debug inspector and the /api/feedback lookup window
+# (a user flags a response shortly after seeing it, not hours later), while
+# capping memory growth. Long-term evaluation persistence belongs to
+# EvaluationService (evaluation/service.py), not this in-memory cache.
+SESSION_TRACES: "deque[QueryTrace]" = deque(maxlen=500)
 
 def get_trace(query_id: str) -> Optional[QueryTrace]:
     for t in reversed(SESSION_TRACES):

@@ -30,7 +30,6 @@ import uuid
 import asyncio
 import logging
 import json
-from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
 from typing import Literal, AsyncGenerator
@@ -58,11 +57,23 @@ from pipeline.classifier import (
 from core.runtime_lock import RuntimeLock, RuntimeLockError
 import config
 from core.orchestrator import get_assistant_service
+from evaluation.schemas import EvaluationEvent
+from evaluation.sanitizer import session_hash
+from evaluation.service import EvaluationService
+from evaluation.sinks.local_dev import LocalDevSink
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("aum_api")
 
 PIPELINE_READY = True
+
+# Task 38 (external review, workspace.md Entry 055): LocalDevSink is the
+# production sink too until Task 39 adds a remote one -- same mechanism,
+# sanitized and bounded instead of a raw asdict(QueryTrace) dump. Swapping
+# in a remote sink later means changing this constructor, not any call site.
+_evaluation_service = EvaluationService(
+    sinks=[LocalDevSink(Path(config.LOG_DIR) / "evaluation_events.jsonl")]
+)
 
 
 class ChatRequest(BaseModel):
@@ -514,7 +525,20 @@ async def ask_stream(req: ChatRequest) -> StreamingResponse:
 
 @app.post("/api/feedback")
 async def feedback(req: FeedbackRequest) -> dict[str, str]:
-    """Append self-contained response-feedback records without losing partial reports."""
+    """Record sanitized evaluation events for the flagged response(s).
+
+    Task 38 (external review, workspace.md Entry 055): this used to persist
+    a raw asdict(QueryTrace) per resolved query_id -- including the full
+    prompt and raw model output, unredacted for every path except the
+    document/quiz ones that already redact -- into logs/feedback.jsonl on
+    local disk. Every event now goes through EvaluationService's sanitizer
+    instead: metadata only by default, with query/answer text retained only
+    because this specific flow is the user's own explicit, consented
+    feedback submission (Task 21/23's existing consent UI), never for
+    passive telemetry. The raw client-side conversation payload is
+    deliberately no longer persisted at all -- it was never on the
+    allowlist and isn't needed to review one flagged exchange.
+    """
     trace_ids = [req.query_id]
     if req.scope == "conversation" and req.conversation:
         trace_ids.extend(
@@ -522,32 +546,36 @@ async def feedback(req: FeedbackRequest) -> dict[str, str]:
             if isinstance(message, dict) and message.get("query_id")
         )
 
-    traces = []
     seen = set()
+    recorded_any = False
     for query_id in trace_ids:
-        if query_id in seen:
+        if not query_id or query_id in seen:
             continue
         seen.add(query_id)
         trace = get_trace(query_id)
         if trace is not None:
-            traces.append(asdict(trace))
+            _evaluation_service.record_trace(
+                trace, activity="ask", session_id=req.session_id,
+                feedback=req.reaction, feedback_comment=req.comment,
+                include_text=True,
+            )
+            recorded_any = True
 
-    record = {
-        "timestamp": datetime.now().isoformat(timespec="seconds"),
-        "reaction": req.reaction,
-        "scope": req.scope,
-        "session_id": req.session_id,
-        "comment": req.comment,
-        "flagged_query_id": req.query_id,
-        "traces": traces,
-        # Preserve client context when traces were evicted on server restart,
-        # or when the user selected conversation scope.
-        "conversation": req.conversation if req.scope == "conversation" else None,
-    }
-    feedback_path = Path(config.LOG_DIR) / "feedback.jsonl"
-    feedback_path.parent.mkdir(parents=True, exist_ok=True)
-    with feedback_path.open("a", encoding="utf-8") as feedback_file:
-        feedback_file.write(json.dumps(record, ensure_ascii=False) + "\n")
+    if not recorded_any:
+        # The trace was evicted (bounded SESSION_TRACES cache, or a server
+        # restart) -- still record the feedback signal itself rather than
+        # silently dropping it, just without the metadata a trace would add.
+        for sink in _evaluation_service.sinks:
+            sink.record(EvaluationEvent(
+                event_id=str(uuid.uuid4()),
+                timestamp_utc=datetime.now().isoformat(timespec="seconds"),
+                query_id=req.query_id,
+                session_hash=session_hash(req.session_id),
+                activity="ask",
+                source_mode="",
+                feedback=req.reaction,
+                feedback_comment=req.comment,
+            ))
 
     return {"status": "ok"}
 
