@@ -406,6 +406,19 @@ def _classify_topic_llm(query: str, llm_tok, llm_model) -> str:
     return llm_tok.decode(new_tokens, skip_special_tokens=True).strip().lower()
 
 
+_TOPIC_LABELS = {"general_aum", "out_of_scope", "housing", "general", "cos"}
+
+
+def parse_topic_label(decoded: str) -> str | None:
+    """Pull one of the five routing labels out of raw Mistral router output.
+
+    Extracted out of classify_topic() (TASK 42) so pipeline/semantic_router.py's
+    hybrid mode can reuse the exact same parsing rather than a second regex
+    that could silently drift from this one."""
+    match = re.search(r"\b(general_aum|out_of_scope|housing|general|cos)\b", decoded)
+    return match.group(1) if match else None
+
+
 def _classify_topic_fallback(query: str, embedder, cos_index, H_index, housing_ok: bool) -> str:
     """Conservative fallback: retain AUM routes, otherwise answer generally."""
     tokens = set(re.findall(r"[a-z]+", query.lower()))
@@ -445,9 +458,7 @@ def classify_topic(query: str, embedder, cos_index, H_index, housing_ok: bool,
     if llm_tok is not None and llm_model is not None:
         try:
             decoded = _classify_topic_llm(query, llm_tok, llm_model)
-            labels = {"general_aum", "out_of_scope", "housing", "general", "cos"}
-            match = re.search(r"\b(general_aum|out_of_scope|housing|general|cos)\b", decoded)
-            topic = match.group(1) if match else ""
+            topic = parse_topic_label(decoded) or ""
             if topic == "general_aum" and not _has_reliable_aum_evidence(query):
                 logger.info("[classify_topic] GENERAL_AUM rejected without AUM evidence")
                 if routing_path is not None:
@@ -455,7 +466,7 @@ def classify_topic(query: str, embedder, cos_index, H_index, housing_ok: bool,
                 topic = "general"
             elif topic and routing_path is not None:
                 routing_path.append(f"Mistral-router label={topic}")
-            if topic in labels:
+            if topic in _TOPIC_LABELS:
                 logger.info(
                     f"[classify_topic] '{query[:60]}' -> {topic} "
                     f"(Mistral router, raw={decoded!r})"

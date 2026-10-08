@@ -33,6 +33,7 @@ from pipeline.classifier import (
 from pipeline.memory import logger
 from pipeline.quiz import generate_quiz
 from pipeline.retrieval import retrieve_cos_rrf, retrieve_housing_logged
+from pipeline.semantic_router import classify_topic_hybrid, classify_topic_semantic
 
 _DOCUMENT_INSUFFICIENT_EVIDENCE = (
     "I could not find enough information in the uploaded document to answer that."
@@ -73,7 +74,17 @@ class AssistantService:
         self.documents.delete(document_id, session_id)
 
     def classify_topic(self, question: str, routing_path: list[str] | None = None) -> str:
+        """Dispatches on config.AUM_ROUTER (Task 42). Default "legacy" is
+        unchanged production behavior; "semantic" and "hybrid" are measured
+        alternatives -- see the TASK 42 benchmark results log entry before
+        ever changing the default."""
         r = self.runtime
+        if config.AUM_ROUTER == "semantic":
+            return classify_topic_semantic(question, r.embedder, routing_path)
+        if config.AUM_ROUTER == "hybrid":
+            return classify_topic_hybrid(
+                question, r.embedder, r.llm_tok, r.llm_model, routing_path,
+            )
         return classify_topic(
             question, r.embedder, r.cos_index, r.housing_index, r.housing_ok,
             r.llm_tok, r.llm_model, routing_path,

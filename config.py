@@ -78,6 +78,17 @@ HOUSING_EVIDENCE_SCORE_FLOOR = 0.35
 # with the labeled-dataset work (Task 42), not an anecdotal guess.
 DOCUMENT_EVIDENCE_SCORE_FLOOR = 0.35
 
+# ---- Routing architecture (Task 42, external review 2026-10-07) ----
+# "legacy" is today's production router (classify_topic() in
+# pipeline/classifier.py: hardcoded person override -> Mistral 5-way
+# router -> keyword/embedding fallback). "semantic" and "hybrid"
+# (pipeline/semantic_router.py) are measured alternatives, not yet
+# recommended for production -- see the TASK 42 benchmark results log
+# entry in workspace.md before ever changing this default.
+AUM_ROUTER = os.environ.get("AUM_ROUTER", "legacy").strip().lower()
+if AUM_ROUTER not in ("legacy", "semantic", "hybrid"):
+    AUM_ROUTER = "legacy"
+
 # ---- NOT FOUND IN backend.py ----
 # No RAM-checking logic exists anywhere in the ~2227-line source file
 # (verified by a full read, not just grep). Left as None rather than an
