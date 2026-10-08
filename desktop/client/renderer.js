@@ -711,6 +711,7 @@ function labelForTopic(topic, pending) {
   if (topic === 'general') return 'Open-ended · Mistral';
   if (topic === 'open_ended_disabled') return 'Grounded AUM mode';
   if (topic === 'document') return 'Your document';
+  if (topic === 'quiz_unavailable') return 'Quiz needs a source';
   return 'AUM Chatbot';
 }
 
@@ -761,15 +762,35 @@ composer.addEventListener('submit', async (e) => {
       messagesEl.scrollTop = messagesEl.scrollHeight;
     });
 
-    pendingCard.classList.remove('pending');
-    pendingCard.classList.add(`topic-${data.topic_used}`);
-    pendingCard.querySelector('.card-meta').textContent = labelForTopic(data.topic_used, false);
-    pendingCard.lastChild.textContent = streamedAnswer;
-    addReactionControls(pendingCard, data.query_id);
+    if (data.kind === 'quiz') {
+      // Task 53: a natural-language quiz request ("generate 5 MCQs on
+      // X") typed into ordinary chat now reaches the same structured
+      // generator the Quiz button uses -- render it the same way, not as
+      // streamed prose. The placeholder "Generating your quiz…" delta
+      // (server/api_server.py:ask_stream) was only ever meant to show
+      // progress; drop it rather than leaving it as a stray bot bubble.
+      pendingCard.remove();
+      renderQuizCard(data.quiz, data.source_mode);
+      // Known scope cut for this pass (see workspace.md TASK 53): a
+      // chat-originated quiz renders live but is stored here only as a
+      // text summary, not as a reloadable interactive quiz -- reopening
+      // this chat later will show this line, not the quiz itself.
+      activeChat.messages.push({
+        who: 'bot',
+        text: `Generated a ${data.quiz.questions.length}-question quiz: "${data.quiz.title}"`,
+        topic: 'quiz', query_id: null,
+      });
+    } else {
+      pendingCard.classList.remove('pending');
+      pendingCard.classList.add(`topic-${data.topic_used}`);
+      pendingCard.querySelector('.card-meta').textContent = labelForTopic(data.topic_used, false);
+      pendingCard.lastChild.textContent = streamedAnswer;
+      addReactionControls(pendingCard, data.query_id);
 
-    activeChat.messages.push({
-      who: 'bot', text: streamedAnswer, topic: data.topic_used, query_id: data.query_id || null,
-    });
+      activeChat.messages.push({
+        who: 'bot', text: streamedAnswer, topic: data.topic_used, query_id: data.query_id || null,
+      });
+    }
   } catch (err) {
     const errText = `Couldn't reach the server (${err.message}). Please try again in a moment.`;
     pendingCard.classList.remove('pending');

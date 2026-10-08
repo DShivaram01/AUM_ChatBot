@@ -55,6 +55,7 @@ from pipeline.classifier import (
     store_trace,
 )
 from pipeline.memory import query_fingerprint
+from pipeline.quiz_intent import detect_quiz_intent, resolve_quiz_source
 from core.runtime_lock import RuntimeLock, RuntimeLockError
 import config
 from core.orchestrator import get_assistant_service
@@ -89,10 +90,22 @@ class ChatResponse(BaseModel):
     topic_used: Literal[
         "cos", "housing", "general_aum", "general",
         "open_ended_disabled", "out_of_scope", "document",
+        # Task 53: a natural-language quiz request detected in ordinary
+        # chat (e.g. "generate 5 MCQs on X") now reaches the same
+        # AssistantService.quiz() pipeline the Quiz button already uses,
+        # instead of general_chat()'s unstructured free-text answer --
+        # see pipeline/quiz_intent.py and workspace.md TASK 53/Entry 063.
+        "quiz", "quiz_unavailable",
     ]
     query_id: str
     sources: list[str] = []
     latency_ms: int
+    # Populated only when topic_used == "quiz": the same {"title", "questions"}
+    # shape /api/quiz already returns, so the client's existing quiz-card
+    # renderer needs no changes to its input shape.
+    kind: Literal["answer", "quiz"] = "answer"
+    quiz: dict | None = None
+    source_mode: Literal["pretrained", "housing", "document"] | None = None
 
 
 class FeedbackRequest(BaseModel):
@@ -247,6 +260,54 @@ async def _resolve_topic(req: "ChatRequest") -> tuple[str, str]:
         log.info("[routing] general request held in grounded mode; Open-ended mode required")
         return "open_ended_disabled", routing_path + "; open-ended mode disabled"
     return inferred_topic, routing_path
+
+
+def _try_quiz_from_chat(req: "ChatRequest") -> dict | None:
+    """Task 53: detect a natural-language quiz request typed into ordinary
+    chat (e.g. "generate 5 MCQs on X") and run it through the exact same
+    AssistantService.quiz() pipeline the Quiz button already uses, instead
+    of letting it fall through to general_chat()'s unstructured free-text
+    answer -- this was the user's own original bug report (Task 52 log
+    entry). Quiz is an activity orthogonal to topic/domain routing (see
+    pipeline/quiz.py's own module docstring), so this check runs BEFORE
+    _resolve_topic() entirely, exactly like that function's own
+    document/explicit-topic checks run before auto-classification.
+
+    Returns None if this isn't a quiz request (caller falls through to its
+    normal routing). Otherwise returns a dict with ChatResponse-shaped
+    fields ready to return as-is (success, "no source" guidance, or a
+    generation failure -- all surfaced as a normal 200 answer, same
+    pattern as _non_retrieval_answer's canned responses, not an
+    HTTPException the chat UI has no friendly way to display).
+    """
+    has_document = bool(req.document_ids)
+    intent = detect_quiz_intent(req.question, has_attached_document=has_document)
+    if intent.activity != "quiz_create":
+        return None
+
+    source_mode, error = resolve_quiz_source(
+        intent.topic, has_attached_document=has_document,
+        # The client sends topic="general" for a message typed with the
+        # Open-ended toggle on -- the same signal _resolve_topic() already
+        # trusts for GENERAL's own opt-in gate, reused here rather than
+        # inventing a second one.
+        open_ended_enabled=(req.topic == "general"),
+    )
+    if error:
+        return {"answer": error, "topic_used": "quiz_unavailable", "kind": "answer", "quiz": None}
+
+    result = get_assistant_service().quiz(
+        intent.topic, intent.count, source_mode, req.document_ids, req.session_id,
+    )
+    if "error" in result:
+        return {
+            "answer": result["error"], "topic_used": "quiz_unavailable",
+            "kind": "answer", "quiz": None,
+        }
+    return {
+        "answer": "", "topic_used": "quiz", "kind": "quiz", "quiz": result["quiz"],
+        "source_mode": source_mode,
+    }
 
 
 def _run_chat_sync(
@@ -457,6 +518,15 @@ async def ask(req: ChatRequest) -> ChatResponse:
     start = time.time()
 
     async with _generate_lock:
+        quiz_result = await asyncio.to_thread(_try_quiz_from_chat, req)
+        if quiz_result is not None:
+            return ChatResponse(
+                answer=quiz_result["answer"], topic_used=quiz_result["topic_used"],
+                query_id="", sources=[], kind=quiz_result["kind"], quiz=quiz_result["quiz"],
+                source_mode=quiz_result.get("source_mode"),
+                latency_ms=int((time.time() - start) * 1000),
+            )
+
         topic_used, routing_path = await _resolve_topic(req)
         answer, query_id = await asyncio.to_thread(
             _run_chat_sync, topic_used, req.question, req.session_id, routing_path,
@@ -482,6 +552,31 @@ async def ask_stream(req: ChatRequest) -> StreamingResponse:
 
     async def token_stream() -> AsyncGenerator[str, None]:
         async with _generate_lock:
+            # Task 53: quiz is an activity check that runs before topic
+            # routing, same as _resolve_topic()'s own document/explicit-
+            # topic checks -- see _try_quiz_from_chat's own docstring.
+            # Quiz generation makes several sequential model calls
+            # internally (pipeline/quiz.py, one per question) with no
+            # meaningful per-token stream of its own, so this yields one
+            # placeholder delta rather than faking a token stream, then
+            # replaces it client-side once the "done" event's quiz payload
+            # arrives (see desktop/client/renderer.js).
+            quiz_result = await asyncio.to_thread(_try_quiz_from_chat, req)
+            if quiz_result is not None:
+                if quiz_result["kind"] == "quiz":
+                    yield _sse_event("Generating your quiz…")
+                else:
+                    yield _sse_event(quiz_result["answer"])
+                yield _sse_event(
+                    json.dumps({
+                        "query_id": "", "topic_used": quiz_result["topic_used"],
+                        "kind": quiz_result["kind"], "quiz": quiz_result["quiz"],
+                        "source_mode": quiz_result.get("source_mode"),
+                    }),
+                    event="done",
+                )
+                return
+
             topic_used, routing_path = await _resolve_topic(req)
 
             import queue
