@@ -22,10 +22,23 @@ import json
 import re
 
 from pipeline.answer import generate_streaming
-from pipeline.memory import logger
+from pipeline.memory import logger, query_fingerprint
 
 REQUIRED_OPTIONS = 4
 _MAX_ATTEMPTS_PER_QUESTION = 2  # one real attempt + one retry with feedback
+# Housing/document grounding can hand generate_quiz() up to 6 full chunks
+# (each up to ~400 tokens / ~1600-2000 chars -- see structured_chunks()'s
+# own max_tokens=400). Joined untruncated, that routinely produced a
+# prompt well past generate_streaming()'s MAX_CHARS safety net (3200),
+# which truncates by blindly slicing the END of the assembled prompt --
+# silently deleting the closing "[/INST]" tag along with most of the
+# context. The model then had no instruction to respond to at all and
+# just continued the context text instead of generating a question (found
+# via a real user's quiz failures, Task 52). Capping each chunk's
+# contribution here keeps the assembled context comfortably under that
+# limit for the realistic 1-6 chunk range, so truncation essentially never
+# has to fire for quiz prompts in the first place.
+_MAX_CONTEXT_CHARS_PER_CHUNK = 500
 
 _KEY_CANONICAL = {
     "title": "title",
@@ -245,7 +258,9 @@ def generate_quiz(
     failure (never a malformed quiz)."""
     context_chunks = context_chunks or []
     evidence_map = evidence_map or {}
-    context = "\n\n---\n\n".join(f"[{i}] {c}" for i, c in enumerate(context_chunks, 1))
+    context = "\n\n---\n\n".join(
+        f"[{i}] {c[:_MAX_CONTEXT_CHARS_PER_CHUNK]}" for i, c in enumerate(context_chunks, 1)
+    )
 
     questions: list[dict] = []
     seen_texts: list[str] = []
@@ -258,15 +273,34 @@ def generate_quiz(
             full = ""
             for partial in generate_streaming(
                 prompt, llm_tok, llm_model,
-                query_id=f"{query_id}-q{q_num}a{attempt}", max_new_tokens=220,
+                # 220 was too tight for subjects whose correct JSON needs
+                # long option text (e.g. amino-acid sequences for a
+                # "protein sequences" quiz) -- the model ran out of budget
+                # before closing the JSON object and every attempt failed
+                # to parse (Task 52, found via a real user report). Every
+                # other generation call in this codebase already uses
+                # 350-550; 320 is a smaller, quiz-appropriate raise, not a
+                # match to those longer free-form answers.
+                query_id=f"{query_id}-q{q_num}a{attempt}", max_new_tokens=320,
             ):
                 full = partial
             try:
                 data = _extract_json(full)
             except (ValueError, json.JSONDecodeError) as exc:
                 last_errors = [f"could not parse model output as JSON: {exc}"]
+                # Used to log raw=full[:300] -- a real privacy gap, not
+                # just a style nit: for a grounded (housing/document)
+                # quiz, the model's own output can echo back retrieved
+                # context verbatim when it fails to follow the JSON
+                # instruction (observed directly: a real failure dumped
+                # 300 chars of retrieved Housing policy table-of-contents
+                # text into this exact log line). A document-mode failure
+                # could do the same with a student's own uploaded content.
+                # output_fp lets repeated identical failures still be
+                # correlated without ever persisting what was generated.
                 logger.warning(
-                    f"[{query_id}] Quiz q{q_num} attempt {attempt} unparseable: {exc}; raw={full[:300]!r}"
+                    f"[{query_id}] Quiz q{q_num} attempt {attempt} unparseable: {exc}; "
+                    f"output_len={len(full)} output_fp={query_fingerprint(full)}"
                 )
                 feedback = last_errors[0]
                 continue
@@ -281,7 +315,20 @@ def generate_quiz(
                 # type already coerced and tried in _finalize_question) --
                 # don't silently ship an ungrounded "grounded" question.
                 if require_evidence and not finalized["evidence_ids"]:
-                    q_errors = ["evidence_refs did not match any retrieved context number"]
+                    # Found via a real single-chunk document quiz failure
+                    # (Task 52): the model cited evidence_refs:[3] when
+                    # only context [1] existed -- plausibly confusing a
+                    # numbered section *inside* the chunk's own text with
+                    # our [N] context-reference convention. Naming the
+                    # actual valid numbers in the retry feedback (instead
+                    # of a generic "didn't match") gives the model a
+                    # concrete correction to act on rather than having to
+                    # guess again.
+                    valid_refs = sorted(evidence_map.keys())
+                    q_errors = [
+                        f"evidence_refs did not match any retrieved context number "
+                        f"(valid context numbers are {valid_refs})"
+                    ]
                 else:
                     accepted = (data, finalized)
                     break

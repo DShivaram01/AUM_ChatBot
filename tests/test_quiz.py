@@ -6,7 +6,7 @@ import numpy as np
 
 from core.assistant_service import AssistantService
 from core.runtime_manager import RuntimeManager
-from pipeline.quiz import _extract_json, _finalize_question, _validate
+from pipeline.quiz import _MAX_CONTEXT_CHARS_PER_CHUNK, _extract_json, _finalize_question, _validate, generate_quiz
 
 
 class WordOverlapEmbedder:
@@ -99,6 +99,44 @@ def test_quiz_pretrained_mode_needs_no_evidence_and_succeeds():
     assert call_count["n"] == 3  # one model call per question, not one call for the whole quiz
     assert len(result["quiz"]["questions"]) == 3
     assert all(q["evidence_ids"] == [] for q in result["quiz"]["questions"])
+
+
+def test_generate_quiz_caps_each_context_chunk_so_prompt_stays_well_under_truncation_limit():
+    """Task 52: housing/document grounding can hand generate_quiz() up to 6
+    full chunks (each up to ~400 tokens). Joined untruncated, that
+    routinely exceeded generate_streaming()'s prompt-length safety net and
+    silently destroyed the prompt's closing instruction tag. Confirm the
+    assembled prompt never contains an unbounded chunk, regardless of how
+    long the retrieved chunk text actually is."""
+    import pipeline.quiz as quiz_module
+    real_generate_streaming = quiz_module.generate_streaming
+    seen_prompts = []
+
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300):
+        seen_prompts.append(prompt)
+        yield _fake_single_question_response(1, evidence_refs=[1])
+
+    long_chunk = "word " * 2000  # far longer than _MAX_CONTEXT_CHARS_PER_CHUNK
+    quiz_module.generate_streaming = fake_generate_streaming
+    try:
+        quiz, errors = generate_quiz(
+            "guest policy", 1, None, None, "Q1",
+            context_chunks=[long_chunk] * 6,
+            evidence_map={i: f"chk_{i}" for i in range(1, 7)},
+            require_evidence=True,
+        )
+    finally:
+        quiz_module.generate_streaming = real_generate_streaming
+    assert errors == [], errors
+    assert len(seen_prompts) == 1
+    prompt = seen_prompts[0]
+    # Each of the 6 chunks must have been capped, not passed through whole.
+    assert len(long_chunk) > _MAX_CONTEXT_CHARS_PER_CHUNK * 6  # sanity on the fixture itself
+    for marker in ("[1]", "[2]", "[3]", "[4]", "[5]", "[6]"):
+        idx = prompt.index(marker)
+        next_marker_idx = prompt.find("[", idx + 1)
+        segment = prompt[idx:next_marker_idx] if next_marker_idx != -1 else prompt[idx:]
+        assert len(segment) < _MAX_CONTEXT_CHARS_PER_CHUNK + len(marker) + 20
 
 
 def test_quiz_document_mode_requires_attached_document():

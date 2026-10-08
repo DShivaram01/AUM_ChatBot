@@ -57,15 +57,45 @@ def _relative_threshold(cands, top_n=10, absolute_floor=EVIDENCE_SCORE_FLOOR):
 
 # ── LLM streaming generation (backend.py:1041-1101) ────────────────────
 
+_PROMPT_MAX_CHARS = 3200
+
+
+def _truncate_prompt(prompt: str, max_chars: int = _PROMPT_MAX_CHARS) -> str:
+    """Enforce a hard ceiling on prompt length without breaking the
+    prompt's own structure.
+
+    Every prompt this app builds ends in the Mistral instruction closer
+    "[/INST]". The original version of this function just sliced
+    prompt[:max_chars] -- fine for a short prompt, but for anything long
+    enough to actually need truncating, slicing from the end deletes that
+    closing tag along with most of whatever came before it (the <context>
+    block, in every real case). The model then has no instruction left to
+    respond to at all, and -- observed for real -- just continues the
+    now-truncated context text instead of generating an answer. Found via
+    a real quiz failure (Task 52): grounded quiz prompts with several
+    retrieved chunks routinely exceeded this limit, and every single one
+    silently lost its "[/INST]" this way. Preserve the tag: keep the head,
+    drop from the middle, and always end on "[/INST]" when the prompt has
+    one; fall back to the simple slice only if it doesn't (shouldn't
+    happen with this app's own prompt templates, but this function has no
+    way to enforce that from the caller's side)."""
+    if len(prompt) <= max_chars:
+        return prompt
+    tail = "[/INST]"
+    if prompt.endswith(tail):
+        return prompt[: max_chars - len(tail)] + tail
+    return prompt[:max_chars]
+
+
 def generate_streaming(
     prompt, tokenizer, model,
     query_id="Q", max_new_tokens=300,
     trace: QueryTrace = None,
 ):
-    MAX_CHARS = 3200
+    MAX_CHARS = _PROMPT_MAX_CHARS
     if len(prompt) > MAX_CHARS:
-        prompt = prompt[:MAX_CHARS]
-        logger.warning(f"[{query_id}] Prompt truncated to {MAX_CHARS} chars")
+        prompt = _truncate_prompt(prompt, MAX_CHARS)
+        logger.warning(f"[{query_id}] Prompt truncated to {MAX_CHARS} chars (closing tag preserved)")
 
     if trace:
         trace.full_prompt   = prompt
