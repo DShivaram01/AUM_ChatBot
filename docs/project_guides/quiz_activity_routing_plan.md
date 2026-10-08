@@ -1,9 +1,9 @@
 # Quiz as a cross-entry-point activity — design & implementation record
 
 **Date:** 2026-10-08
-**Status:** Phase 1-2 DONE and verified live (this document); Phase 3-4 NOT started (see Scope cuts below)
+**Status:** Phase 1-2 DONE and verified live (this document); COS quiz support CANCELLED (not deferred -- Entry 064); the Quiz button and `/api/quiz` endpoint this document originally described as one of two entry points were REMOVED in a later same-day entry (Task 55) -- natural-language intent detection is now the only way to reach quiz generation. Sections below describing the button are historical (accurate as of when they were written); see the postscript at the end of this document.
 **Origin:** `AUM_CHATBOT_INTELLIGENT_QUIZ_ROUTING_AND_RELIABILITY_PLAN_2026-10-08.md` (uploaded design proposal, validated against the codebase before any of this was built) + the user's direct bug report that motivated it: "I wasnt able to generate quiz using quiz button... when i tried open ended mode and just asked a query to generate 5 mcqs on a subject, it gave me 5 questions with options but unstructured."
-**Tracking:** `workspace.md` TASK 52 (the underlying generation bug, fixed first) and TASK 53 (this feature), Entries 062-063.
+**Tracking:** `workspace.md` TASK 52 (the underlying generation bug, fixed first), TASK 53 (this feature), and TASK 55 (button removal), Entries 062-065.
 
 ## 1. Problem
 
@@ -81,3 +81,11 @@ Everything below is from the source plan's Phases 2-4 and was **not** built in t
 - **Persisting a chat-originated quiz as reloadable/interactive.** It renders live and correctly, but `activeChat.messages` stores only a text summary for it today; reopening a saved chat later will show that summary line, not the interactive quiz. Flagged directly in the client code where this happens.
 
 None of these block what was built: a user can now get a real, structured, validated quiz by typing a natural request into chat, from pretrained knowledge, Housing policy, or an attached document, exactly as reliably as using the Quiz button -- which was the actual bug report this work started from.
+
+## 6. Postscript (2026-10-08, same day): the button is gone
+
+Direct user instruction: "remove the quiz button, and solely focus on the intent recognition from query as we discussed." Removed the Quiz button/modal from `desktop/client/index.html` and `desktop/client/renderer.js`, and the `/api/quiz` endpoint + `QuizRequest` model from `server/api_server.py` (confirmed via grep that nothing else called it -- the Gradio debug UI never touched quiz at all). `AssistantService.quiz()` is now reached exclusively through `pipeline/quiz_intent.py`'s detection, via `_try_quiz_from_chat()`/`_try_quiz_followup_from_chat()`. `renderQuizCard()` and `QUIZ_SOURCE_LABELS` were kept -- they're still what renders a chat-originated quiz.
+
+Also per the same conversation: COS quiz support (Section 3's "Combined-source mode" row and the plan's own COS example) is cancelled outright, not deferred -- "Students will only ask for quiz from uploaded documents or pretrained data." `resolve_quiz_source()` already never routed to COS, so no code change was needed there; it's now documented as permanent behavior rather than a placeholder.
+
+Verified live after removal: `POST /api/quiz` returns 404; a natural-language quiz request through `/api/ask` still works end-to-end against the real model. Full detail in `workspace.md` TASK 55 / Entry 065.

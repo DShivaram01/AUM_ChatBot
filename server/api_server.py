@@ -92,18 +92,18 @@ class ChatResponse(BaseModel):
         "cos", "housing", "general_aum", "general",
         "open_ended_disabled", "out_of_scope", "document",
         # Task 53: a natural-language quiz request detected in ordinary
-        # chat (e.g. "generate 5 MCQs on X") now reaches the same
-        # AssistantService.quiz() pipeline the Quiz button already uses,
-        # instead of general_chat()'s unstructured free-text answer --
-        # see pipeline/quiz_intent.py and workspace.md TASK 53/Entry 063.
+        # chat (e.g. "generate 5 MCQs on X") is the ONLY way to reach
+        # AssistantService.quiz() now (Task 55 removed the Quiz button and
+        # its dedicated /api/quiz endpoint) -- see pipeline/quiz_intent.py
+        # and workspace.md TASK 53/55.
         "quiz", "quiz_unavailable",
     ]
     query_id: str
     sources: list[str] = []
     latency_ms: int
     # Populated only when topic_used == "quiz": the same {"title", "questions"}
-    # shape /api/quiz already returns, so the client's existing quiz-card
-    # renderer needs no changes to its input shape.
+    # shape AssistantService.quiz() returns, so the client's existing
+    # quiz-card renderer needs no changes to its input shape.
     kind: Literal["answer", "quiz"] = "answer"
     quiz: dict | None = None
     source_mode: Literal["pretrained", "housing", "document"] | None = None
@@ -118,12 +118,11 @@ class FeedbackRequest(BaseModel):
     conversation: list[dict] | None = None
 
 
-class QuizRequest(BaseModel):
-    topic: str
-    count: int = 10
-    source_mode: Literal["pretrained", "housing", "document"] = "pretrained"
-    document_ids: list[str] | None = None
-    session_id: str | None = None
+# QuizRequest / POST /api/quiz removed (Task 55): the Quiz button is gone
+# from the client -- AssistantService.quiz() is now reached only through
+# natural-language intent detection in chat (pipeline/quiz_intent.py,
+# _try_quiz_from_chat/_try_quiz_followup_from_chat below). Nothing else
+# called this endpoint (confirmed by grep before removing it).
 
 
 # ---------------------------------------------------------------------------
@@ -314,15 +313,17 @@ async def _resolve_topic(req: "ChatRequest") -> tuple[str, str]:
 
 
 def _try_quiz_from_chat(req: "ChatRequest") -> dict | None:
-    """Task 53: detect a natural-language quiz request typed into ordinary
-    chat (e.g. "generate 5 MCQs on X") and run it through the exact same
-    AssistantService.quiz() pipeline the Quiz button already uses, instead
-    of letting it fall through to general_chat()'s unstructured free-text
-    answer -- this was the user's own original bug report (Task 52 log
-    entry). Quiz is an activity orthogonal to topic/domain routing (see
-    pipeline/quiz.py's own module docstring), so this check runs BEFORE
-    _resolve_topic() entirely, exactly like that function's own
-    document/explicit-topic checks run before auto-classification.
+    """Task 53 (and Task 55: this is now the ONLY entry point into quiz
+    generation, the dedicated Quiz button/modal and /api/quiz endpoint
+    having been removed): detect a natural-language quiz request typed
+    into ordinary chat (e.g. "generate 5 MCQs on X") and run it through
+    AssistantService.quiz(), instead of letting it fall through to
+    general_chat()'s unstructured free-text answer -- this was the user's
+    own original bug report (Task 52 log entry). Quiz is an activity
+    orthogonal to topic/domain routing (see pipeline/quiz.py's own module
+    docstring), so this check runs BEFORE _resolve_topic() entirely,
+    exactly like that function's own document/explicit-topic checks run
+    before auto-classification.
 
     Returns None if this isn't a quiz request (caller falls through to its
     normal routing). Otherwise returns a dict with ChatResponse-shaped
@@ -383,8 +384,10 @@ def _format_quiz_explanation(quiz: dict, question_number: int) -> str:
 
 def _try_quiz_followup_from_chat(req: "ChatRequest") -> dict | None:
     """Task 54: "explain question 3" and "try again"/"regenerate" for the
-    quiz most recently generated in this session (chat- or button-
-    originated -- both record into _session_last_quiz). Deliberately
+    quiz most recently generated in this session (records into
+    _session_last_quiz -- Task 55 removed the only other path that used
+    to write to this store, the Quiz button's /api/quiz endpoint, so
+    chat-originated generation is the sole writer now). Deliberately
     checked only when this session actually has a stored quiz to refer
     to; see detect_quiz_followup's own docstring for why that matters.
 
@@ -619,31 +622,6 @@ async def delete_document(document_id: str, session_id: str) -> dict[str, str]:
         return {"status": "deleted"}
     except (ValueError, KeyError, PermissionError) as exc:
         raise _document_error(exc) from exc
-
-@app.post("/api/quiz")
-async def quiz(req: QuizRequest) -> dict:
-    """Generate a validated MCQ quiz from one of three sources. A controlled
-    failure (HTTP 422) is returned instead of a malformed quiz when
-    generation/validation can't produce a valid result after one retry."""
-    if not _model_loaded:
-        raise HTTPException(503, "Models still loading, try again shortly.")
-
-    async with _generate_lock:
-        result = await asyncio.to_thread(
-            get_assistant_service().quiz,
-            req.topic, req.count, req.source_mode, req.document_ids, req.session_id,
-        )
-    if "error" in result:
-        raise HTTPException(422, result["error"])
-    # Task 54: remember this quiz so a chat follow-up ("explain question
-    # 3", "try again") after using the button has something to refer to --
-    # the button and natural-language paths share this one store.
-    _record_last_quiz(
-        req.session_id, result["quiz"], req.topic, req.count,
-        req.source_mode, req.document_ids,
-    )
-    return result
-
 
 @app.post("/api/ask", response_model=ChatResponse)
 async def ask(req: ChatRequest) -> ChatResponse:

@@ -1,9 +1,11 @@
-"""Task 53 Phase 1-2: a natural-language quiz request typed into ordinary
-chat (/api/ask, /api/ask/stream) must reach the same AssistantService.quiz()
-pipeline the Quiz button already uses, not an unstructured free-text
-answer. Integration-level (real FastAPI app via TestClient), with the LLM
-mocked exactly like tests/test_quiz.py already does -- this project's
-standing rule that default tests never load real model weights."""
+"""Task 53 Phase 1-2 (Task 55: now the ONLY way to reach quiz generation,
+the Quiz button and its /api/quiz endpoint having been removed): a
+natural-language quiz request typed into ordinary chat (/api/ask,
+/api/ask/stream) must reach AssistantService.quiz(), not an unstructured
+free-text answer. Integration-level (real FastAPI app via TestClient),
+with the LLM mocked exactly like tests/test_quiz.py already does -- this
+project's standing rule that default tests never load real model
+weights."""
 
 import json
 
@@ -187,26 +189,23 @@ def test_explain_question_followup_after_a_chat_originated_quiz():
     assert "because" in body["answer"]  # the stored explanation, looked up not regenerated
 
 
-def test_explain_question_followup_after_a_button_originated_quiz():
-    import pipeline.quiz as quiz_module
-    real_generate_streaming = quiz_module.generate_streaming
-    call_count = {"n": 0}
+def test_explain_question_followup_works_regardless_of_how_the_quiz_was_recorded():
+    # Task 55 removed the Quiz button and its dedicated /api/quiz endpoint
+    # -- chat-originated generation (_try_quiz_from_chat) is the only
+    # thing that calls _record_last_quiz() now. This still confirms the
+    # follow-up handler itself only cares about _session_last_quiz's
+    # contents, not which code path populated it -- a real property of
+    # the design worth keeping covered even with one fewer caller.
+    api_server._record_last_quiz(
+        "followup-test-2",
+        {"title": "Computational Biology Quiz", "questions": [
+            {"question_id": "q1", "question": "Question 1?", "options": ["A", "B", "C", "D"],
+             "correct_index": 1, "explanation": "because", "evidence_ids": []},
+        ]},
+        "computational biology", 1, "pretrained", None,
+    )
 
-    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300):
-        call_count["n"] += 1
-        yield _fake_single_question_response(call_count["n"])
-
-    quiz_module.generate_streaming = fake_generate_streaming
     client = TestClient(api_server.app)
-    try:
-        quiz_response = client.post("/api/quiz", json={
-            "topic": "computational biology", "count": 2, "source_mode": "pretrained",
-            "session_id": "followup-test-2",
-        })
-    finally:
-        quiz_module.generate_streaming = real_generate_streaming
-    assert quiz_response.status_code == 200, quiz_response.text
-
     response = client.post("/api/ask", json={
         "question": "why is question 1 correct?",
         "topic": "general", "session_id": "followup-test-2",

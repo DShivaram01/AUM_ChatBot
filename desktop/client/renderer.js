@@ -28,14 +28,6 @@ const attachmentRow = document.getElementById('attachmentRow');
 const attachmentChip = document.getElementById('attachmentChip');
 const removeAttachmentBtn = document.getElementById('removeAttachmentBtn');
 const attachmentStatus = document.getElementById('attachmentStatus');
-const quizBtn = document.getElementById('quizBtn');
-const quizModal = document.getElementById('quizModal');
-const quizTopicInput = document.getElementById('quizTopicInput');
-const quizCountInput = document.getElementById('quizCountInput');
-const quizSourceDocument = document.getElementById('quizSourceDocument');
-const quizStatus = document.getElementById('quizStatus');
-const quizCancel = document.getElementById('quizCancel');
-const quizGenerate = document.getElementById('quizGenerate');
 
 let pendingFeedback = null;
 
@@ -226,64 +218,17 @@ removeAttachmentBtn.addEventListener('click', async () => {
   }).catch(() => {});
 });
 
-// ---------- Quiz (Task 36) ----------
+// ---------- Quiz (Task 36; Task 53/55 -- button removed, natural-language
+// intent detection in chat is now the only way to request a quiz. See
+// pipeline/quiz_intent.py and the composer's SSE completion handler
+// below, which calls renderQuizCard() for any response with kind==='quiz'
+// regardless of how the server decided to generate it.) ----------
 
 const QUIZ_SOURCE_LABELS = {
   pretrained: 'Quiz source: Mistral pretrained knowledge',
   housing: 'Quiz source: AUM Housing policy',
   document: 'Quiz source: your attached document',
 };
-
-function openQuizModal() {
-  ensureActiveChat();
-  const hasDocument = activeChat.documentIds && activeChat.documentIds.length > 0;
-  quizSourceDocument.disabled = !hasDocument;
-  if (!hasDocument && quizSourceDocument.checked) {
-    document.querySelector('input[name="quizSource"][value="pretrained"]').checked = true;
-  }
-  quizStatus.textContent = '';
-  quizModal.classList.remove('hidden');
-  quizTopicInput.focus();
-}
-
-function closeQuizModal() {
-  quizModal.classList.add('hidden');
-}
-
-quizBtn.addEventListener('click', openQuizModal);
-quizCancel.addEventListener('click', closeQuizModal);
-
-quizGenerate.addEventListener('click', async () => {
-  const topic = quizTopicInput.value.trim();
-  const count = Math.max(1, Math.min(20, parseInt(quizCountInput.value, 10) || 5));
-  const sourceMode = document.querySelector('input[name="quizSource"]:checked').value;
-  if (!topic) {
-    quizStatus.textContent = 'Please enter a topic.';
-    return;
-  }
-  quizGenerate.disabled = true;
-  quizStatus.textContent = 'Generating quiz… this can take a while for more questions.';
-  try {
-    const res = await fetch(`${serverUrl}/api/quiz`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        topic, count, source_mode: sourceMode,
-        document_ids: sourceMode === 'document' ? activeChat.documentIds : undefined,
-        session_id: activeChat.id,
-      }),
-      signal: AbortSignal.timeout(300000),
-    });
-    const body = await res.json();
-    if (!res.ok) throw new Error(body.detail || `server returned ${res.status}`);
-    closeQuizModal();
-    renderQuizCard(body.quiz, sourceMode);
-  } catch (err) {
-    quizStatus.textContent = `Couldn't generate a quiz: ${err.message}`;
-  } finally {
-    quizGenerate.disabled = false;
-  }
-});
 
 function renderQuizCard(quiz, sourceMode) {
   ensureActiveChat();
@@ -763,9 +708,9 @@ composer.addEventListener('submit', async (e) => {
     });
 
     if (data.kind === 'quiz') {
-      // Task 53: a natural-language quiz request ("generate 5 MCQs on
-      // X") typed into ordinary chat now reaches the same structured
-      // generator the Quiz button uses -- render it the same way, not as
+      // Task 53/55: a natural-language quiz request ("generate 5 MCQs on
+      // X") typed into ordinary chat is now the only way to get a quiz --
+      // render it the same structured way the old button used to, not as
       // streamed prose. The placeholder "Generating your quiz…" delta
       // (server/api_server.py:ask_stream) was only ever meant to show
       // progress; drop it rather than leaving it as a stray bot bubble.
