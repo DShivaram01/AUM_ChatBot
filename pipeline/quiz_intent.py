@@ -158,3 +158,40 @@ def resolve_quiz_source(
         return "pretrained", None
 
     return None, NO_SOURCE_MESSAGE
+
+
+# ---------- Quiz follow-ups (Task 54) ----------
+# Deliberately NOT checked unconditionally against every message -- the
+# caller (server/api_server.py) only runs this when the session actually
+# has a stored last-generated quiz. That's what keeps "explain question 3"
+# from misfiring against, say, a document question that happens to
+# mention "question 3" of some unrelated numbered list; without a quiz to
+# explain, there's nothing for this to match against in the first place.
+
+_QUESTION_NUM_RE = re.compile(r"\bquestion\s*(\d{1,2})\b", re.IGNORECASE)
+_EXPLAIN_TRIGGER_RE = re.compile(r"\b(?:explain|why)\b", re.IGNORECASE)
+_REGENERATE_RE = re.compile(
+    r"\b(try again|regenerate|make another(?:\s+one|\s+quiz)?|"
+    r"give me another(?:\s+quiz)?|another quiz(?:\s+on the same topic)?|"
+    r"new quiz(?:\s+on the same topic)?|redo (?:the|this) quiz)\b",
+    re.IGNORECASE,
+)
+
+
+def detect_quiz_followup(text: str) -> dict | None:
+    """Returns {"kind": "explain", "question_number": N} for "explain
+    question N" (in either word order, "why is question 2's answer X"
+    also matches); {"kind": "regenerate"} for "try again"/"regenerate"/
+    "make another one"/etc.; None otherwise."""
+    stripped = text.strip()
+    if not stripped:
+        return None
+
+    question_match = _QUESTION_NUM_RE.search(stripped)
+    if question_match and _EXPLAIN_TRIGGER_RE.search(stripped):
+        return {"kind": "explain", "question_number": int(question_match.group(1))}
+
+    if _REGENERATE_RE.search(stripped):
+        return {"kind": "regenerate"}
+
+    return None

@@ -517,10 +517,18 @@ def build_housing_answer_streaming(
     ctx = "\n\n---\n\n".join(_trunc(h["chunk"]["text"], 500) for h in hits)
     cits = "  ".join(_housing_cite(h["chunk"]) for h in hits)
 
+    # Task 54: history_text (now real, see pipeline/memory.py:format_history)
+    # goes before the instruction block, not between it and the question --
+    # keeps "Use ONLY the policy text inside <context> tags" unambiguous
+    # about what counts as grounding evidence (earlier chat turns, never).
+    history_block = f"{history_text}" if history_text else ""
     prompt = (
         "<s>[INST] "
+        f"{history_block}"
         "You are an AUM Housing policy assistant. "
-        "Use ONLY the policy text inside <context> tags. "
+        "Use ONLY the policy text inside <context> tags as grounding evidence "
+        "for your answer -- the conversation history above, if any, is for "
+        "context on what was already discussed, not a source of facts. "
         "Do NOT invent rules. Write ONE paragraph. No bullet points. "
         "End with the citations.\n\n"
         f"Question: {query}\n\n"

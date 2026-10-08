@@ -37,6 +37,7 @@ def _fake_single_question_response(number):
 def setup_function(_fn):
     set_assistant_service(AssistantService(RuntimeManager(embedder=WordOverlapEmbedder())))
     api_server._model_loaded = True
+    api_server._session_last_quiz.clear()
 
 
 def teardown_function(_fn):
@@ -144,3 +145,123 @@ def test_ask_stream_detects_quiz_intent_and_emits_quiz_in_done_event():
     payload = json.loads(done_line[len("data:"):].strip())
     assert payload["kind"] == "quiz"
     assert len(payload["quiz"]["questions"]) == 5
+
+
+# ---------- Task 54: quiz follow-ups ----------
+
+def _generate_a_chat_quiz(client, session_id, count=3):
+    import pipeline.quiz as quiz_module
+    real_generate_streaming = quiz_module.generate_streaming
+    call_count = {"n": 0}
+
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300):
+        call_count["n"] += 1
+        yield _fake_single_question_response(call_count["n"])
+
+    quiz_module.generate_streaming = fake_generate_streaming
+    try:
+        response = client.post("/api/ask", json={
+            "question": f"Create {count} MCQs on computational biology",
+            "topic": "general", "session_id": session_id,
+        })
+    finally:
+        quiz_module.generate_streaming = real_generate_streaming
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["kind"] == "quiz"
+    return body["quiz"]
+
+
+def test_explain_question_followup_after_a_chat_originated_quiz():
+    client = TestClient(api_server.app)
+    _generate_a_chat_quiz(client, "followup-test-1", count=3)
+
+    response = client.post("/api/ask", json={
+        "question": "explain question 2",
+        "topic": "general", "session_id": "followup-test-1",
+    })
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["kind"] == "answer"
+    assert "Question 2?" in body["answer"]
+    assert "because" in body["answer"]  # the stored explanation, looked up not regenerated
+
+
+def test_explain_question_followup_after_a_button_originated_quiz():
+    import pipeline.quiz as quiz_module
+    real_generate_streaming = quiz_module.generate_streaming
+    call_count = {"n": 0}
+
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300):
+        call_count["n"] += 1
+        yield _fake_single_question_response(call_count["n"])
+
+    quiz_module.generate_streaming = fake_generate_streaming
+    client = TestClient(api_server.app)
+    try:
+        quiz_response = client.post("/api/quiz", json={
+            "topic": "computational biology", "count": 2, "source_mode": "pretrained",
+            "session_id": "followup-test-2",
+        })
+    finally:
+        quiz_module.generate_streaming = real_generate_streaming
+    assert quiz_response.status_code == 200, quiz_response.text
+
+    response = client.post("/api/ask", json={
+        "question": "why is question 1 correct?",
+        "topic": "general", "session_id": "followup-test-2",
+    })
+    assert response.status_code == 200, response.text
+    assert "Question 1?" in response.json()["answer"]
+
+
+def test_explain_question_out_of_range_gives_a_clear_message_not_a_crash():
+    client = TestClient(api_server.app)
+    _generate_a_chat_quiz(client, "followup-test-3", count=2)
+
+    response = client.post("/api/ask", json={
+        "question": "explain question 9",
+        "topic": "general", "session_id": "followup-test-3",
+    })
+    assert response.status_code == 200, response.text
+    assert "2 question" in response.json()["answer"]
+
+
+def test_regenerate_followup_reuses_the_same_params():
+    client = TestClient(api_server.app)
+    first_quiz = _generate_a_chat_quiz(client, "followup-test-4", count=2)
+
+    import pipeline.quiz as quiz_module
+    real_generate_streaming = quiz_module.generate_streaming
+    call_count = {"n": 100}  # distinct text from the first batch
+
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300):
+        call_count["n"] += 1
+        yield _fake_single_question_response(call_count["n"])
+
+    quiz_module.generate_streaming = fake_generate_streaming
+    try:
+        response = client.post("/api/ask", json={
+            "question": "try again",
+            "topic": "general", "session_id": "followup-test-4",
+        })
+    finally:
+        quiz_module.generate_streaming = real_generate_streaming
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["kind"] == "quiz"
+    assert len(body["quiz"]["questions"]) == 2  # same count as the original
+    assert body["quiz"] != first_quiz  # genuinely regenerated, not the cached copy
+
+
+def test_followup_phrase_without_a_prior_quiz_does_not_misfire():
+    # "explain question 3" with nothing generated yet in this session --
+    # must not crash or fabricate a quiz answer; falls through to normal
+    # chat routing (which, with no LLM mocked, fails safely with a 503
+    # here since _model_loaded gates it -- the real assertion is just
+    # that _try_quiz_followup_from_chat itself returns None).
+    from server.api_server import _try_quiz_followup_from_chat
+    from server.api_server import ChatRequest
+    req = ChatRequest(question="explain question 3", topic="general", session_id="never-had-a-quiz")
+    assert _try_quiz_followup_from_chat(req) is None

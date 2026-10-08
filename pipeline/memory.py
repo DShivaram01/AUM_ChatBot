@@ -67,9 +67,38 @@ def query_fingerprint(text: str) -> str:
 
 
 def format_history(history, max_turns=4, max_chars=1000):
+    """Format recent (question, answer) turns into a short block a prompt
+    can prepend before its own question, so a follow-up ("what about
+    2024?", "explain that more") can actually reference what was just
+    discussed in the same session.
+
+    Task 54: this was a documented no-op stub ("history injection into
+    prompts was removed... kept only for signature compatibility") --
+    there was genuinely no conversation memory anywhere in this app.
+    Implemented for real for Housing, Document QA, and General -- NOT
+    COS. COS's own LLM calls never see the user's literal question at
+    all (pipeline/answer.py:_cos_prompt_single only ever sends a
+    project's abstract for paraphrasing); there is no prompt to inject
+    history into there without a much larger redesign of how COS answers
+    questions, so this is a deliberate scope boundary, not an oversight.
+
+    history: a list of {"question": str, "answer": str} dicts, oldest
+    first. Uses at most the last max_turns, and truncates by dropping the
+    OLDEST turns first if the formatted block would exceed max_chars --
+    the most recent turn is the one most likely to matter for a
+    follow-up and is kept intact for as long as possible.
     """
-    Kept as a no-op stub, matching backend.py:1453-1454 exactly -- history
-    injection into prompts was removed (see build_cos_answer_streaming's
-    unused history_text parameter, kept only for signature compatibility).
-    """
-    return ""
+    if not history:
+        return ""
+    lines = []
+    for turn in history[-max_turns:]:
+        q = str(turn.get("question", "")).strip()
+        a = str(turn.get("answer", "")).strip()
+        if not q and not a:
+            continue
+        lines.append(f"Student: {q}\nAssistant: {a}")
+    while lines and len("\n\n".join(lines)) > max_chars:
+        lines.pop(0)
+    if not lines:
+        return ""
+    return "Earlier in this conversation:\n" + "\n\n".join(lines) + "\n\n"

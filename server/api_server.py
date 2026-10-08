@@ -30,6 +30,7 @@ import uuid
 import asyncio
 import logging
 import json
+from collections import deque
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Literal, AsyncGenerator
@@ -55,7 +56,7 @@ from pipeline.classifier import (
     store_trace,
 )
 from pipeline.memory import query_fingerprint
-from pipeline.quiz_intent import detect_quiz_intent, resolve_quiz_source
+from pipeline.quiz_intent import detect_quiz_followup, detect_quiz_intent, resolve_quiz_source
 from core.runtime_lock import RuntimeLock, RuntimeLockError
 import config
 from core.orchestrator import get_assistant_service
@@ -139,6 +140,54 @@ class QuizRequest(BaseModel):
 
 _session_pending: dict[str, list] = {}
 
+# Task 54: there was no conversation memory anywhere in this app before
+# this -- every answer was generated independently of prior turns in the
+# same session (pipeline/memory.py:format_history was a documented no-op
+# stub). Bounded per session (same spirit as pipeline/classifier.py's
+# SESSION_TRACES deque, Task 38) so this can't grow unbounded across a
+# long-running process. Scoped to Housing/Document/General -- NOT COS,
+# which never sends the user's literal question to the LLM at all (see
+# format_history's own docstring) -- and NOT quiz, which has its own
+# separate per-session memory for follow-ups (_session_last_quiz, below).
+_HISTORY_MAX_TURNS = 4
+_session_history: dict[str, deque] = {}
+
+
+def _get_history(session_id: str | None) -> list[dict]:
+    if not session_id or session_id not in _session_history:
+        return []
+    return list(_session_history[session_id])
+
+
+def _record_turn(session_id: str | None, question: str, answer: str) -> None:
+    if not session_id or not question.strip() or not answer.strip():
+        return
+    history = _session_history.setdefault(session_id, deque(maxlen=_HISTORY_MAX_TURNS))
+    history.append({"question": question, "answer": answer})
+
+
+# Task 54: quiz follow-ups ("explain question 3", "try again") need their
+# own memory, separate from _session_history above -- a generated quiz
+# isn't a (question, answer) chat turn, it's a structured object a
+# follow-up needs to index into or regenerate from the same parameters.
+# Keyed by session_id, holds exactly the one most recently generated quiz
+# per session (not a bounded history of many -- "explain question 3"
+# always means the last one shown).
+_session_last_quiz: dict[str, dict] = {}
+
+
+def _record_last_quiz(
+    session_id: str | None, quiz: dict, topic: str, count: int,
+    source_mode: str, document_ids: list[str] | None,
+) -> None:
+    if not session_id:
+        return
+    _session_last_quiz[session_id] = {
+        "quiz": quiz, "topic": topic, "count": count,
+        "source_mode": source_mode, "document_ids": document_ids,
+    }
+
+
 _GENERAL_AUM_RESPONSE = (
     "I do not currently have an authoritative AUM source connected for that "
     "general university-information question. I can help with AUM "
@@ -163,16 +212,18 @@ _GENERAL_PROMPT = (
 )
 
 
-def _run_general_sync(question: str) -> tuple[str, str]:
+def _run_general_sync(question: str, session_id: str | None = None) -> tuple[str, str]:
     answer = ""
     query_id = ""
-    for partial, _, _, query_id in get_assistant_service().general_chat(question):
+    history = _get_history(session_id)
+    for partial, _, _, query_id in get_assistant_service().general_chat(question, history):
         answer = partial
     return answer.strip(), query_id
 
 
-def _run_general_stream_sync(question: str):
-    yield from get_assistant_service().general_chat(question)
+def _run_general_stream_sync(question: str, session_id: str | None = None):
+    history = _get_history(session_id)
+    yield from get_assistant_service().general_chat(question, history)
 
 
 def _non_retrieval_answer(
@@ -304,9 +355,75 @@ def _try_quiz_from_chat(req: "ChatRequest") -> dict | None:
             "answer": result["error"], "topic_used": "quiz_unavailable",
             "kind": "answer", "quiz": None,
         }
+    _record_last_quiz(
+        req.session_id, result["quiz"], intent.topic, intent.count,
+        source_mode, req.document_ids,
+    )
     return {
         "answer": "", "topic_used": "quiz", "kind": "quiz", "quiz": result["quiz"],
         "source_mode": source_mode,
+    }
+
+
+def _format_quiz_explanation(quiz: dict, question_number: int) -> str:
+    questions = quiz.get("questions", [])
+    if not 1 <= question_number <= len(questions):
+        return (
+            f"This quiz only has {len(questions)} question(s), so there's no "
+            f"question {question_number}."
+        )
+    q = questions[question_number - 1]
+    correct_text = q["options"][q["correct_index"]]
+    return (
+        f"Question {question_number}: {q['question']}\n"
+        f"Correct answer: {correct_text}\n"
+        f"{q.get('explanation', '').strip()}"
+    ).strip()
+
+
+def _try_quiz_followup_from_chat(req: "ChatRequest") -> dict | None:
+    """Task 54: "explain question 3" and "try again"/"regenerate" for the
+    quiz most recently generated in this session (chat- or button-
+    originated -- both record into _session_last_quiz). Deliberately
+    checked only when this session actually has a stored quiz to refer
+    to; see detect_quiz_followup's own docstring for why that matters.
+
+    Returns None if this isn't a follow-up (caller falls through to
+    _try_quiz_from_chat, then normal routing), exactly like
+    _try_quiz_from_chat's own contract.
+    """
+    if not req.session_id or req.session_id not in _session_last_quiz:
+        return None
+    followup = detect_quiz_followup(req.question)
+    if followup is None:
+        return None
+
+    last = _session_last_quiz[req.session_id]
+
+    if followup["kind"] == "explain":
+        answer = _format_quiz_explanation(last["quiz"], followup["question_number"])
+        return {"answer": answer, "topic_used": "quiz_unavailable", "kind": "answer", "quiz": None}
+
+    # "regenerate" -- same topic/count/source, a fresh attempt. Duplicate
+    # questions across the two quizzes are possible (nothing tracks
+    # across separate generate_quiz() calls) -- acceptable for a first
+    # pass; this project's own Task 43 findings already cover why
+    # duplicate-avoidance is a real per-call cost, not a free addition.
+    result = get_assistant_service().quiz(
+        last["topic"], last["count"], last["source_mode"], last["document_ids"], req.session_id,
+    )
+    if "error" in result:
+        return {
+            "answer": result["error"], "topic_used": "quiz_unavailable",
+            "kind": "answer", "quiz": None,
+        }
+    _record_last_quiz(
+        req.session_id, result["quiz"], last["topic"], last["count"],
+        last["source_mode"], last["document_ids"],
+    )
+    return {
+        "answer": "", "topic_used": "quiz", "kind": "quiz", "quiz": result["quiz"],
+        "source_mode": last["source_mode"],
     }
 
 
@@ -316,17 +433,20 @@ def _run_chat_sync(
 ) -> tuple[str, str]:
     """Run a retrieval pipeline, GENERAL model answer, or static capability response."""
     if topic == "general":
-        return _run_general_sync(question)
+        answer, query_id = _run_general_sync(question, session_id)
+        _record_turn(session_id, question, answer)
+        return answer, query_id
 
     static_result = _non_retrieval_answer(topic, question, routing_path)
     if static_result is not None:
         return static_result
 
     pending = _session_pending.get(session_id, []) if session_id else []
+    history = _get_history(session_id)
     gen = (
-        get_assistant_service().document_chat(question, document_ids or [], session_id)
+        get_assistant_service().document_chat(question, document_ids or [], session_id, history)
         if topic == "document"
-        else get_assistant_service().housing_chat(question, [], [])
+        else get_assistant_service().housing_chat(question, history, [])
         if topic == "housing"
         else get_assistant_service().cos_chat(question, [], pending)
     )
@@ -340,6 +460,9 @@ def _run_chat_sync(
         query_id = item[3]
     if session_id:
         _session_pending[session_id] = new_pending
+        # COS excluded deliberately -- see _session_history's own comment.
+        if topic in ("housing", "document"):
+            _record_turn(session_id, question, final_answer)
     return final_answer, query_id
 
 
@@ -349,7 +472,11 @@ def _run_chat_stream_sync(
 ):
     """Same as _run_chat_sync but yields partial results for the SSE endpoint."""
     if topic == "general":
-        yield from _run_general_stream_sync(question)
+        last_answer = ""
+        for item in _run_general_stream_sync(question, session_id):
+            last_answer = item[0]
+            yield item
+        _record_turn(session_id, question, last_answer)
         return
 
     static_result = _non_retrieval_answer(topic, question, routing_path)
@@ -359,22 +486,27 @@ def _run_chat_stream_sync(
         return
 
     pending = _session_pending.get(session_id, []) if session_id else []
+    history = _get_history(session_id)
     gen = (
-        get_assistant_service().document_chat(question, document_ids or [], session_id)
+        get_assistant_service().document_chat(question, document_ids or [], session_id, history)
         if topic == "document"
-        else get_assistant_service().housing_chat(question, [], [])
+        else get_assistant_service().housing_chat(question, history, [])
         if topic == "housing"
         else get_assistant_service().cos_chat(question, [], pending)
     )
     new_pending = pending
+    last_answer = ""
     try:
         for item in gen:
+            last_answer = item[0]
             if item[1] is not None:
                 new_pending = item[1]
             yield item
     finally:
         if session_id:
             _session_pending[session_id] = new_pending
+            if topic in ("housing", "document"):
+                _record_turn(session_id, question, last_answer)
 
 
 app = FastAPI(title="AUM Chatbot API", version="0.1.0")
@@ -503,6 +635,13 @@ async def quiz(req: QuizRequest) -> dict:
         )
     if "error" in result:
         raise HTTPException(422, result["error"])
+    # Task 54: remember this quiz so a chat follow-up ("explain question
+    # 3", "try again") after using the button has something to refer to --
+    # the button and natural-language paths share this one store.
+    _record_last_quiz(
+        req.session_id, result["quiz"], req.topic, req.count,
+        req.source_mode, req.document_ids,
+    )
     return result
 
 
@@ -518,7 +657,9 @@ async def ask(req: ChatRequest) -> ChatResponse:
     start = time.time()
 
     async with _generate_lock:
-        quiz_result = await asyncio.to_thread(_try_quiz_from_chat, req)
+        quiz_result = await asyncio.to_thread(_try_quiz_followup_from_chat, req)
+        if quiz_result is None:
+            quiz_result = await asyncio.to_thread(_try_quiz_from_chat, req)
         if quiz_result is not None:
             return ChatResponse(
                 answer=quiz_result["answer"], topic_used=quiz_result["topic_used"],
@@ -561,7 +702,9 @@ async def ask_stream(req: ChatRequest) -> StreamingResponse:
             # placeholder delta rather than faking a token stream, then
             # replaces it client-side once the "done" event's quiz payload
             # arrives (see desktop/client/renderer.js).
-            quiz_result = await asyncio.to_thread(_try_quiz_from_chat, req)
+            quiz_result = await asyncio.to_thread(_try_quiz_followup_from_chat, req)
+            if quiz_result is None:
+                quiz_result = await asyncio.to_thread(_try_quiz_from_chat, req)
             if quiz_result is not None:
                 if quiz_result["kind"] == "quiz":
                     yield _sse_event("Generating your quiz…")

@@ -30,7 +30,7 @@ from pipeline.classifier import (
     next_query_id,
     store_trace,
 )
-from pipeline.memory import logger
+from pipeline.memory import format_history, logger
 from pipeline.quiz import generate_quiz
 from pipeline.retrieval import retrieve_cos_rrf, retrieve_housing_logged
 from pipeline.semantic_router import classify_topic_hybrid, classify_topic_semantic
@@ -142,6 +142,10 @@ class AssistantService:
             yield partial, pending, render_trace_md(trace) if self.debug else "", qid
 
     def housing_chat(self, message: str, history: list, _pending: list) -> Iterator[tuple]:
+        """`history` (Task 54): a list of {"question", "answer"} dicts from
+        earlier in this same session, oldest first -- was accepted but
+        never used before this task (see pipeline/memory.py:format_history's
+        own docstring for why COS does not get the same treatment)."""
         message = message.strip()
         qid = next_query_id("HSG")
         if not message:
@@ -158,14 +162,17 @@ class AssistantService:
         )
         for partial, trace in build_housing_answer_streaming(
             message, hits, r.llm_tok, r.llm_model, qid,
-            search_ms=(time.time() - started) * 1000,
+            history_text=format_history(history), search_ms=(time.time() - started) * 1000,
         ):
             yield partial, [], render_trace_md(trace) if self.debug else "", qid
 
-    def general_chat(self, question: str) -> Iterator[tuple]:
+    def general_chat(self, question: str, history: list | None = None) -> Iterator[tuple]:
         qid = next_query_id("GP")
+        history_block = format_history(history or [])
         prompt = (
-            "<s>[INST] Answer the user's question directly, clearly, and accurately. "
+            "<s>[INST] "
+            f"{history_block}"
+            "Answer the user's question directly, clearly, and accurately. "
             "This is a general-purpose answer and is not grounded in the AUM source "
             "collections. Do not claim an AUM source, citation, policy, or factual "
             "basis unless the user supplied it. If you are uncertain, say so.\n\n"
@@ -178,6 +185,7 @@ class AssistantService:
 
     def document_chat(
         self, question: str, document_ids: list[str], session_id: str | None,
+        history: list | None = None,
     ) -> Iterator[tuple]:
         """Grounded Q&A restricted to the caller's own uploaded document(s).
 
@@ -244,9 +252,14 @@ class AssistantService:
 
         ctx = "\n\n---\n\n".join(_trunc(hit["text"], 500) for hit in hits)
         cits = "  ".join(_document_cite(hit) for hit in hits)
+        history_block = format_history(history or [])
         prompt = (
-            "<s>[INST] You are a document assistant. "
-            "Use ONLY the document text inside <context> tags. "
+            "<s>[INST] "
+            f"{history_block}"
+            "You are a document assistant. "
+            "Use ONLY the document text inside <context> tags as grounding "
+            "evidence -- the conversation history above, if any, is for "
+            "context on what was already discussed, not a source of facts. "
             "Do NOT use outside knowledge. Do NOT invent facts. "
             "Write ONE paragraph. No bullet points. End with the citations.\n\n"
             f"Question: {question}\n\n"

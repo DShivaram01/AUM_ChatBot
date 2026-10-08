@@ -4,7 +4,7 @@ AUM_CHATBOT_INTELLIGENT_QUIZ_ROUTING_AND_RELIABILITY_PLAN_2026-10-08.md
 Sections 3, 6, and 9, so this suite doubles as that plan's own acceptance
 tests for the detector it specified."""
 
-from pipeline.quiz_intent import detect_quiz_intent, resolve_quiz_source
+from pipeline.quiz_intent import detect_quiz_followup, detect_quiz_intent, resolve_quiz_source
 
 
 def test_plan_example_create_5_mcqs_on_computational_biology():
@@ -111,3 +111,33 @@ def test_resolve_quiz_source_asks_rather_than_guesses_without_a_source():
     )
     assert mode is None
     assert err and "Open-ended" in err
+
+
+# ---------- detect_quiz_followup ----------
+
+def test_explain_question_n_both_word_orders():
+    assert detect_quiz_followup("explain question 3") == {"kind": "explain", "question_number": 3}
+    assert detect_quiz_followup("why is the answer to question 2 correct?") == {
+        "kind": "explain", "question_number": 2,
+    }
+
+
+def test_explain_without_a_question_number_does_not_match():
+    assert detect_quiz_followup("explain that in more detail") is None
+
+
+def test_question_number_without_explain_trigger_does_not_match():
+    assert detect_quiz_followup("question 3 was easy") is None
+
+
+def test_regenerate_phrasings():
+    for phrase in [
+        "try again", "regenerate", "make another one", "give me another quiz",
+        "another quiz on the same topic", "redo this quiz",
+    ]:
+        assert detect_quiz_followup(phrase) == {"kind": "regenerate"}, phrase
+
+
+def test_ordinary_messages_do_not_match_followup():
+    assert detect_quiz_followup("What is the housing guest policy?") is None
+    assert detect_quiz_followup("") is None
