@@ -42,6 +42,20 @@ def test_extract_json_tolerates_markdown_fence_and_prose():
     assert _extract_json(raw) == {"title": "X", "questions": []}
 
 
+def test_extract_json_strips_js_style_comments_but_not_urls_in_strings():
+    # Found via Task 43's real-generation measurement: the model sometimes
+    # appends "// explanation" after an array element, which is not valid
+    # JSON. Must be stripped outside a string, but a literal "//" inside a
+    # real string (e.g. a URL) must survive.
+    raw = (
+        '{"options": ["FTP", "SMTP", // explains itself\n "HTTP"], '
+        '"note": "see https://www.aum.edu for more"}'
+    )
+    data = _extract_json(raw)
+    assert data["options"] == ["FTP", "SMTP", "HTTP"]
+    assert data["note"] == "see https://www.aum.edu for more"
+
+
 def test_finalize_question_maps_evidence_refs_to_real_ids_not_model_text():
     q = {"question": "Q?", "options": ["A", "B", "C", "D"], "correct_index": 1,
          "explanation": "e", "evidence_refs": [2]}

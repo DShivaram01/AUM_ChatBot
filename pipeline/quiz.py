@@ -57,7 +57,13 @@ def _repair_json_text(raw: str) -> str:
     treats a single-quote span as a mistaken delimiter when it appears
     OUTSIDE one. Also strips literal markdown bold markers (observed
     injected mid-array, e.g. right before the model's chosen "correct"
-    option) -- never valid inside real JSON, always safe to remove."""
+    option) and JavaScript-style `//` line comments the model sometimes
+    appends after an option to explain its reasoning (found via Task 43's
+    real-generation measurement, not anticipated in advance) -- neither
+    is ever valid inside real JSON, both safe to remove, and the comment
+    strip uses the same "only outside a double-quoted string" rule as the
+    quote repair, so a literal `//` inside real content (e.g. a URL) is
+    left alone."""
     raw = raw.replace("**", "")
     raw = re.sub(r'\\([^"\\/bfnrtu])', r"\1", raw)
 
@@ -79,6 +85,10 @@ def _repair_json_text(raw: str) -> str:
                 out.append('"' + raw[i + 1:j] + '"')
                 i = j + 1
                 continue
+        if ch == "/" and not in_double and i + 1 < n and raw[i + 1] == "/":
+            while i < n and raw[i] != "\n":
+                i += 1
+            continue
         out.append(ch)
         i += 1
     return "".join(out)
