@@ -28,6 +28,14 @@ const attachmentRow = document.getElementById('attachmentRow');
 const attachmentChip = document.getElementById('attachmentChip');
 const removeAttachmentBtn = document.getElementById('removeAttachmentBtn');
 const attachmentStatus = document.getElementById('attachmentStatus');
+const quizBtn = document.getElementById('quizBtn');
+const quizModal = document.getElementById('quizModal');
+const quizTopicInput = document.getElementById('quizTopicInput');
+const quizCountInput = document.getElementById('quizCountInput');
+const quizSourceDocument = document.getElementById('quizSourceDocument');
+const quizStatus = document.getElementById('quizStatus');
+const quizCancel = document.getElementById('quizCancel');
+const quizGenerate = document.getElementById('quizGenerate');
 
 let pendingFeedback = null;
 
@@ -217,6 +225,147 @@ removeAttachmentBtn.addEventListener('click', async () => {
     method: 'DELETE',
   }).catch(() => {});
 });
+
+// ---------- Quiz (Task 36) ----------
+
+const QUIZ_SOURCE_LABELS = {
+  pretrained: 'Quiz source: Mistral pretrained knowledge',
+  aum: 'Quiz source: AUM Housing policy',
+  document: 'Quiz source: your attached document',
+};
+
+function openQuizModal() {
+  ensureActiveChat();
+  const hasDocument = activeChat.documentIds && activeChat.documentIds.length > 0;
+  quizSourceDocument.disabled = !hasDocument;
+  if (!hasDocument && quizSourceDocument.checked) {
+    document.querySelector('input[name="quizSource"][value="pretrained"]').checked = true;
+  }
+  quizStatus.textContent = '';
+  quizModal.classList.remove('hidden');
+  quizTopicInput.focus();
+}
+
+function closeQuizModal() {
+  quizModal.classList.add('hidden');
+}
+
+quizBtn.addEventListener('click', openQuizModal);
+quizCancel.addEventListener('click', closeQuizModal);
+
+quizGenerate.addEventListener('click', async () => {
+  const topic = quizTopicInput.value.trim();
+  const count = Math.max(1, Math.min(20, parseInt(quizCountInput.value, 10) || 5));
+  const sourceMode = document.querySelector('input[name="quizSource"]:checked').value;
+  if (!topic) {
+    quizStatus.textContent = 'Please enter a topic.';
+    return;
+  }
+  quizGenerate.disabled = true;
+  quizStatus.textContent = 'Generating quiz… this can take a while for more questions.';
+  try {
+    const res = await fetch(`${serverUrl}/api/quiz`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        topic, count, source_mode: sourceMode,
+        document_ids: sourceMode === 'document' ? activeChat.documentIds : undefined,
+        session_id: activeChat.id,
+      }),
+      signal: AbortSignal.timeout(300000),
+    });
+    const body = await res.json();
+    if (!res.ok) throw new Error(body.detail || `server returned ${res.status}`);
+    closeQuizModal();
+    renderQuizCard(body.quiz, sourceMode);
+  } catch (err) {
+    quizStatus.textContent = `Couldn't generate a quiz: ${err.message}`;
+  } finally {
+    quizGenerate.disabled = false;
+  }
+});
+
+function renderQuizCard(quiz, sourceMode) {
+  ensureActiveChat();
+  const card = document.createElement('div');
+  card.className = 'quiz-card';
+
+  const sourceLabel = document.createElement('div');
+  sourceLabel.className = 'quiz-source-label';
+  sourceLabel.textContent = QUIZ_SOURCE_LABELS[sourceMode] || 'Quiz';
+  card.appendChild(sourceLabel);
+
+  const title = document.createElement('div');
+  title.className = 'card-meta';
+  title.textContent = quiz.title;
+  card.appendChild(title);
+
+  quiz.questions.forEach((q, qi) => {
+    const qWrap = document.createElement('div');
+    qWrap.className = 'quiz-question';
+
+    const qText = document.createElement('div');
+    qText.className = 'quiz-question-text';
+    qText.textContent = `${qi + 1}. ${q.question}`;
+    qWrap.appendChild(qText);
+
+    const optsWrap = document.createElement('div');
+    optsWrap.className = 'quiz-options';
+    q.options.forEach((opt, oi) => {
+      const label = document.createElement('label');
+      label.className = 'quiz-option';
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = `quiz-${quiz.title}-${qi}`;
+      radio.value = String(oi);
+      label.appendChild(radio);
+      label.append(opt);
+      optsWrap.appendChild(label);
+    });
+    qWrap.appendChild(optsWrap);
+
+    const explanation = document.createElement('div');
+    explanation.className = 'quiz-explanation hidden';
+    explanation.textContent = q.explanation || '';
+    qWrap.appendChild(explanation);
+
+    qWrap.dataset.correctIndex = String(q.correct_index);
+    card.appendChild(qWrap);
+  });
+
+  const submitBtn = document.createElement('button');
+  submitBtn.type = 'button';
+  submitBtn.className = 'quiz-submit-btn';
+  submitBtn.textContent = 'Check answers';
+  card.appendChild(submitBtn);
+
+  const scoreEl = document.createElement('div');
+  scoreEl.className = 'quiz-score';
+  card.appendChild(scoreEl);
+
+  submitBtn.addEventListener('click', () => {
+    let correct = 0;
+    card.querySelectorAll('.quiz-question').forEach((qWrap) => {
+      const correctIndex = parseInt(qWrap.dataset.correctIndex, 10);
+      const radios = qWrap.querySelectorAll('.quiz-option input');
+      const selected = qWrap.querySelector('.quiz-option input:checked');
+      const selectedIndex = selected ? parseInt(selected.value, 10) : -1;
+      if (selectedIndex === correctIndex) correct += 1;
+      radios.forEach((radio, idx) => {
+        radio.disabled = true;
+        const optionLabel = radio.closest('.quiz-option');
+        if (idx === correctIndex) optionLabel.classList.add('correct');
+        else if (idx === selectedIndex) optionLabel.classList.add('incorrect');
+      });
+      qWrap.querySelector('.quiz-explanation').classList.remove('hidden');
+    });
+    scoreEl.textContent = `Score: ${correct} / ${quiz.questions.length}`;
+    submitBtn.disabled = true;
+  });
+
+  messagesEl.appendChild(card);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
 
 function ensureActiveChat() {
   if (!activeChat) startNewChat();

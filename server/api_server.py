@@ -92,6 +92,14 @@ class FeedbackRequest(BaseModel):
     conversation: list[dict] | None = None
 
 
+class QuizRequest(BaseModel):
+    topic: str
+    count: int = 10
+    source_mode: Literal["pretrained", "aum", "document"] = "pretrained"
+    document_ids: list[str] | None = None
+    session_id: str | None = None
+
+
 # ---------------------------------------------------------------------------
 # ROUTING NOTE: automatic requests remain grounded: COS, Housing,
 # GENERAL_AUM, or OPEN_ENDED_DISABLED. GENERAL is only selected by an explicit
@@ -406,6 +414,24 @@ async def delete_document(document_id: str, session_id: str) -> dict[str, str]:
         return {"status": "deleted"}
     except (ValueError, KeyError, PermissionError) as exc:
         raise _document_error(exc) from exc
+
+@app.post("/api/quiz")
+async def quiz(req: QuizRequest) -> dict:
+    """Generate a validated MCQ quiz from one of three sources. A controlled
+    failure (HTTP 422) is returned instead of a malformed quiz when
+    generation/validation can't produce a valid result after one retry."""
+    if not _model_loaded:
+        raise HTTPException(503, "Models still loading, try again shortly.")
+
+    async with _generate_lock:
+        result = await asyncio.to_thread(
+            get_assistant_service().quiz,
+            req.topic, req.count, req.source_mode, req.document_ids, req.session_id,
+        )
+    if "error" in result:
+        raise HTTPException(422, result["error"])
+    return result
+
 
 @app.post("/api/ask", response_model=ChatResponse)
 async def ask(req: ChatRequest) -> ChatResponse:

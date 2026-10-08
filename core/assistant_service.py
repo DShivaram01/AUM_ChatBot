@@ -30,6 +30,7 @@ from pipeline.classifier import (
     store_trace,
 )
 from pipeline.memory import logger
+from pipeline.quiz import generate_quiz
 from pipeline.retrieval import retrieve_cos_rrf, retrieve_housing_logged
 
 _DOCUMENT_INSUFFICIENT_EVIDENCE = (
@@ -254,3 +255,71 @@ class AssistantService:
             f"document(s) {sorted(set(hit['document_id'] for hit in hits))}>"
         )
         store_trace(trace)
+
+    def quiz(
+        self, topic: str, count: int, source_mode: str,
+        document_ids: list[str] | None = None, session_id: str | None = None,
+    ) -> dict:
+        """Generate a validated MCQ quiz. Quiz is an activity with three
+        knowledge sources (plan Sec 13), not a fourth chat pipeline -- this
+        method only picks evidence; pipeline.quiz.generate_quiz() owns
+        generation/validation/retry, shared by all three source modes.
+
+        Returns {"quiz": {...}} on success or {"error": "..."} on a
+        controlled failure -- never a malformed quiz.
+        """
+        topic = topic.strip()
+        qid = next_query_id("QZ")
+        if not topic:
+            return {"error": "Please provide a topic for the quiz."}
+        if not 1 <= count <= 20:
+            return {"error": "Please request between 1 and 20 questions."}
+
+        context_chunks: list[str] = []
+        evidence_map: dict[int, str] = {}
+        require_evidence = source_mode in ("aum", "document")
+
+        if source_mode == "document":
+            if not document_ids:
+                return {"error": "Please attach a document for a document-grounded quiz."}
+            if not session_id:
+                return {"error": "A session is required to use uploaded documents."}
+            hits: list[dict] = []
+            try:
+                for document_id in document_ids:
+                    hits.extend(self.documents.retrieve_chunks(document_id, session_id, topic, limit=6))
+            except (KeyError, PermissionError) as exc:
+                return {"error": str(exc)}
+            if not hits:
+                return {"error": "The uploaded document has no content to quiz on."}
+            for i, hit in enumerate(hits[:6], 1):
+                context_chunks.append(hit["text"])
+                evidence_map[i] = hit["chunk_id"]
+
+        elif source_mode == "aum":
+            r = self.runtime
+            if not r.housing_ok:
+                return {"error": "No AUM source is available to build a grounded quiz right now."}
+            hits = retrieve_housing_logged(
+                topic, r.embedder, r.housing_index, r.housing_embeddings,
+                r.housing_chunks, query_id=qid, reranker=r.reranker,
+            )
+            if not hits:
+                return {"error": "I could not find enough AUM source material on that topic for a quiz."}
+            for i, hit in enumerate(hits[:6], 1):
+                chunk = hit["chunk"]
+                context_chunks.append(chunk["text"])
+                evidence_map[i] = f"housing:{chunk.get('section', 'General')}:p{chunk.get('page', '?')}"
+
+        elif source_mode != "pretrained":
+            return {"error": f"Unknown quiz source: {source_mode}"}
+
+        quiz, errors = generate_quiz(
+            topic, count, self.runtime.llm_tok, self.runtime.llm_model, qid,
+            context_chunks=context_chunks, evidence_map=evidence_map,
+            require_evidence=require_evidence,
+        )
+        if quiz is None:
+            logger.warning(f"[{qid}] Quiz generation failed: {errors}")
+            return {"error": "Could not generate a valid quiz from the model output. Please try again."}
+        return {"quiz": quiz, "query_id": qid, "source_mode": source_mode}

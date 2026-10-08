@@ -86,6 +86,7 @@
       <form id="composer" class="composer">
         <input id="documentFileInput" type="file" accept="application/pdf" class="sr-only" />
         <button type="button" id="attachBtn" class="attach-btn" title="Attach a PDF to ask questions about">📎</button>
+        <button type="button" id="quizBtn" class="attach-btn" title="Generate a quiz">🎯</button>
         <input id="questionInput" type="text" autocomplete="off"
                placeholder="Ask a question…" />
         <button type="submit" id="sendBtn">Ask</button>
@@ -111,6 +112,27 @@
       <div class="feedback-actions">
         <button type="button" id="feedbackCancel" class="feedback-cancel">Cancel</button>
         <button type="button" id="feedbackConfirm" class="feedback-confirm">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="quizModal" class="feedback-modal hidden" role="dialog" aria-modal="true" aria-labelledby="quizTitle">
+    <div class="feedback-dialog">
+      <h2 id="quizTitle">Generate a quiz</h2>
+      <label class="feedback-comment-label" for="quizTopicInput">Topic</label>
+      <input id="quizTopicInput" type="text" placeholder="e.g. operating systems scheduling" autocomplete="off" />
+      <fieldset class="feedback-scope">
+        <legend>Source</legend>
+        <label><input type="radio" name="quizSource" value="pretrained" checked /> Mistral pretrained knowledge</label>
+        <label><input type="radio" name="quizSource" value="aum" /> AUM Housing policy</label>
+        <label><input type="radio" name="quizSource" id="quizSourceDocument" value="document" /> Attached document</label>
+      </fieldset>
+      <label class="feedback-comment-label" for="quizCountInput">Number of questions (1-20)</label>
+      <input id="quizCountInput" type="number" min="1" max="20" value="5" />
+      <p id="quizStatus" class="feedback-status" aria-live="polite"></p>
+      <div class="feedback-actions">
+        <button type="button" id="quizCancel" class="feedback-cancel">Cancel</button>
+        <button type="button" id="quizGenerate" class="feedback-confirm">Generate</button>
       </div>
     </div>
   </div>
