@@ -100,6 +100,56 @@ def test_document_chat_grounded_answer_cites_page_and_stays_private():
     assert "redacted" in trace.full_prompt
 
 
+def test_document_chat_with_multiple_documents_does_not_cite_irrelevant_ones():
+    """Task 56: found live with 3 real attached documents -- the evidence
+    gate only checks the TOP pooled score, so a confidently-relevant top
+    hit let unrelated low-scoring chunks from OTHER attached documents
+    through into both the model's context and the citation string the
+    prompt tells it to append verbatim. A real generation cited a parking
+    PDF and a dining-services PDF for a capstone-grading fact. Confirm
+    both the context and the citation list are filtered to hits that
+    individually clear the evidence floor, not just the pooled top-5."""
+    service = AssistantService(RuntimeManager(embedder=WordOverlapEmbedder()))
+    service.documents = DocumentService(WordOverlapEmbedder())
+
+    def fake_retrieve_chunks(document_id, session_id, query, limit=5):
+        if document_id == "doc_relevant":
+            return [{
+                "chunk_id": "rel_1", "document_id": "doc_relevant", "filename": "capstone.pdf",
+                "page": 1, "page_end": 1, "heading_path": [], "score": 0.48,
+                "text": "The oral defense counts for 25 percent of the capstone grade.",
+            }]
+        return [{
+            "chunk_id": f"{document_id}_1", "document_id": document_id,
+            "filename": f"{document_id}.pdf", "page": 1, "page_end": 1,
+            "heading_path": [], "score": 0.05, "text": "unrelated filler content",
+        }]
+
+    service.documents.retrieve_chunks = fake_retrieve_chunks
+    import core.assistant_service as assistant_module
+    real_generate_streaming = assistant_module.generate_streaming
+    seen_prompts = []
+
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300, trace=None):
+        seen_prompts.append(prompt)
+        yield "The oral defense counts for 25 percent. (capstone.pdf, p.1)"
+
+    assistant_module.generate_streaming = fake_generate_streaming
+    try:
+        list(service.document_chat(
+            "What percentage is the oral defense worth?",
+            ["doc_relevant", "doc_filler1", "doc_filler2"], "qa-session-a",
+        ))
+    finally:
+        assistant_module.generate_streaming = real_generate_streaming
+
+    prompt = seen_prompts[0]
+    assert "oral defense counts for 25 percent" in prompt
+    assert "unrelated filler content" not in prompt
+    assert "doc_filler1.pdf" not in prompt
+    assert "doc_filler2.pdf" not in prompt
+
+
 def test_document_chat_denies_cross_session_access():
     service, document_id = _service_with_ingested_doc(session_id="qa-session-a")
     items = list(service.document_chat(

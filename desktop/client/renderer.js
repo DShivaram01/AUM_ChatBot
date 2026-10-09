@@ -25,9 +25,17 @@ const feedbackConfirm = document.getElementById('feedbackConfirm');
 const attachBtn = document.getElementById('attachBtn');
 const documentFileInput = document.getElementById('documentFileInput');
 const attachmentRow = document.getElementById('attachmentRow');
-const attachmentChip = document.getElementById('attachmentChip');
-const removeAttachmentBtn = document.getElementById('removeAttachmentBtn');
 const attachmentStatus = document.getElementById('attachmentStatus');
+
+// Task 56: how many documents one chat may have attached at once. Bounds
+// both UI clutter and retrieval load -- AssistantService.quiz()'s
+// document branch pools up to 6 chunks PER document before picking its
+// best 6 overall, and document_chat() does its own per-document FAISS
+// search per attached file, so this is a real resource knob, not just a
+// UI nicety. 5 is a deliberate, modest cap, not derived from a measured
+// limit -- revisit with real multi-document latency numbers if this
+// turns out to be too low (or too generous) in practice.
+const MAX_ATTACHED_DOCUMENTS = 5;
 
 let pendingFeedback = null;
 
@@ -145,21 +153,45 @@ function switchToChat(id) {
   renderAttachmentRow();
 }
 
-// ---------- Document attachment (Task 35: grounded document Q&A) ----------
-// One PDF per chat for this first pass. The chat's own id doubles as the
-// server-side document session_id, so an attached document is private to
-// this one chat -- matching the per-session privacy scope the backend
-// already enforces (core/document_service.py / stores/document_store.py).
+// ---------- Document attachment (Task 35: grounded document Q&A; Task 56:
+// up to MAX_ATTACHED_DOCUMENTS PDFs per chat instead of one). The chat's
+// own id doubles as the server-side document session_id, so an attached
+// document is private to this one chat -- matching the per-session
+// privacy scope the backend already enforces (core/document_service.py /
+// stores/document_store.py). AssistantService.quiz()/document_chat()
+// already pool and rank chunks across every document_id given to them
+// (document_chat() always did; quiz()'s document branch had a real bug
+// where a document listed later could be silently dropped entirely --
+// fixed in core/assistant_service.py, Task 56) -- this section only adds
+// the client-side ability to actually attach more than one.
 
 function renderAttachmentRow() {
   const docs = (activeChat && activeChat.attachedDocuments) || [];
+  attachmentRow.innerHTML = '';
   if (!docs.length) {
     attachmentRow.classList.add('hidden');
-    attachmentChip.textContent = '';
     return;
   }
   attachmentRow.classList.remove('hidden');
-  attachmentChip.textContent = `📄 ${docs[0].filename} — ask questions about this document`;
+  docs.forEach((doc) => {
+    const group = document.createElement('span');
+    group.className = 'attachment-chip-group';
+
+    const chip = document.createElement('span');
+    chip.className = 'attachment-chip';
+    chip.textContent = `📄 ${doc.filename}`;
+    group.appendChild(chip);
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'attachment-remove';
+    removeBtn.setAttribute('aria-label', `Remove ${doc.filename}`);
+    removeBtn.textContent = '✕';
+    removeBtn.addEventListener('click', () => removeAttachedDocument(doc.document_id));
+    group.appendChild(removeBtn);
+
+    attachmentRow.appendChild(group);
+  });
 }
 
 function setAttachmentStatus(text) {
@@ -177,37 +209,68 @@ attachBtn.addEventListener('click', () => {
   documentFileInput.click();
 });
 
+async function uploadOneDocument(file) {
+  const form = new FormData();
+  form.append('session_id', activeChat.id);
+  form.append('file', file);
+  const res = await fetch(`${serverUrl}/api/documents`, { method: 'POST', body: form });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.detail || `server returned ${res.status}`);
+  }
+  return res.json();
+}
+
 documentFileInput.addEventListener('change', async () => {
-  const file = documentFileInput.files[0];
+  const files = Array.from(documentFileInput.files || []);
   documentFileInput.value = '';
-  if (!file) return;
+  if (!files.length) return;
   ensureActiveChat();
-  setAttachmentStatus(`Uploading ${file.name}…`);
-  try {
-    const form = new FormData();
-    form.append('session_id', activeChat.id);
-    form.append('file', file);
-    const res = await fetch(`${serverUrl}/api/documents`, { method: 'POST', body: form });
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
-      throw new Error(body.detail || `server returned ${res.status}`);
+
+  const alreadyAttached = activeChat.attachedDocuments ? activeChat.attachedDocuments.length : 0;
+  const room = MAX_ATTACHED_DOCUMENTS - alreadyAttached;
+  const toUpload = files.slice(0, Math.max(room, 0));
+  const skipped = files.length - toUpload.length;
+
+  if (toUpload.length === 0) {
+    setAttachmentStatus(`Already at the ${MAX_ATTACHED_DOCUMENTS}-document limit for this chat. Remove one first.`);
+    return;
+  }
+
+  const failures = [];
+  for (const file of toUpload) {
+    setAttachmentStatus(`Uploading ${file.name}…`);
+    try {
+      const metadata = await uploadOneDocument(file);
+      activeChat.documentIds = [...(activeChat.documentIds || []), metadata.document_id];
+      activeChat.attachedDocuments = [
+        ...(activeChat.attachedDocuments || []),
+        { document_id: metadata.document_id, filename: metadata.filename },
+      ];
+      renderAttachmentRow();
+    } catch (err) {
+      failures.push(`${file.name}: ${err.message}`);
     }
-    const metadata = await res.json();
-    activeChat.documentIds = [metadata.document_id];
-    activeChat.attachedDocuments = [{ document_id: metadata.document_id, filename: metadata.filename }];
-    renderAttachmentRow();
-    setAttachmentStatus(`Attached — ${metadata.pages} page(s), ready for questions.`);
-    await saveActiveChatIfNeeded();
-  } catch (err) {
-    setAttachmentStatus(`Couldn't attach ${file.name}: ${err.message}`);
+  }
+
+  await saveActiveChatIfNeeded();
+  const notes = [];
+  if (failures.length) notes.push(`Couldn't attach ${failures.join('; ')}`);
+  if (skipped > 0) notes.push(`${skipped} file(s) skipped — ${MAX_ATTACHED_DOCUMENTS}-document limit reached.`);
+  if (!notes.length) {
+    const count = activeChat.attachedDocuments.length;
+    setAttachmentStatus(`${count} document${count === 1 ? '' : 's'} attached, ready for questions.`);
+  } else {
+    setAttachmentStatus(notes.join(' '));
   }
 });
 
-removeAttachmentBtn.addEventListener('click', async () => {
-  if (!activeChat || !activeChat.documentIds || !activeChat.documentIds.length) return;
-  const [documentId] = activeChat.documentIds;
-  activeChat.documentIds = [];
-  activeChat.attachedDocuments = [];
+async function removeAttachedDocument(documentId) {
+  if (!activeChat || !activeChat.documentIds) return;
+  activeChat.documentIds = activeChat.documentIds.filter((id) => id !== documentId);
+  activeChat.attachedDocuments = (activeChat.attachedDocuments || []).filter(
+    (doc) => doc.document_id !== documentId,
+  );
   renderAttachmentRow();
   setAttachmentStatus('');
   await saveActiveChatIfNeeded();
@@ -216,7 +279,7 @@ removeAttachmentBtn.addEventListener('click', async () => {
   fetch(`${serverUrl}/api/documents/${documentId}?session_id=${encodeURIComponent(activeChat.id)}`, {
     method: 'DELETE',
   }).catch(() => {});
-});
+}
 
 // ---------- Quiz (Task 36; Task 53/55 -- button removed, natural-language
 // intent detection in chat is now the only way to request a quiz. See

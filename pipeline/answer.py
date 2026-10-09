@@ -34,7 +34,7 @@ import numpy as np
 from transformers import TextIteratorStreamer
 
 import config
-from pipeline.memory import logger
+from pipeline.memory import logger, query_fingerprint
 from pipeline.classifier import QueryTrace, RetrievalCandidate, SESSION_TRACES
 
 SIGMA = config.SIGMA
@@ -101,8 +101,16 @@ def generate_streaming(
         trace.full_prompt   = prompt
         trace.prompt_chars  = len(prompt)
 
-    logger.info(f"[{query_id}] == LLM PROMPT ==")
-    logger.info(f"[{query_id}] {prompt[:500]}{'...' if len(prompt) > 500 else ''}")
+    # Task 56 (external review 2026-10-08): this used to log the real
+    # first 500 chars of the assembled prompt for EVERY generation call,
+    # every pipeline (COS/Housing/Document/General/Quiz all go through
+    # this one function) -- including Housing policy text and, worse,
+    # uploaded document content, unconditionally, not just on failure.
+    # Task 44 fixed several other raw-text logging call sites this same
+    # session but missed this shared one. A length + fingerprint still
+    # lets repeated identical prompts be correlated without ever
+    # persisting what was actually asked or what was in context.
+    logger.info(f"[{query_id}] == LLM PROMPT == len={len(prompt)} fp={query_fingerprint(prompt)}")
 
     inputs = tokenizer(
         prompt, return_tensors="pt", truncation=True, max_length=4096
@@ -143,8 +151,9 @@ def generate_streaming(
         trace.output_tokens  = len(tokenizer.encode(full))
         trace.t_generate     = ms
 
-    logger.info(f"[{query_id}] == LLM OUTPUT ==")
-    logger.info(f"[{query_id}] {full[:600]}{'...' if len(full) > 600 else ''}")
+    # Same reasoning as the prompt log above -- the real model output can
+    # itself contain paraphrased document/policy content.
+    logger.info(f"[{query_id}] == LLM OUTPUT == len={len(full)} fp={query_fingerprint(full)}")
     logger.info(f"[{query_id}] Generation: {ms:.0f}ms  {len(full)} chars")
 
 

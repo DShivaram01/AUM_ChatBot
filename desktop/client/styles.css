@@ -381,11 +381,21 @@ body {
 .attachment-row {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
   padding: 0 40px;
   margin-top: 10px;
 }
 .attachment-row.hidden { display: none; }
+
+/* Task 56: one chip per attached document (up to 5) instead of a single
+   static chip -- each group pairs a chip with its own remove button so
+   one document can be detached without clearing the rest. */
+.attachment-chip-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
 
 .attachment-chip {
   font-size: 13px;

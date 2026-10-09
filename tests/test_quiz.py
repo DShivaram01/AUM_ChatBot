@@ -151,6 +151,48 @@ def test_quiz_housing_mode_uses_housing_evidence_and_rejects_without_housing():
     assert "error" in result  # no housing index available in this unit test
 
 
+def test_quiz_document_mode_uses_best_scoring_chunks_across_all_attached_documents():
+    """Task 56: quiz()'s document branch used to concatenate per-document
+    hit lists and slice [:6] WITHOUT sorting by score first -- whichever
+    document was listed first (or merely returned >=6 of its own hits)
+    silently crowded out every other attached document's content, with
+    no error. Attach a low-relevance document FIRST and a high-relevance
+    one SECOND; the high-relevance document's chunks must still win."""
+    service = AssistantService(RuntimeManager(embedder=WordOverlapEmbedder()))
+
+    def fake_retrieve_chunks(document_id, session_id, query, limit=6):
+        # Simulate retrieve_chunks()'s own real contract: each call
+        # returns ITS document's hits already sorted by score -- the bug
+        # was in how the CALLER (quiz()) merged multiple such lists.
+        if document_id == "doc_low":
+            return [
+                {"chunk_id": f"low_{i}", "text": f"low relevance chunk {i}", "score": 0.1}
+                for i in range(6)  # >= 6 on its own -- old code: this alone fills hits[:6]
+            ]
+        return [{"chunk_id": "high_1", "text": "the single highly relevant chunk", "score": 0.9}]
+
+    service.documents.retrieve_chunks = fake_retrieve_chunks
+    import pipeline.quiz as quiz_module
+    real_generate_streaming = quiz_module.generate_streaming
+    seen_prompts = []
+
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300):
+        seen_prompts.append(prompt)
+        yield _fake_single_question_response(1, evidence_refs=[1])
+
+    quiz_module.generate_streaming = fake_generate_streaming
+    try:
+        result = service.quiz(
+            "anything", 1, "document",
+            document_ids=["doc_low", "doc_high"], session_id="s1",
+        )
+    finally:
+        quiz_module.generate_streaming = real_generate_streaming
+
+    assert "quiz" in result, result
+    assert "the single highly relevant chunk" in seen_prompts[0]
+
+
 def test_quiz_generation_failure_is_a_controlled_error_not_a_malformed_quiz():
     service = AssistantService(RuntimeManager(embedder=WordOverlapEmbedder()))
     import pipeline.quiz as quiz_module

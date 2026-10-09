@@ -250,8 +250,22 @@ class AssistantService:
             yield _DOCUMENT_INSUFFICIENT_EVIDENCE, [], "", qid
             return
 
-        ctx = "\n\n---\n\n".join(_trunc(hit["text"], 500) for hit in hits)
-        cits = "  ".join(_document_cite(hit) for hit in hits)
+        # Task 56, found live with 3 real attached documents (one on-topic,
+        # two unrelated filler): the evidence GATE above only ever checked
+        # the TOP score, so a confidently-relevant top hit let the whole
+        # pooled top-5 through -- including low-scoring chunks from
+        # completely unrelated attached documents. Those then went into
+        # both the model's own context AND the citation string the prompt
+        # instructs it to append verbatim, and the model dutifully cited
+        # filler documents it never actually drew on (confirmed in a real
+        # generation: it cited the parking and dining-services PDFs for a
+        # capstone-grading fact). Filtering to hits that individually
+        # clear the same evidence floor fixes both -- the top hit always
+        # clears it by construction (that's what made is_strong True), so
+        # this can never produce an empty list.
+        grounded_hits = [h for h in hits if h["score"] >= DOCUMENT_EVIDENCE_SCORE_FLOOR]
+        ctx = "\n\n---\n\n".join(_trunc(hit["text"], 500) for hit in grounded_hits)
+        cits = "  ".join(_document_cite(hit) for hit in grounded_hits)
         history_block = format_history(history or [])
         prompt = (
             "<s>[INST] "
@@ -317,6 +331,17 @@ class AssistantService:
                 return {"error": str(exc)}
             if not hits:
                 return {"error": "The uploaded document has no content to quiz on."}
+            # Task 56: with more than one document attached, each
+            # retrieve_chunks() call above returns its OWN up-to-6 hits
+            # already sorted by score, but concatenating several such
+            # lists and then slicing [:6] took whichever document's hits
+            # happened to come first in the list -- not the best 6 across
+            # all attached documents. A document with >=6 locally-relevant
+            # chunks could silently crowd out every other attached
+            # document's content from the quiz entirely, with no error or
+            # warning. document_chat() already sorted before truncating
+            # (a few lines away in this same file); this branch didn't.
+            hits.sort(key=lambda h: h["score"], reverse=True)
             for i, hit in enumerate(hits[:6], 1):
                 context_chunks.append(hit["text"])
                 evidence_map[i] = hit["chunk_id"]

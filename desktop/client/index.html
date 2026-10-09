@@ -77,15 +77,12 @@
         </div>
       </div>
 
-      <div id="attachmentRow" class="attachment-row hidden">
-        <span id="attachmentChip" class="attachment-chip"></span>
-        <button type="button" id="removeAttachmentBtn" class="attachment-remove" aria-label="Remove attached document">✕</button>
-      </div>
+      <div id="attachmentRow" class="attachment-row hidden"></div>
       <p id="attachmentStatus" class="attachment-status hidden" aria-live="polite"></p>
 
       <form id="composer" class="composer">
-        <input id="documentFileInput" type="file" accept="application/pdf" class="sr-only" />
-        <button type="button" id="attachBtn" class="attach-btn" title="Attach a PDF to ask questions about">📎</button>
+        <input id="documentFileInput" type="file" accept="application/pdf" multiple class="sr-only" />
+        <button type="button" id="attachBtn" class="attach-btn" title="Attach up to 5 PDFs to ask questions about">📎</button>
         <input id="questionInput" type="text" autocomplete="off"
                placeholder="Ask a question…" />
         <button type="submit" id="sendBtn">Ask</button>
