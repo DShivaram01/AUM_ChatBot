@@ -1,142 +1,139 @@
-"""TASK 42 step 5: benchmark legacy/semantic/hybrid routing against the
-labeled gold set (tests/fixtures/routing_gold_set.jsonl), using whichever
-embedder and Mistral model the caller's AssistantService already has
-loaded -- this module never loads its own model. Running a second copy of
-the 7B model alongside the server's would risk exceeding this machine's
-single-GPU memory budget (see workspace.md's Task 32 GPU-safety note and
-the near-incident logged against this same session) -- call
-run_benchmark() from inside the already-running server process (e.g. a
-temporary debug endpoint), never as its own standalone script.
+"""Routing benchmark against a labeled gold set (TASK 42), safe by
+construction (TASK 48).
+
+Never loads its own model: it uses whatever embedder/Mistral the caller's
+RuntimeManager already holds, so run it inside the already-running server
+process -- a standalone script would load a second 7B copy onto the single
+GPU (workspace.md Task 32).
+
+TASK 48: the first version set config.AUM_ROUTER and monkey-patched
+_classify_topic_llm on two modules for the duration of a run, so live
+requests served mid-run could see the wrong router. Now each router is an
+injected callable, called directly, and Mistral calls are counted through a
+per-arm wrapper around the model object -- no global state is touched.
 """
 
 from __future__ import annotations
 
 import json
 import time
+from collections.abc import Callable
 from pathlib import Path
 
-import config
-import pipeline.classifier as classifier_module
-import pipeline.semantic_router as semantic_router_module
-from core.assistant_service import AssistantService
+from pipeline.classifier import classify_topic
+from pipeline.semantic_router import classify_topic_hybrid, classify_topic_semantic
 
 GOLD_SET_PATH = Path(__file__).resolve().parent.parent / "tests" / "fixtures" / "routing_gold_set.jsonl"
 
-_ALL_MODES = ["legacy", "semantic", "hybrid"]
+# A router arm: (query, llm_model_or_None) -> one of the five topic labels.
+Router = Callable[[str, object], str]
+
+
+class _CountingModel:
+    """Counts generate() calls on one arm's model without patching modules."""
+
+    def __init__(self, model):
+        self._model = model
+        self.calls = 0
+
+    def generate(self, *args, **kwargs):
+        self.calls += 1
+        return self._model.generate(*args, **kwargs)
+
+    def __getattr__(self, name):
+        return getattr(self._model, name)
 
 
 def load_gold_set(path: Path = GOLD_SET_PATH) -> list[dict]:
-    rows: list[dict] = []
     with open(path) as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                rows.append(json.loads(line))
-    return rows
+        return [json.loads(line) for line in f if line.strip()]
 
 
-def _confusion_and_per_class(labels_true: list[str], labels_pred: list[str]) -> tuple[dict, dict]:
-    all_labels = sorted(set(labels_true) | set(labels_pred))
-    confusion = {t: {p: 0 for p in all_labels} for t in all_labels}
+def production_routers(runtime) -> dict[str, Router]:
+    """The three shipped architectures, called directly -- not through
+    AssistantService.classify_topic(), which dispatches on global config."""
+    r = runtime
+    return {
+        "legacy": lambda q, m: classify_topic(
+            q, r.embedder, r.cos_index, r.housing_index, r.housing_ok, r.llm_tok, m,
+        ),
+        "semantic": lambda q, m: classify_topic_semantic(q, r.embedder),
+        "hybrid": lambda q, m: classify_topic_hybrid(q, r.embedder, r.llm_tok, m),
+    }
+
+
+def _percentile(sorted_vals: list[float], pct: float) -> float:
+    # nearest-rank; safe for small n (the old int(0.95*n)-1 indexed -1 at n<2)
+    return sorted_vals[max(0, min(len(sorted_vals) - 1, round(pct * len(sorted_vals)) - 1))]
+
+
+def score(labels_true: list[str], labels_pred: list[str]) -> dict:
+    """Accuracy, macro-F1, per-class P/R/F1 and a confusion matrix. Macro-F1
+    matters because the five classes are imbalanced -- accuracy alone hides a
+    router that never predicts a small class like out_of_scope."""
+    labels = sorted(set(labels_true) | set(labels_pred))
+    confusion = {t: {p: 0 for p in labels} for t in labels}
     for t, p in zip(labels_true, labels_pred):
         confusion[t][p] += 1
     per_class = {}
-    for label in all_labels:
-        tp = confusion.get(label, {}).get(label, 0)
-        fp = sum(confusion[t].get(label, 0) for t in all_labels if t != label)
-        fn = sum(v for k, v in confusion.get(label, {}).items() if k != label)
-        per_class[label] = {
-            "precision": tp / (tp + fp) if (tp + fp) else 0.0,
-            "recall": tp / (tp + fn) if (tp + fn) else 0.0,
-            "support": sum(confusion.get(label, {}).values()),
-        }
-    return confusion, per_class
+    for lab in labels:
+        tp = confusion[lab][lab]
+        fp = sum(confusion[t][lab] for t in labels if t != lab)
+        fn = sum(confusion[lab][p] for p in labels if p != lab)
+        prec = tp / (tp + fp) if tp + fp else 0.0
+        rec = tp / (tp + fn) if tp + fn else 0.0
+        f1 = 2 * prec * rec / (prec + rec) if prec + rec else 0.0
+        per_class[lab] = {"precision": prec, "recall": rec, "f1": f1, "support": tp + fn}
+    gold_labels = sorted(set(labels_true))
+    n = len(labels_true)
+    return {
+        "n": n,
+        "accuracy": sum(t == p for t, p in zip(labels_true, labels_pred)) / n if n else 0.0,
+        "macro_f1": sum(per_class[lab]["f1"] for lab in gold_labels) / len(gold_labels) if gold_labels else 0.0,
+        "per_class": per_class,
+        "confusion_matrix": confusion,
+    }
 
 
-def run_benchmark(service: AssistantService, modes: list[str] | None = None) -> dict:
-    """Runs the full gold set through each requested AUM_ROUTER mode using
-    the real routing code paths (service.classify_topic(), same method
-    production traffic calls). Returns accuracy, a confusion matrix,
-    per-class precision/recall, per-category accuracy, routing latency,
-    and the real Mistral-router invocation count per mode -- the number
-    that validates or refutes the hybrid design's GPU-cost argument.
-
-    Counts Mistral invocations by wrapping _classify_topic_llm itself
-    (not by text-matching routing_path strings) so an invocation that
-    returned unparseable output and fell through to a keyword fallback is
-    still counted -- the GPU time was still spent even though the label
-    was discarded.
-    """
-    modes = modes or _ALL_MODES
-    gold = load_gold_set()
-
-    real_classifier_llm = classifier_module._classify_topic_llm
-    real_semantic_llm = semantic_router_module._classify_topic_llm
-    call_counter = {"n": 0}
-
-    def counting_llm_call(query, tok, model):
-        call_counter["n"] += 1
-        return real_classifier_llm(query, tok, model)
-
-    original_router = config.AUM_ROUTER
+def run_benchmark(
+    runtime, routers: dict[str, Router] | None = None, rows: list[dict] | None = None,
+) -> dict:
+    """Run every row through every router arm. Returns per-arm metrics
+    (score() plus latency P50/P95, real Mistral generate() count, per-category
+    accuracy and mismatches)."""
+    routers = routers or production_routers(runtime)
+    rows = rows if rows is not None else load_gold_set()
     results: dict[str, dict] = {}
-    classifier_module._classify_topic_llm = counting_llm_call
-    semantic_router_module._classify_topic_llm = counting_llm_call
-    try:
-        for mode in modes:
-            config.AUM_ROUTER = mode
-            call_counter["n"] = 0
-            labels_true: list[str] = []
-            labels_pred: list[str] = []
-            per_category_correct: dict[str, int] = {}
-            per_category_total: dict[str, int] = {}
-            latencies_ms: list[float] = []
-            mismatches: list[dict] = []
+    for name, route in routers.items():
+        model = _CountingModel(runtime.llm_model) if runtime.llm_model is not None else None
+        preds, latencies = [], []
+        start = time.perf_counter()
+        for row in rows:
+            t0 = time.perf_counter()
+            preds.append(route(row["query"], model))
+            latencies.append((time.perf_counter() - t0) * 1000.0)
+        wall = time.perf_counter() - start
 
-            t_mode_start = time.perf_counter()
-            for row in gold:
-                t0 = time.perf_counter()
-                pred = service.classify_topic(row["query"])
-                latencies_ms.append((time.perf_counter() - t0) * 1000.0)
-
-                labels_true.append(row["expected_topic"])
-                labels_pred.append(pred)
-                cat = row["category"]
-                per_category_total[cat] = per_category_total.get(cat, 0) + 1
-                if pred == row["expected_topic"]:
-                    per_category_correct[cat] = per_category_correct.get(cat, 0) + 1
-                else:
-                    mismatches.append({
-                        "id": row["id"], "query": row["query"], "category": cat,
-                        "expected": row["expected_topic"], "predicted": pred,
-                    })
-            t_mode_total_s = time.perf_counter() - t_mode_start
-
-            n = len(gold)
-            correct = sum(1 for t, p in zip(labels_true, labels_pred) if t == p)
-            confusion, per_class = _confusion_and_per_class(labels_true, labels_pred)
-            sorted_latencies = sorted(latencies_ms)
-
-            results[mode] = {
-                "n": n,
-                "accuracy": correct / n,
-                "mistral_calls": call_counter["n"],
-                "mistral_invocation_rate": call_counter["n"] / n,
-                "avg_latency_ms": sum(latencies_ms) / n,
-                "p95_latency_ms": sorted_latencies[int(0.95 * n) - 1],
-                "max_latency_ms": sorted_latencies[-1],
-                "total_wall_time_s": t_mode_total_s,
-                "confusion_matrix": confusion,
-                "per_class": per_class,
-                "per_category_accuracy": {
-                    cat: per_category_correct.get(cat, 0) / per_category_total[cat]
-                    for cat in per_category_total
-                },
-                "mismatches": mismatches,
-            }
-    finally:
-        classifier_module._classify_topic_llm = real_classifier_llm
-        semantic_router_module._classify_topic_llm = real_semantic_llm
-        config.AUM_ROUTER = original_router
-
+        truth = [row["expected_topic"] for row in rows]
+        res = score(truth, preds)
+        lat = sorted(latencies)
+        cats: dict[str, list[int]] = {}
+        for row, pred in zip(rows, preds):
+            cats.setdefault(row.get("category", "uncategorized"), []).append(pred == row["expected_topic"])
+        calls = model.calls if model else 0
+        res.update({
+            "mistral_calls": calls,
+            "mistral_invocation_rate": calls / len(rows) if rows else 0.0,
+            "p50_latency_ms": _percentile(lat, 0.50) if lat else 0.0,
+            "p95_latency_ms": _percentile(lat, 0.95) if lat else 0.0,
+            "avg_latency_ms": sum(lat) / len(lat) if lat else 0.0,
+            "total_wall_time_s": wall,
+            "per_category_accuracy": {c: sum(v) / len(v) for c, v in cats.items()},
+            "mismatches": [
+                {"id": row.get("id"), "query": row["query"], "category": row.get("category"),
+                 "expected": row["expected_topic"], "predicted": pred}
+                for row, pred in zip(rows, preds) if pred != row["expected_topic"]
+            ],
+        })
+        results[name] = res
     return results
