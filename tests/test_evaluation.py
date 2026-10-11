@@ -44,7 +44,9 @@ def test_trace_to_event_strips_full_prompt_and_raw_output_by_default():
     assert event.query_text is None
     assert event.answer_text is None
     assert "private document text" not in str(vars(event))
-    assert event.retrieval_top_score == 0.71
+    assert event.top_faiss_score == 0.71
+    assert event.top_rerank_score is None  # not computed on this path -- not conflated into one number
+    assert event.schema_version == 2
     assert event.retrieval_candidate_count == 1
     assert event.session_hash != "real-session-id"
 

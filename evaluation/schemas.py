@@ -25,8 +25,12 @@ class EvaluationEvent:
     source_mode: str           # cos / housing / document / general / general_aum / out_of_scope / open_ended_disabled / pretrained
     route_label: str = ""      # the resolved topic/intent label
     route_method: str = ""     # routing_path: person-override / Mistral-router label / fallback / explicit
+    router_mode: str = ""      # config.AUM_ROUTER: legacy | semantic | hybrid
 
-    retrieval_top_score: float = 0.0
+    # Task 50 (v2): split from v1's single retrieval_top_score, which was a
+    # max() over two incomparable scales. None = not computed for this path.
+    top_faiss_score: Optional[float] = None    # cosine similarity
+    top_rerank_score: Optional[float] = None   # cross-encoder logit
     retrieval_candidate_count: int = 0
     evidence_passed: Optional[bool] = None
     response_state: str = ""   # "paragraph" | "list" | "not_found" | "non_retrieval" | ...
@@ -45,3 +49,6 @@ class EvaluationEvent:
     # query (the consented flow) -- never for passive/automatic telemetry.
     query_text: Optional[str] = None
     answer_text: Optional[str] = None
+
+    # v1 rows (pre-Task 50) have no schema_version key at all.
+    schema_version: int = 2

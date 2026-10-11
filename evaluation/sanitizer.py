@@ -12,6 +12,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Optional
 
+import config
 from evaluation.schemas import EvaluationEvent
 
 _DEV_DEFAULT_SECRET = "dev-only-insecure-default-do-not-use-in-production"
@@ -63,13 +64,11 @@ def trace_to_event(
     document chunk text -- those stay out of every EvaluationEvent.
     """
     candidates = getattr(trace, "candidates", None) or []
-    top_score = 0.0
-    for c in candidates:
-        score = max(
-            getattr(c, "rerank_score", 0.0) or 0.0,
-            getattr(c, "faiss_score", 0.0) or 0.0,
-        )
-        top_score = max(top_score, score)
+    # Task 50: cosine (FAISS) and cross-encoder logits (rerank) are different
+    # scales -- keep them apart. 0.0 means "not computed", matching
+    # RetrievalCandidate.row()'s own convention.
+    faiss = [c.faiss_score for c in candidates if getattr(c, "faiss_score", 0.0)]
+    rerank = [c.rerank_score for c in candidates if getattr(c, "rerank_score", 0.0)]
 
     event = EvaluationEvent(
         event_id=str(uuid.uuid4()),
@@ -80,7 +79,9 @@ def trace_to_event(
         source_mode=getattr(trace, "intent_type", ""),
         route_label=getattr(trace, "intent_type", ""),
         route_method=getattr(trace, "routing_path", ""),
-        retrieval_top_score=top_score,
+        router_mode=config.AUM_ROUTER,
+        top_faiss_score=max(faiss) if faiss else None,
+        top_rerank_score=max(rerank) if rerank else None,
         retrieval_candidate_count=len(candidates),
         evidence_passed=getattr(trace, "threshold_passed", None),
         response_state=getattr(trace, "response_state", ""),
