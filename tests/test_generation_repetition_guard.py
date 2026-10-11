@@ -55,9 +55,9 @@ def test_guard_bans_reproducing_an_avoided_sequence_but_not_the_prompt():
     # while copying from the context in the prompt stays allowed.
     previous = list(range(1, 20))  # a 19-token earlier question
     guard = GeneratedOnlyRepetitionGuard(prompt_len=len(PROMPT), banned_sequences=[previous])
-    scores = guard(_ids(PROMPT + previous[:11]), torch.ones(1, VOCAB))
-    assert scores[0, 12] == -float("inf")  # 12th token of a re-written question
-    scores = guard(_ids(PROMPT + previous[:8]), torch.ones(1, VOCAB))
-    assert scores[0, 9] != -float("inf")  # a shared name-length span is fine
+    scores = guard(_ids(PROMPT + previous[:3]), torch.ones(1, VOCAB))
+    assert scores[0, 4] == -float("inf")  # re-writing it is blocked from the 4th token
+    scores = guard(_ids(PROMPT + previous[:2]), torch.ones(1, VOCAB))
+    assert scores[0, 3] != -float("inf")  # shorter shared spans are fine
     scores = guard(_ids(PROMPT + GENERATED), torch.ones(1, VOCAB))
     assert scores[0, 5] == 1.0

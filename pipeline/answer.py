@@ -61,11 +61,12 @@ def _relative_threshold(cands, top_n=10, absolute_floor=EVIDENCE_SCORE_FLOOR):
 _PROMPT_MAX_CHARS = 3200
 _NO_REPEAT_NGRAM = 4
 _REPETITION_PENALTY = 1.1
-# Longer than _NO_REPEAT_NGRAM on purpose: blocking every 4-gram of an
-# earlier question also blocked re-using a proper name ("Willow Creek
-# Shuttle Service" is ~8 Mistral tokens) and garbled it ("Willlow Creek ShuttLE",
-# measured 2026-10-11); 12 still stops a 15-25 token question being re-written.
-_AVOID_NGRAM = 12
+# n-gram ban on already-asked quiz questions. Measured 2026-10-11 (Task 51,
+# 12 quizzes): n=4 -> 12/12 valid, 26 near-duplicate pairs, 6/60 garbled
+# names ("Willlow Creek ShuttLE"); n=12 -> 11/12 valid, 52 pairs, 0 garbled.
+# 4 is the better trade-off; real question diversity needs semantic dedup /
+# per-question evidence rotation, not a longer or shorter n (TASK 60).
+_AVOID_NGRAM = 4
 
 
 class GeneratedOnlyRepetitionGuard(LogitsProcessor):
@@ -86,7 +87,7 @@ class GeneratedOnlyRepetitionGuard(LogitsProcessor):
     def __init__(self, prompt_len: int, ngram: int = _NO_REPEAT_NGRAM, penalty: float = _REPETITION_PENALTY,
                  banned_sequences: list[list[int]] | None = None):
         self.prompt_len, self.ngram, self.penalty = prompt_len, ngram, penalty
-        # Token sequences whose 12-grams (_AVOID_NGRAM) must not be reproduced (quiz:
+        # Token sequences whose _AVOID_NGRAM-grams must not be reproduced (quiz:
         # the already-asked questions). Measured on 2026-10-11: without this,
         # greedy decoding re-wrote the previous question verbatim and quiz
         # validity fell 11/12 -> 5/12 -- the old prompt-wide ban had been
