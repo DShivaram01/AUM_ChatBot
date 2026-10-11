@@ -31,7 +31,8 @@ import time
 import threading
 
 import numpy as np
-from transformers import TextIteratorStreamer
+import torch
+from transformers import LogitsProcessor, LogitsProcessorList, TextIteratorStreamer
 
 import config
 from pipeline.memory import logger, query_fingerprint
@@ -58,6 +59,43 @@ def _relative_threshold(cands, top_n=10, absolute_floor=EVIDENCE_SCORE_FLOOR):
 # ── LLM streaming generation (backend.py:1041-1101) ────────────────────
 
 _PROMPT_MAX_CHARS = 3200
+_NO_REPEAT_NGRAM = 4
+_REPETITION_PENALTY = 1.1
+
+
+class GeneratedOnlyRepetitionGuard(LogitsProcessor):
+    """Anti-looping (no repeated 4-grams + 1.1 repetition penalty) applied to
+    the GENERATED tokens only.
+
+    Task 51 (found by the Document QA evaluation): generate() used to get
+    no_repeat_ngram_size=4 / repetition_penalty=1.1 directly, and Hugging
+    Face applies both over the WHOLE input_ids -- prompt included. Every
+    4-token span already present in the retrieved context was therefore
+    banned from the answer, so the model could not copy facts verbatim.
+    Mistral tokenizes digits one by one, so numbers were hit hardest; real
+    outputs: "$30" for "$35", "every 15 minutes" for 12, "extension 3410"
+    for 4410, "Shutttle" / "Willlow" when the name had already appeared.
+    That breaks every grounded pipeline (COS / Housing / Document / Quiz),
+    whose whole job is to repeat the context faithfully."""
+
+    def __init__(self, prompt_len: int, ngram: int = _NO_REPEAT_NGRAM, penalty: float = _REPETITION_PENALTY):
+        self.prompt_len, self.ngram, self.penalty = prompt_len, ngram, penalty
+
+    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor) -> torch.FloatTensor:
+        generated = input_ids[:, self.prompt_len:]
+        if generated.shape[1] == 0:
+            return scores
+        picked = torch.gather(scores, 1, generated)
+        picked = torch.where(picked < 0, picked * self.penalty, picked / self.penalty)
+        scores = scores.scatter(1, generated, picked)
+        n = self.ngram
+        if generated.shape[1] >= n - 1:
+            for row, tokens in enumerate(generated.tolist()):
+                prefix = tokens[len(tokens) - (n - 1):]
+                banned = [tokens[i + n - 1] for i in range(len(tokens) - n + 1) if tokens[i:i + n - 1] == prefix]
+                if banned:
+                    scores[row, banned] = -float("inf")
+        return scores
 
 
 def _truncate_prompt(prompt: str, max_chars: int = _PROMPT_MAX_CHARS) -> str:
@@ -128,8 +166,9 @@ def generate_streaming(
         streamer=streamer,
         max_new_tokens=max_new_tokens,
         do_sample=False,
-        no_repeat_ngram_size=4,
-        repetition_penalty=1.1,
+        logits_processor=LogitsProcessorList(
+            [GeneratedOnlyRepetitionGuard(int(inputs["input_ids"].shape[1]))]
+        ),
         eos_token_id=tokenizer.eos_token_id,
         pad_token_id=tokenizer.eos_token_id,
     )
