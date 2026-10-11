@@ -1,0 +1,1326 @@
+{
+ "summary": {
+  "docqa": {
+   "n_answerable": 22,
+   "n_unanswerable": 9,
+   "answer_accuracy": 0.2727272727272727,
+   "false_abstention_rate": 0.3181818181818182,
+   "citation_contains_expected_page": 0.5454545454545454,
+   "citation_exact_page": 0.5,
+   "retrieval_top1_page": 0.9090909090909091,
+   "abstention_correct": 1.0,
+   "abstained_by_gate": 7,
+   "abstained_by_model": 2,
+   "latency_ms_median": 3169.6778339974117,
+   "floor_sweep": [
+    {
+     "floor": 0.2,
+     "answerable_blocked": 0,
+     "unanswerable_blocked": 3
+    },
+    {
+     "floor": 0.25,
+     "answerable_blocked": 0,
+     "unanswerable_blocked": 5
+    },
+    {
+     "floor": 0.3,
+     "answerable_blocked": 3,
+     "unanswerable_blocked": 6
+    },
+    {
+     "floor": 0.35,
+     "answerable_blocked": 4,
+     "unanswerable_blocked": 6
+    },
+    {
+     "floor": 0.4,
+     "answerable_blocked": 6,
+     "unanswerable_blocked": 6
+    },
+    {
+     "floor": 0.45,
+     "answerable_blocked": 7,
+     "unanswerable_blocked": 7
+    },
+    {
+     "floor": 0.5,
+     "answerable_blocked": 12,
+     "unanswerable_blocked": 7
+    }
+   ],
+   "top_score_answerable": [
+    0.268,
+    0.27,
+    0.296,
+    0.302,
+    0.377,
+    0.386,
+    0.423,
+    0.454,
+    0.459,
+    0.462,
+    0.488,
+    0.498,
+    0.519,
+    0.602,
+    0.618,
+    0.638,
+    0.638,
+    0.641,
+    0.676,
+    0.681,
+    0.733,
+    0.792
+   ],
+   "top_score_unanswerable": [
+    -0.024,
+    0.107,
+    0.144,
+    0.22,
+    0.223,
+    0.267,
+    0.408,
+    0.544,
+    0.651
+   ]
+  },
+  "isolation": {
+   "all_blocked": true,
+   "detail": [
+    {
+     "doc": "robotics",
+     "metadata_status": 403,
+     "chat_topic": "document",
+     "chat_answer_leaked_fact": false,
+     "chat_answer": "Document is not available in this session"
+    },
+    {
+     "doc": "shuttle",
+     "metadata_status": 403,
+     "chat_topic": "document",
+     "chat_answer_leaked_fact": false,
+     "chat_answer": "Document is not available in this session"
+    },
+    {
+     "doc": "labsafety",
+     "metadata_status": 403,
+     "chat_topic": "document",
+     "chat_answer_leaked_fact": false,
+     "chat_answer": "Document is not available in this session"
+    }
+   ]
+  },
+  "quiz": {
+   "n_quizzes": 12,
+   "validity_rate": 0.9166666666666666,
+   "questions_generated": 55,
+   "model_calls": 69,
+   "retries_total": 10,
+   "retry_rate_per_question": 0.1694915254237288,
+   "failed_attempts_by_cause": {
+    "duplicate_failures": 0,
+    "evidence_failures": 9,
+    "parse_failures": 0
+   },
+   "near_duplicate_pairs": 13,
+   "repeated_correct_answers": 8,
+   "document_evidence_supports_answer": "19/30",
+   "by_breadth": {
+    "broad": {
+     "valid": "4/5",
+     "retries": 1,
+     "duplicate_failures": 0
+    },
+    "narrow": {
+     "valid": "7/7",
+     "retries": 9,
+     "duplicate_failures": 0
+    }
+   },
+   "latency_s_median": 38.48504504098673
+  }
+ },
+ "docqa_rows": [
+  {
+   "doc": "robotics",
+   "q": "How much are the membership dues?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "The annual membership dues for the Harbor Point Robotic Club are $30 per semester, as stated in the Harbor PointRobotics ClubHandbook Membership section of the Harbor Point robotics handbook (p.1).",
+   "latency_ms": 2360.8915680088103,
+   "abstained": false,
+   "gate_abstained": false,
+   "top_score": 0.7325308322906494,
+   "top_page": 1,
+   "correct": false,
+   "cited_pages": [
+    1
+   ],
+   "citation_ok": true,
+   "citation_exact": true,
+   "retrieval_top1_ok": true
+  },
+  {
+   "doc": "robotics",
+   "q": "Which room does the robotics club meet in?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "Based on the provided information from the Harbor Point robotic club handbook, there is no specific mention of the meeting location for the club in the excerpt you've shared. For further details about the meeting place, I would recommend checking the \"Club Meetings\" or \"General Information\" sections of the handbook, which may be located on different pages. (harbor\\_point\\_robotics\\_handbook. pdf, General Information, Not specified)",
+   "latency_ms": 4662.981278001098,
+   "abstained": true,
+   "gate_abstained": false,
+   "top_score": 0.42307156324386597,
+   "top_page": 2,
+   "correct": false,
+   "cited_pages": [],
+   "citation_ok": false,
+   "citation_exact": false,
+   "retrieval_top1_ok": false
+  },
+  {
+   "doc": "robotics",
+   "q": "Who founded the robotics club?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "The founders of the Harbor Points Robotic Club remain unspecified in the provided excerpt from the Harbor Points robotics handbooks. The focus of the text is primarily on the club's competition participation, competition rules, and the election of the lead captain. (harbour_point_roboticshandbook.pdf , Competition, page 2)",
+   "latency_ms": 3750.210436002817,
+   "abstained": true,
+   "gate_abstained": false,
+   "top_score": 0.4590308666229248,
+   "top_page": 2,
+   "correct": false,
+   "cited_pages": [],
+   "citation_ok": false,
+   "citation_exact": false,
+   "retrieval_top1_ok": false
+  },
+  {
+   "doc": "robotics",
+   "q": "What is the maximum weight for a competition robot?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "The maximum weight for competition robots in the Harbor Point Robotics Club, as per the Gulf CoastBotBattle competition rules mentioned in their handbook, is 15 kilograms. This weight limit is crucial to ensure fairness during the competition, which takes place annually in April. (harbors_point_Robotics_handbooks.pdf, Compettion, p. 2)",
+   "latency_ms": 4178.506946976995,
+   "abstained": false,
+   "gate_abstained": false,
+   "top_score": 0.618425726890564,
+   "top_page": 2,
+   "correct": true,
+   "cited_pages": [],
+   "citation_ok": false,
+   "citation_exact": false,
+   "retrieval_top1_ok": true
+  },
+  {
+   "doc": "robotics",
+   "q": "In which month is the Gulf Coast BotBattle held?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "The Gulf Coast Bot Battle competition is held annually in the month of April, according to the Harbor Points robotic handbooks. (harbor\\_point\\_robotics\\_handbook. pdf, Competition,\\ p.2 )",
+   "latency_ms": 2378.1026630022097,
+   "abstained": false,
+   "gate_abstained": false,
+   "top_score": 0.4977610111236572,
+   "top_page": 2,
+   "correct": true,
+   "cited_pages": [
+    2
+   ],
+   "citation_ok": true,
+   "citation_exact": true,
+   "retrieval_top1_ok": true
+  },
+  {
+   "doc": "robotics",
+   "q": "Where must lithium batteries be stored?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "Lithium battery storage should be in a fireproof cabinet designated as B, as stated in the safety rules section of the Harbor Point robotics handbook. (harbour_point_robotic_handbook, Safety Rules p.3).",
+   "latency_ms": 2491.5274290251546,
+   "abstained": false,
+   "gate_abstained": false,
+   "top_score": 0.6023622751235962,
+   "top_page": 3,
+   "correct": false,
+   "cited_pages": [
+    3
+   ],
+   "citation_ok": true,
+   "citation_exact": true,
+   "retrieval_top1_ok": true
+  },
+  {
+   "doc": "robotics",
+   "q": "How soon must an injury be reported?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "I could not find enough information in the uploaded document to answer that.",
+   "latency_ms": 4.670772992540151,
+   "abstained": true,
+   "gate_abstained": true,
+   "top_score": 0.2955661714076996,
+   "top_page": 3,
+   "correct": false,
+   "cited_pages": [],
+   "citation_ok": false,
+   "citation_exact": false,
+   "retrieval_top1_ok": true
+  },
+  {
+   "doc": "robotics",
+   "q": "What is the robotics club's annual budget?",
+   "expect": "abstain",
+   "topic_used": "document",
+   "answer": "I could not find enough information in the uploaded document to answer that.",
+   "latency_ms": 4.470682993996888,
+   "abstained": true,
+   "gate_abstained": true,
+   "top_score": 0.5438001155853271,
+   "top_page": 2,
+   "correct": true
+  },
+  {
+   "doc": "robotics",
+   "q": "How many robots did the club build in 2015?",
+   "expect": "abstain",
+   "topic_used": "document",
+   "answer": "Based on the provided document, there is no specific information available about the number of robots built by the club in 2o15. The text only mentions the competition details, the weight limit of the competition robots, and the election of the lead captain. Therefore, it is impossible to determine the exact number of robotic builds in 2oo15 from the given document. (harabor_point_Robotics_handbooks.pdf, Compettion, p. 2)",
+   "latency_ms": 5124.3564400065225,
+   "abstained": true,
+   "gate_abstained": false,
+   "top_score": 0.6513596773147583,
+   "top_page": 2,
+   "correct": true
+  },
+  {
+   "doc": "robotics",
+   "q": "What is the boiling point of water at sea level?",
+   "expect": "abstain",
+   "topic_used": "document",
+   "answer": "I could not find enough information in the uploaded document to answer that.",
+   "latency_ms": 4.763903009006754,
+   "abstained": true,
+   "gate_abstained": true,
+   "top_score": 0.10725709795951843,
+   "top_page": 1,
+   "correct": true
+  },
+  {
+   "doc": "shuttle",
+   "q": "How often does the Blue Line run?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "The Blue Line campusloop in Willow Creek Shutttle Service operates every 15 minutes, running from 7am to 1o pm. This information can be found on page 1 of the Willow Creek shuttle guide. (willow\\_creek\\_shuttle\\_guide. pdf, document, pp.1)",
+   "latency_ms": 3495.1199619972613,
+   "abstained": false,
+   "gate_abstained": false,
+   "top_score": 0.519031286239624,
+   "top_page": 1,
+   "correct": false,
+   "cited_pages": [
+    1
+   ],
+   "citation_ok": true,
+   "citation_exact": true,
+   "retrieval_top1_ok": true
+  },
+  {
+   "doc": "shuttle",
+   "q": "Where does the Red Line go?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "I could not find enough information in the uploaded document to answer that.",
+   "latency_ms": 4.579753003781661,
+   "abstained": true,
+   "gate_abstained": true,
+   "top_score": 0.26973965764045715,
+   "top_page": 1,
+   "correct": false,
+   "cited_pages": [],
+   "citation_ok": false,
+   "citation_exact": false,
+   "retrieval_top1_ok": true
+  },
+  {
+   "doc": "shuttle",
+   "q": "How much does a visitor pay per ride?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "A visitor using the WillowCreek Shuttle Service will be charged $1. fifty per ride according to the fares and passes section of the Willlow Creek Shuttle Guide. (willlow_creek\\_ shuttle\\_guide .pdf, Fare and Passes , p.2 )",
+   "latency_ms": 3169.6778339974117,
+   "abstained": false,
+   "gate_abstained": false,
+   "top_score": 0.6757358312606812,
+   "top_page": 2,
+   "correct": false,
+   "cited_pages": [
+    2
+   ],
+   "citation_ok": true,
+   "citation_exact": true,
+   "retrieval_top1_ok": true
+  },
+  {
+   "doc": "shuttle",
+   "q": "How much is the staff monthly pass?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "The cost for a staff monthly pass on the Willow Craig Shuttle service is $20, as stated in the Fares andPasses section of theWillow Creek Shuttles Guide. ( willow_creeks shuttle_guide . pdf, Faresand Passes,p.2)",
+   "latency_ms": 3274.4694929861,
+   "abstained": false,
+   "gate_abstained": false,
+   "top_score": 0.4876710772514343,
+   "top_page": 2,
+   "correct": true,
+   "cited_pages": [
+    2
+   ],
+   "citation_ok": true,
+   "citation_exact": true,
+   "retrieval_top1_ok": true
+  },
+  {
+   "doc": "shuttle",
+   "q": "How many bikes can a bus carry?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "The Willow Creek Campusloop Shuttle Bus can accommodate a maximum of 2 bikes on its front racks. This information is mentioned under the policies section of the provided Willow CreekShuttle Guide document. (willows_creek shuttle_ guide.pdf,Policies,p.3)",
+   "latency_ms": 3320.449341990752,
+   "abstained": false,
+   "gate_abstained": false,
+   "top_score": 0.6380310654640198,
+   "top_page": 3,
+   "correct": true,
+   "cited_pages": [
+    3
+   ],
+   "citation_ok": true,
+   "citation_exact": true,
+   "retrieval_top1_ok": true
+  },
+  {
+   "doc": "shuttle",
+   "q": "How long are lost items kept?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "Lost items found on the WilllowCreek Shutttle buses are kept at the Transist Office in the Rosss Building for a period of 14days. After this time, unclaimed items may be disposed of or donated. (willow\\_creek\\_shuttle\\_guide. pdf, Policies , p.3 )",
+   "latency_ms": 3746.2394169997424,
+   "abstained": false,
+   "gate_abstained": false,
+   "top_score": 0.3766261339187622,
+   "top_page": 3,
+   "correct": false,
+   "cited_pages": [
+    3
+   ],
+   "citation_ok": true,
+   "citation_exact": true,
+   "retrieval_top1_ok": true
+  },
+  {
+   "doc": "shuttle",
+   "q": "Which building is the Transit Office in?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "I could not find enough information in the uploaded document to answer that.",
+   "latency_ms": 4.818043002160266,
+   "abstained": true,
+   "gate_abstained": true,
+   "top_score": 0.3016192317008972,
+   "top_page": 3,
+   "correct": false,
+   "cited_pages": [],
+   "citation_ok": false,
+   "citation_exact": false,
+   "retrieval_top1_ok": true
+  },
+  {
+   "doc": "shuttle",
+   "q": "At what wind speed is shuttle service suspended?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "The WillowCreek Shuttle service suspends operation when wind speeds surpass 45 miles per hour. This information regarding weather-related service interruptions is stated under the Policies section of the Willow Creek Shuttle Guide on page 3. (willlow_creek\\_ shuttle\\_guide .pdf, Polices, p. 3)",
+   "latency_ms": 3896.2907170061953,
+   "abstained": false,
+   "gate_abstained": false,
+   "top_score": 0.38591957092285156,
+   "top_page": 3,
+   "correct": true,
+   "cited_pages": [],
+   "citation_ok": false,
+   "citation_exact": false,
+   "retrieval_top1_ok": true
+  },
+  {
+   "doc": "shuttle",
+   "q": "Do the shuttles have wifi?",
+   "expect": "abstain",
+   "topic_used": "document",
+   "answer": "I could not find enough information in the uploaded document to answer that.",
+   "latency_ms": 4.6719420060981065,
+   "abstained": true,
+   "gate_abstained": true,
+   "top_score": 0.26710039377212524,
+   "top_page": 1,
+   "correct": true
+  },
+  {
+   "doc": "shuttle",
+   "q": "What is the name of the shuttle drivers' union?",
+   "expect": "abstain",
+   "topic_used": "document",
+   "answer": "I could not find enough information in the uploaded document to answer that.",
+   "latency_ms": 4.64549200842157,
+   "abstained": true,
+   "gate_abstained": true,
+   "top_score": 0.2230202555656433,
+   "top_page": 3,
+   "correct": true
+  },
+  {
+   "doc": "shuttle",
+   "q": "Who was the first president of the United States?",
+   "expect": "abstain",
+   "topic_used": "document",
+   "answer": "I could not find enough information in the uploaded document to answer that.",
+   "latency_ms": 4.506742989178747,
+   "abstained": true,
+   "gate_abstained": true,
+   "top_score": -0.02355990745127201,
+   "top_page": 2,
+   "correct": true
+  },
+  {
+   "doc": "labsafety",
+   "q": "What standard must safety goggles meet?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "Safety gogges used in the laboratory setting must adhere to the American National Standards Institute (ANSI) Z87 standard, specifically version 1. This requirement is outlined in the BIO 328 Laboratory safety procedures document (p.1). In addition to this, nitrile gloves are mandated for use at all times and lab coats are to be laundered weekly through Kessler services.",
+   "latency_ms": 4210.8740029798355,
+   "abstained": false,
+   "gate_abstained": false,
+   "top_score": 0.680626392364502,
+   "top_page": 1,
+   "correct": false,
+   "cited_pages": [
+    1
+   ],
+   "citation_ok": true,
+   "citation_exact": true,
+   "retrieval_top1_ok": true
+  },
+  {
+   "doc": "labsafety",
+   "q": "Who launders the lab coats?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "I could not find enough information in the uploaded document to answer that.",
+   "latency_ms": 4.914191988063976,
+   "abstained": true,
+   "gate_abstained": true,
+   "top_score": 0.26798197627067566,
+   "top_page": 1,
+   "correct": false,
+   "cited_pages": [],
+   "citation_ok": false,
+   "citation_exact": false,
+   "retrieval_top1_ok": true
+  },
+  {
+   "doc": "labsafety",
+   "q": "Where can ethidium bromide be used?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "Ethidium brome can be used exclusively in Bay \u00b3, as stated in the Chemical Handing section of the BIO318 Lab Safety document (p.\\2). It's important to note that any spill exceeding 50ml should be addressed promptly, and for spills larger than \u00bd liter, the room should be evacuated immediately and the incident reported via extension 4110.",
+   "latency_ms": 4378.391074977117,
+   "abstained": false,
+   "gate_abstained": false,
+   "top_score": 0.6412007212638855,
+   "top_page": 2,
+   "correct": false,
+   "cited_pages": [],
+   "citation_ok": false,
+   "citation_exact": false,
+   "retrieval_top1_ok": true
+  },
+  {
+   "doc": "labsafety",
+   "q": "How large a spill requires evacuating the room?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "A spill of ethidiumbromide that exceeds 50mL should be attended to promptly, but it does not necessitate immediate evacuation of the room. However, for spills greater than 5 liters (or 50 times the threshold), the room should indeed be evacuated, and the incident should be reported via extension number 4100, as per the Chemical handling section of the provided BIO328 Lab Safety Document (p.2).",
+   "latency_ms": 5153.823431988712,
+   "abstained": false,
+   "gate_abstained": false,
+   "top_score": 0.4543313980102539,
+   "top_page": 2,
+   "correct": false,
+   "cited_pages": [
+    2
+   ],
+   "citation_ok": true,
+   "citation_exact": true,
+   "retrieval_top1_ok": true
+  },
+  {
+   "doc": "labsafety",
+   "q": "What extension should be called after a large spill?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "In case of a large spilt of ethidiem bromide, which is defined as more than 5 times the initial threshold of 50 mL (i.e., 50 ml * 5 = 250 mls or 25 ml), the room must be evacuated and the incident can be reported by calling extension 3410, according to the Chemical Handle section of the document titled \"BIO319 Lab Safety\" (p. 2).",
+   "latency_ms": 5209.98288600822,
+   "abstained": false,
+   "gate_abstained": false,
+   "top_score": 0.4616389274597168,
+   "top_page": 2,
+   "correct": false,
+   "cited_pages": [],
+   "citation_ok": false,
+   "citation_exact": false,
+   "retrieval_top1_ok": true
+  },
+  {
+   "doc": "labsafety",
+   "q": "How much is the lab safety quiz worth?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "The lab safety quizzes in the BIO 328 course are worth 5 percent of the total course grade, as stated in the Grading and conduct section of the BIO318 Lab Safety Procedural document (p.3). This information can be found in the provided document titled \"bio319_lab_procedures.pdf.\"",
+   "latency_ms": 3851.9785690004937,
+   "abstained": false,
+   "gate_abstained": false,
+   "top_score": 0.7918299436569214,
+   "top_page": 3,
+   "correct": true,
+   "cited_pages": [
+    3
+   ],
+   "citation_ok": true,
+   "citation_exact": true,
+   "retrieval_top1_ok": true
+  },
+  {
+   "doc": "labsafety",
+   "q": "How many safety violations lead to removal from the lab section?",
+   "expect": "answer",
+   "topic_used": "document",
+   "answer": "Two safety violations result in a student's removal from the laboratory section, as stated under the Grading & Conduct section of the \"BIO 18 Laboratories Safety Procedurals\" document (p3). However, the document does not specify the number of safety violations that would lead to a warning or other penalties before removal. (bio328_lab\\_safety\\_procedures, Grading &amp; Conduct, pp.3) (bio381_lab\\_procedural, document, pp.1)",
+   "latency_ms": 5981.8326809909195,
+   "abstained": true,
+   "gate_abstained": false,
+   "top_score": 0.6375201940536499,
+   "top_page": 3,
+   "correct": false,
+   "cited_pages": [
+    1,
+    3
+   ],
+   "citation_ok": true,
+   "citation_exact": false,
+   "retrieval_top1_ok": true
+  },
+  {
+   "doc": "labsafety",
+   "q": "What are the instructor's office hours?",
+   "expect": "abstain",
+   "topic_used": "document",
+   "answer": "I could not find enough information in the uploaded document to answer that.",
+   "latency_ms": 4.365842993138358,
+   "abstained": true,
+   "gate_abstained": true,
+   "top_score": 0.2199535071849823,
+   "top_page": 3,
+   "correct": true
+  },
+  {
+   "doc": "labsafety",
+   "q": "Which textbook is required for BIO 318?",
+   "expect": "abstain",
+   "topic_used": "document",
+   "answer": "Based on the provided document, there is no explicit mention of a required textbook for BIO328. The document primarily focuses on lab safety procedures and personal protective equipment. (bio 319 lab safety procedurals.pdf, p. 1)",
+   "latency_ms": 2797.471903002588,
+   "abstained": true,
+   "gate_abstained": false,
+   "top_score": 0.4079478979110718,
+   "top_page": 1,
+   "correct": true
+  },
+  {
+   "doc": "labsafety",
+   "q": "What is the chemical formula of table salt?",
+   "expect": "abstain",
+   "topic_used": "document",
+   "answer": "I could not find enough information in the uploaded document to answer that.",
+   "latency_ms": 4.322783992392942,
+   "abstained": true,
+   "gate_abstained": true,
+   "top_score": 0.14405398070812225,
+   "top_page": 2,
+   "correct": true
+  }
+ ],
+ "quizzes": [
+  {
+   "prompt": "Quiz me on this document",
+   "doc": "robotics",
+   "breadth": "broad",
+   "kind": "quiz",
+   "source_mode": "document",
+   "query_id": "",
+   "latency_ms": 30168.63184698741,
+   "valid": true,
+   "answer": "",
+   "attempts": {
+    "query_id": "QZ0070",
+    "model_calls": 5,
+    "retries": 0,
+    "failed_attempts": 0,
+    "duplicate_failures": 0,
+    "evidence_failures": 0,
+    "parse_failures": 0
+   },
+   "n_questions": 5,
+   "near_duplicate_pairs": 1,
+   "repeated_correct_answers": 1,
+   "evidence_supports_answer": 4,
+   "questions_with_evidence_ids": 5,
+   "questions": [
+    {
+     "q": "Where should lithium batteries be stored according to the rules of the robotics club?",
+     "answer": "The lead captain's office",
+     "evidence_ids": [
+      "chk_0e9fdb1fca819d1e_0002"
+     ]
+    },
+    {
+     "q": "Where should lithiuim batteries be stored as per the rules of this robotics club according to the provided information?",
+     "answer": "[Fireproof cabinet B]",
+     "evidence_ids": [
+      "chk_0e9fdb1fca819d1e_0002"
+     ]
+    },
+    {
+     "q": "According to the provided rules, where should lithia batteries be stored for safekeeping?",
+     "answer": "[Fireproof cabinet B]",
+     "evidence_ids": [
+      "chk_0e9fdb1fca819d1e_0002"
+     ]
+    },
+    {
+     "q": "Who founded the robotics Club mentioned in the text?",
+     "answer": "Proffesor Ilsa Vargas",
+     "evidence_ids": [
+      "chk_0e9fdb1fca819d1e_0000"
+     ]
+    },
+    {
+     "q": "According to the provided club rules, who should be contacted in case of an injury?",
+     "answer": "The safety officer",
+     "evidence_ids": [
+      "chk_0e9fdb1fca819d1e_0002"
+     ]
+    }
+   ]
+  },
+  {
+   "prompt": "Generate 5 MCQs on this document",
+   "doc": "shuttle",
+   "breadth": "broad",
+   "kind": "quiz",
+   "source_mode": "document",
+   "query_id": "",
+   "latency_ms": 28735.707271989668,
+   "valid": true,
+   "answer": "",
+   "attempts": {
+    "query_id": "QZ0071",
+    "model_calls": 5,
+    "retries": 0,
+    "failed_attempts": 0,
+    "duplicate_failures": 0,
+    "evidence_failures": 0,
+    "parse_failures": 0
+   },
+   "n_questions": 5,
+   "near_duplicate_pairs": 0,
+   "repeated_correct_answers": 0,
+   "evidence_supports_answer": 4,
+   "questions_with_evidence_ids": 5,
+   "questions": [
+    {
+     "q": "What is the frequency of the Red Line service?",
+     "answer": "Every 30 Minutes",
+     "evidence_ids": [
+      "chk_2986f75cd44a677f_0000"
+     ]
+    },
+    {
+     "q": "What is the frequency, in minutes, of the Blue Line campusloop service?",
+     "answer": "12",
+     "evidence_ids": [
+      "chk_2986f75cd44a677f_0000"
+     ]
+    },
+    {
+     "q": "What is the cost for visitors to take a single ride on the Willow Creek shuttle service?",
+     "answer": "$1.00",
+     "evidence_ids": [
+      "chk_2986f75cd44a677f_0001"
+     ]
+    },
+    {
+     "q": "What can be done with a lost item found on a Willow Creek bus?",
+     "answer": "The Transit Office will hold it for 1 week.",
+     "evidence_ids": [
+      "chk_2986f75cd44a677f_0002"
+     ]
+    },
+    {
+     "q": "What is the cost of a monthly pass on the Willlow Creek Shuttles for staff members?",
+     "answer": "$20",
+     "evidence_ids": [
+      "chk_2986f75cd44a677f_0001"
+     ]
+    }
+   ]
+  },
+  {
+   "prompt": "Generate 5 MCQs about this document",
+   "doc": "labsafety",
+   "breadth": "broad",
+   "kind": "quiz",
+   "source_mode": "document",
+   "query_id": "",
+   "latency_ms": 32368.872149992967,
+   "valid": true,
+   "answer": "",
+   "attempts": {
+    "query_id": "QZ0072",
+    "model_calls": 5,
+    "retries": 0,
+    "failed_attempts": 0,
+    "duplicate_failures": 0,
+    "evidence_failures": 0,
+    "parse_failures": 0
+   },
+   "n_questions": 5,
+   "near_duplicate_pairs": 1,
+   "repeated_correct_answers": 0,
+   "evidence_supports_answer": 3,
+   "questions_with_evidence_ids": 5,
+   "questions": [
+    {
+     "q": "Where can Ethidium Bromide be used according to the lab safety procedures?",
+     "answer": "Bay 3",
+     "evidence_ids": [
+      "chk_d9b9dce107034e94_0001"
+     ]
+    },
+    {
+     "q": "Where can Ethidum Bromide only be used according the lab safety procedure?",
+     "answer": "[Not specified]",
+     "evidence_ids": [
+      "chk_d9b9dce107034e94_0001"
+     ]
+    },
+    {
+     "q": "Which personal protective equipment (PPE) is required at all time in BIO 218 laboratory according to the safety procedures?",
+     "answer": "Nitrile gloves",
+     "evidence_ids": [
+      "chk_d9b9dce107034e94_0000"
+     ]
+    },
+    {
+     "q": "Which PPE item is not mentioned as being required at alltimes in BIO318 laboratory safety procedures?",
+     "answer": "Extension 44\u00a010",
+     "evidence_ids": [
+      "chk_d9b9dce107034e94_0000"
+     ]
+    },
+    {
+     "q": "Which PPE item must be rated according to ANSI Z97.1 for use in BIO-318 lab?",
+     "answer": "Safety goggles",
+     "evidence_ids": [
+      "chk_d9b9dce107034e94_0000"
+     ]
+    }
+   ]
+  },
+  {
+   "prompt": "Generate 5 MCQs about the safety rules",
+   "doc": "robotics",
+   "breadth": "narrow",
+   "kind": "quiz",
+   "source_mode": "document",
+   "query_id": "",
+   "latency_ms": 38806.973880011356,
+   "valid": true,
+   "answer": "",
+   "attempts": {
+    "query_id": "QZ0073",
+    "model_calls": 6,
+    "retries": 1,
+    "failed_attempts": 1,
+    "duplicate_failures": 0,
+    "evidence_failures": 1,
+    "parse_failures": 0
+   },
+   "n_questions": 5,
+   "near_duplicate_pairs": 1,
+   "repeated_correct_answers": 1,
+   "evidence_supports_answer": 3,
+   "questions_with_evidence_ids": 5,
+   "questions": [
+    {
+     "q": "Where does the robotics club meet every week?",
+     "answer": "The Engineering Annex",
+     "evidence_ids": [
+      "chk_0e9fdb1fca819d1e_0000"
+     ]
+    },
+    {
+     "q": "Where should you report any injury that occurs during the robotics activities?",
+     "answer": "The faculty advisor",
+     "evidence_ids": [
+      "chk_0e9fdb1fca819d1e_0002"
+     ]
+    },
+    {
+     "q": "Where should lithium batteries be stored according to the safety rules?",
+     "answer": "In an open shelf",
+     "evidence_ids": [
+      "chk_0e9fdb1fca819d1e_0002"
+     ]
+    },
+    {
+     "q": "Where is the robotics meeting held every week?",
+     "answer": "The Engineering Annex",
+     "evidence_ids": [
+      "chk_0e9fdb1fca819d1e_0000"
+     ]
+    },
+    {
+     "q": "Where should annual membership dues be paid according to the provided information?",
+     "answer": "The faculty advisor's office",
+     "evidence_ids": [
+      "chk_0e9fdb1fca819d1e_0000"
+     ]
+    }
+   ]
+  },
+  {
+   "prompt": "Generate 5 MCQs about the lost item policy",
+   "doc": "shuttle",
+   "breadth": "narrow",
+   "kind": "quiz",
+   "source_mode": "document",
+   "query_id": "",
+   "latency_ms": 38485.04504098673,
+   "valid": true,
+   "answer": "",
+   "attempts": {
+    "query_id": "QZ0074",
+    "model_calls": 6,
+    "retries": 1,
+    "failed_attempts": 1,
+    "duplicate_failures": 0,
+    "evidence_failures": 0,
+    "parse_failures": 0
+   },
+   "n_questions": 5,
+   "near_duplicate_pairs": 0,
+   "repeated_correct_answers": 1,
+   "evidence_supports_answer": 5,
+   "questions_with_evidence_ids": 5,
+   "questions": [
+    {
+     "q": "Where can you find information about the shuttle service routes?",
+     "answer": "[Willow Creek Shutttle Service Guide]",
+     "evidence_ids": [
+      "chk_2986f75cd44a677f_0000"
+     ]
+    },
+    {
+     "q": "What happens to lost items on the buses?",
+     "answer": "They are sent to the Transit office in the Ross building and held for 2 weeks.",
+     "evidence_ids": [
+      "chk_2986f75cd44a677f_0002"
+     ]
+    },
+    {
+     "q": "What is the holding period for lost items at the Transist Office in the case they are found on the bus?",
+     "answer": "Held for 7 days",
+     "evidence_ids": [
+      "chk_2986f75cd44a677f_0002"
+     ]
+    },
+    {
+     "q": "What is the holding duration for lost items found on the shuttle buses?",
+     "answer": "Held for 7 days",
+     "evidence_ids": [
+      "chk_2986f75cd44a677f_0002"
+     ]
+    },
+    {
+     "q": "Where should you go to retrieve a lost item found on a shuttle bus?",
+     "answer": "Transit Office in Ross Building",
+     "evidence_ids": [
+      "chk_2986f75cd44a677f_0002"
+     ]
+    }
+   ]
+  },
+  {
+   "prompt": "Generate 5 MCQs about personal protective equipment",
+   "doc": "labsafety",
+   "breadth": "narrow",
+   "kind": "quiz",
+   "source_mode": "document",
+   "query_id": "",
+   "latency_ms": 56393.29127399833,
+   "valid": true,
+   "answer": "",
+   "attempts": {
+    "query_id": "QZ0075",
+    "model_calls": 9,
+    "retries": 4,
+    "failed_attempts": 4,
+    "duplicate_failures": 0,
+    "evidence_failures": 4,
+    "parse_failures": 0
+   },
+   "n_questions": 5,
+   "near_duplicate_pairs": 4,
+   "repeated_correct_answers": 1,
+   "evidence_supports_answer": 0,
+   "questions_with_evidence_ids": 5,
+   "questions": [
+    {
+     "q": "Which of the following PPE items is not mentioned as a requirement in the laboratory safety procedures?",
+     "answer": "'Ethidium b romide' specific bay usage",
+     "evidence_ids": [
+      "chk_d9b9dce107034e94_0000"
+     ]
+    },
+    {
+     "q": "Which of the following is not a PPE item mentioned as a requirements in the laboratory Safety Procedues?",
+     "answer": "Ethidium bromeide",
+     "evidence_ids": [
+      "chk_d9b9dce107034e94_0000"
+     ]
+    },
+    {
+     "q": "Which of the following items is not a required PPE in the laboratory according to the safety procedures?",
+     "answer": "Ethidium bromeide",
+     "evidence_ids": [
+      "chk_d9b9dce107034e94_0000"
+     ]
+    },
+    {
+     "q": "Which of the following clothing items is not listed as a requirement for the laboratory according the safety procedures?;",
+     "answer": "Extension 4400",
+     "evidence_ids": [
+      "chk_d9b9dce107034e94_0000"
+     ]
+    },
+    {
+     "q": "Which of the following clothes is not listed in the laboratory's safety procedures as a requirement?",
+     "answer": "Shoes",
+     "evidence_ids": [
+      "chk_d9b9dce107034e94_0000"
+     ]
+    }
+   ]
+  },
+  {
+   "prompt": "Generate 5 MCQs about housing rules",
+   "doc": null,
+   "breadth": "broad",
+   "kind": "answer",
+   "source_mode": null,
+   "query_id": "",
+   "latency_ms": 40497.85422399873,
+   "valid": false,
+   "answer": "Could not generate a valid quiz from the model output. Please try again.",
+   "attempts": {
+    "query_id": "QZ0076",
+    "model_calls": 5,
+    "retries": 1,
+    "failed_attempts": 2,
+    "duplicate_failures": 0,
+    "evidence_failures": 1,
+    "parse_failures": 0
+   }
+  },
+  {
+   "prompt": "Generate 5 MCQs about the residence hall guest policy",
+   "doc": null,
+   "breadth": "narrow",
+   "kind": "quiz",
+   "source_mode": "housing",
+   "query_id": "",
+   "latency_ms": 58277.125023974804,
+   "valid": true,
+   "answer": "",
+   "attempts": {
+    "query_id": "QZ0077",
+    "model_calls": 7,
+    "retries": 2,
+    "failed_attempts": 2,
+    "duplicate_failures": 0,
+    "evidence_failures": 2,
+    "parse_failures": 0
+   },
+   "n_questions": 5,
+   "near_duplicate_pairs": 4,
+   "repeated_correct_answers": 0,
+   "questions": [
+    {
+     "q": "Which of the following statements about overnight guests in the residence hall is true?",
+     "answer": "<strong>Overnight guests from the opposite sex can stay in the resident's rooms.</strong>",
+     "evidence_ids": [
+      "housing:HRL.0042 Visitation and Overnight Guests (Up to -3 Points):p25"
+     ]
+    },
+    {
+     "q": "Which of the following is true about overnight guests of the OPPOSITE sex in the residence hall?",
+     "answer": "<strong>Overnight guests are NOT permitted</strong> in a resident\u2018s room.",
+     "evidence_ids": [
+      "housing:HRL.0042 Visitation and Overnight Guests (Up to -3 Points):p25"
+     ]
+    },
+    {
+     "q": "Which of the following describes the limit for overnight guests of opposite sex in a resident's room?",
+     "answer": "Overnight guests from the opposite sex cannot stay in a resident room.",
+     "evidence_ids": [
+      "housing:HRL.0042 Visitation and Overnight Guests (Up to -3 Points):p25"
+     ]
+    },
+    {
+     "q": "Which of the following limits applies to overnight guests of OPPOSITE SEX in a resident room?",
+     "answer": "Overnight guests OF THE SAME sex are limited.",
+     "evidence_ids": [
+      "housing:HRL.0042 Visitation and Overnight Guests (Up to -3 Points):p25"
+     ]
+    },
+    {
+     "q": "Which of the following limitations applies to overnight female guests in a male resident's dorm room?",
+     "answer": "<b>Overnight guests from the opposite sex ARE NOT permitted.</b>",
+     "evidence_ids": [
+      "housing:HRL.0042 Visitation and Overnight Guests (Up to -3 Points):p25"
+     ]
+    }
+   ]
+  },
+  {
+   "prompt": "Generate 5 MCQs about dorm quiet hours",
+   "doc": null,
+   "breadth": "narrow",
+   "kind": "quiz",
+   "source_mode": "housing",
+   "query_id": "",
+   "latency_ms": 40997.1714260173,
+   "valid": true,
+   "answer": "",
+   "attempts": {
+    "query_id": "QZ0078",
+    "model_calls": 6,
+    "retries": 1,
+    "failed_attempts": 1,
+    "duplicate_failures": 0,
+    "evidence_failures": 1,
+    "parse_failures": 0
+   },
+   "n_questions": 5,
+   "near_duplicate_pairs": 1,
+   "repeated_correct_answers": 1,
+   "questions": [
+    {
+     "q": "What is the maximum number of guests a resident can have in their room during open visitations on Fridays?",
+     "answer": "2",
+     "evidence_ids": [
+      "housing:HRL.0042 Visitation and Overnight Guests (Up to -3 Points):p24"
+     ]
+    },
+    {
+     "q": "What is the maximum allowed number of guests in a resident's room during Quiet Hours (Sunday-Thursday)?",
+     "answer": "Two guests",
+     "evidence_ids": [
+      "housing:HRL.0042 Visitation and Overnight Guests (Up to -3 Points):p24"
+     ]
+    },
+    {
+     "q": "What is the maximum allowable number of guests that a resident can host in their room at any given moment during Quiet hours (Sundays-Thursdays), according to the dorm rules?",
+     "answer": "'No guests' during Quiet hrs",
+     "evidence_ids": [
+      "housing:HRL.0012 Courtesy and Quiet Hours (Up to -2 Points):p17"
+     ]
+    },
+    {
+     "q": "What is the maximum amount of time a guest can stay in a resident\u2019s room during open visiting hours on Fridays, before being considered an overnight visitor?",
+     "answer": "4 hours",
+     "evidence_ids": [
+      "housing:HRL.0042 Visitation and Overnight Guests (Up to -3 Points):p24"
+     ]
+    },
+    {
+     "q": "What is the maximum length of time a single guest can stay past midnight during open visit hours on Frays?",
+     "answer": "4 hours",
+     "evidence_ids": [
+      "housing:HRL.0042 Visitation and Overnight Guests (Up to -3 Points):p24"
+     ]
+    }
+   ]
+  },
+  {
+   "prompt": "Generate 5 MCQs about cell biology",
+   "doc": null,
+   "breadth": "broad",
+   "kind": "quiz",
+   "source_mode": "pretrained",
+   "query_id": "",
+   "latency_ms": 32942.39601600566,
+   "valid": true,
+   "answer": "",
+   "attempts": {
+    "query_id": "QZ0079",
+    "model_calls": 5,
+    "retries": 0,
+    "failed_attempts": 0,
+    "duplicate_failures": 0,
+    "evidence_failures": 0,
+    "parse_failures": 0
+   },
+   "n_questions": 5,
+   "near_duplicate_pairs": 1,
+   "repeated_correct_answers": 0,
+   "questions": [
+    {
+     "q": "Which of the following structures are found within the nucleus of eukaryotic cells?",
+     "answer": "Nucleolus",
+     "evidence_ids": []
+    },
+    {
+     "q": "Which of the following organelles are found within a eukaryote's nucleus?",
+     "answer": "'Nucleolus'",
+     "evidence_ids": []
+    },
+    {
+     "q": "Which of the following components are part of the ribosome, a complex macromolecular machine responsible for protein synthesis in cells?",
+     "answer": "Mitochondria",
+     "evidence_ids": []
+    },
+    {
+     "q": "Which of the following molecules are involved in DNA replication, the process by which a double helix of DNA is copied during cell division?",
+     "answer": "DNA polymerase",
+     "evidence_ids": []
+    },
+    {
+     "q": "Which of the following enzymes are involved in the process of transcription, where genetic information from DNA is used to produce RNA in eukaryotes?",
+     "answer": "'RNA polymerases'",
+     "evidence_ids": []
+    }
+   ]
+  },
+  {
+   "prompt": "Generate 5 MCQs about the Krebs cycle",
+   "doc": null,
+   "breadth": "narrow",
+   "kind": "quiz",
+   "source_mode": "pretrained",
+   "query_id": "",
+   "latency_ms": 35134.725124022225,
+   "valid": true,
+   "answer": "",
+   "attempts": {
+    "query_id": "QZ0080",
+    "model_calls": 5,
+    "retries": 0,
+    "failed_attempts": 0,
+    "duplicate_failures": 0,
+    "evidence_failures": 0,
+    "parse_failures": 0
+   },
+   "n_questions": 5,
+   "near_duplicate_pairs": 0,
+   "repeated_correct_answers": 0,
+   "questions": [
+    {
+     "q": "Which of the following reactions occurs during the Krebs (or Citric Acid) Cycle?",
+     "answer": "* Oxidative decarboxylation of citrate to form isocitrate",
+     "evidence_ids": []
+    },
+    {
+     "q": "Which reaction in the Krebs Cycle results in the formation of carbon dioxide (CO2) and reduces NAD+ to NADH?",
+     "answer": "The conversion of succinyl-CoA to succinate",
+     "evidence_ids": []
+    },
+    {
+     "q": "Which compound is NOT involved in the Kreb's cycle as a direct product or reactant?",
+     "answer": "\"Water (H2O)\"",
+     "evidence_ids": []
+    },
+    {
+     "q": "Which compound is oxidized during the Kreb\u2019s cycle?",
+     "answer": "NADH",
+     "evidence_ids": []
+    },
+    {
+     "q": "Which compound is reduced during the Krebes (or Citrate) Cycle?",
+     "answer": "Nicotinamide Adenine Dinucleotide (NAD+)",
+     "evidence_ids": []
+    }
+   ]
+  },
+  {
+   "prompt": "Generate 5 MCQs about binary search",
+   "doc": null,
+   "breadth": "narrow",
+   "kind": "quiz",
+   "source_mode": "pretrained",
+   "query_id": "",
+   "latency_ms": 31366.758457006654,
+   "valid": true,
+   "answer": "",
+   "attempts": {
+    "query_id": "QZ0081",
+    "model_calls": 5,
+    "retries": 0,
+    "failed_attempts": 0,
+    "duplicate_failures": 0,
+    "evidence_failures": 0,
+    "parse_failures": 0
+   },
+   "n_questions": 5,
+   "near_duplicate_pairs": 0,
+   "repeated_correct_answers": 3,
+   "questions": [
+    {
+     "q": "Which of the following algorithms has a time complexity of O(log n) for searching an element in a sorted array?",
+     "answer": "Binary Search",
+     "evidence_ids": []
+    },
+    {
+     "q": "Which algorithm efficiently searches for an element in an ordered list by repeatedly dividing the search interval in half?",
+     "answer": "Binary Search",
+     "evidence_ids": []
+    },
+    {
+     "q": "Which algorithm uses a divide-and-conquer approach to find a specific value within a sorted list by repeatedly discarding intervals that cannot contain the value?",
+     "answer": "Binary Search",
+     "evidence_ids": []
+    },
+    {
+     "q": "Which algorithm uses a recursive approach to find the position of a target value within a given sorted array, by repeatedly narrowing down the search range?",
+     "answer": "Binary Search",
+     "evidence_ids": []
+    },
+    {
+     "q": "Which algorithm uses a technique called 'recursive binary search' to find a target value in a sorted list?",
+     "answer": "Recursive Binary Search",
+     "evidence_ids": []
+    }
+   ]
+  }
+ ]
+}

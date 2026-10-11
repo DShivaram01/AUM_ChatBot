@@ -1,0 +1,83 @@
+{
+  "_about": "Task 51: independent Document QA / document-quiz evaluation set. All documents are fictional so the model cannot answer from pretrained knowledge. 'keywords' must ALL appear (case-insensitive) in a correct answer; 'page' is the page the fact is on. Unanswerable questions (expect=abstain) include facts adjacent to the document's subject and common-knowledge facts the document does not state.",
+  "documents": [
+    {
+      "id": "robotics",
+      "filename": "harbor_point_robotics_handbook.pdf",
+      "pages": [
+        "Harbor Point Robotics Club Handbook\nMembership\nAnnual membership dues are $35 per semester. The club meets every Thursday at 6:30 pm in Room E214 of the Engineering Annex. The club was founded in 2009 by Professor Ilsa Varga.",
+        "Competition\nThe club competes in the Gulf Coast BotBattle every April. Competition robots must weigh no more than 15 kg. The build season lasts ten weeks, and the lead captain is elected each September.",
+        "Safety Rules\nSoldering is only permitted when the safety officer is present. Lithium batteries must be stored in fireproof cabinet B. Any injury must be reported to the faculty advisor within 24 hours."
+      ],
+      "questions": [
+        {"q": "How much are the membership dues?", "expect": "answer", "keywords": ["35"], "page": 1},
+        {"q": "Which room does the robotics club meet in?", "expect": "answer", "keywords": ["E214"], "page": 1},
+        {"q": "Who founded the robotics club?", "expect": "answer", "keywords": ["Varga"], "page": 1},
+        {"q": "What is the maximum weight for a competition robot?", "expect": "answer", "keywords": ["15"], "page": 2},
+        {"q": "In which month is the Gulf Coast BotBattle held?", "expect": "answer", "keywords": ["April"], "page": 2},
+        {"q": "Where must lithium batteries be stored?", "expect": "answer", "keywords": ["cabinet B"], "page": 3},
+        {"q": "How soon must an injury be reported?", "expect": "answer", "keywords": ["24"], "page": 3},
+        {"q": "What is the robotics club's annual budget?", "expect": "abstain"},
+        {"q": "How many robots did the club build in 2015?", "expect": "abstain"},
+        {"q": "What is the boiling point of water at sea level?", "expect": "abstain"}
+      ]
+    },
+    {
+      "id": "shuttle",
+      "filename": "willow_creek_shuttle_guide.pdf",
+      "pages": [
+        "Willow Creek Shuttle Service Guide\nRoutes\nThe Blue Line campus loop runs every 12 minutes from 7 am to 10 pm. The Red Line runs to Riverside Mall every 30 minutes.",
+        "Fares and Passes\nStudents ride free with a valid student ID. Visitors pay a fare of $1.50 per ride. Staff may buy a monthly pass for $20.",
+        "Policies\nBikes are allowed on the front racks, with a maximum of two bikes per bus. Lost items are held for 14 days at the Transit Office in the Ross Building. Service is suspended when wind speeds exceed 45 mph."
+      ],
+      "questions": [
+        {"q": "How often does the Blue Line run?", "expect": "answer", "keywords": ["12"], "page": 1},
+        {"q": "Where does the Red Line go?", "expect": "answer", "keywords": ["Riverside Mall"], "page": 1},
+        {"q": "How much does a visitor pay per ride?", "expect": "answer", "keywords": ["1.50"], "page": 2},
+        {"q": "How much is the staff monthly pass?", "expect": "answer", "keywords": ["20"], "page": 2},
+        {"q": "How many bikes can a bus carry?", "expect": "answer", "keywords": ["two|2"], "page": 3},
+        {"q": "How long are lost items kept?", "expect": "answer", "keywords": ["14"], "page": 3},
+        {"q": "Which building is the Transit Office in?", "expect": "answer", "keywords": ["Ross"], "page": 3},
+        {"q": "At what wind speed is shuttle service suspended?", "expect": "answer", "keywords": ["45"], "page": 3},
+        {"q": "Do the shuttles have wifi?", "expect": "abstain"},
+        {"q": "What is the name of the shuttle drivers' union?", "expect": "abstain"},
+        {"q": "Who was the first president of the United States?", "expect": "abstain"}
+      ]
+    },
+    {
+      "id": "labsafety",
+      "filename": "bio318_lab_safety.pdf",
+      "pages": [
+        "BIO 318 Laboratory Safety Procedures\nPersonal Protective Equipment\nSafety goggles must be rated ANSI Z87.1. Nitrile gloves are required at all times. Lab coats are laundered weekly by Kessler Services.",
+        "Chemical Handling\nEthidium bromide may only be used in Bay 3. Any spill larger than 500 mL requires evacuating the room and calling extension 4410.",
+        "Grading and Conduct\nThe lab safety quiz is worth 5% of the course grade. A student with two safety violations is removed from the lab section."
+      ],
+      "questions": [
+        {"q": "What standard must safety goggles meet?", "expect": "answer", "keywords": ["Z87.1"], "page": 1},
+        {"q": "Who launders the lab coats?", "expect": "answer", "keywords": ["Kessler"], "page": 1},
+        {"q": "Where can ethidium bromide be used?", "expect": "answer", "keywords": ["Bay 3"], "page": 2},
+        {"q": "How large a spill requires evacuating the room?", "expect": "answer", "keywords": ["500"], "page": 2},
+        {"q": "What extension should be called after a large spill?", "expect": "answer", "keywords": ["4410"], "page": 2},
+        {"q": "How much is the lab safety quiz worth?", "expect": "answer", "keywords": ["5"], "page": 3},
+        {"q": "How many safety violations lead to removal from the lab section?", "expect": "answer", "keywords": ["two|2"], "page": 3},
+        {"q": "What are the instructor's office hours?", "expect": "abstain"},
+        {"q": "Which textbook is required for BIO 318?", "expect": "abstain"},
+        {"q": "What is the chemical formula of table salt?", "expect": "abstain"}
+      ]
+    }
+  ],
+  "quizzes": [
+    {"doc": "robotics", "prompt": "Quiz me on this document", "breadth": "broad"},
+    {"doc": "shuttle", "prompt": "Generate 5 MCQs on this document", "breadth": "broad"},
+    {"doc": "labsafety", "prompt": "Generate 5 MCQs about this document", "breadth": "broad"},
+    {"doc": "robotics", "prompt": "Generate 5 MCQs about the safety rules", "breadth": "narrow"},
+    {"doc": "shuttle", "prompt": "Generate 5 MCQs about the lost item policy", "breadth": "narrow"},
+    {"doc": "labsafety", "prompt": "Generate 5 MCQs about personal protective equipment", "breadth": "narrow"},
+    {"doc": null, "prompt": "Generate 5 MCQs about housing rules", "breadth": "broad"},
+    {"doc": null, "prompt": "Generate 5 MCQs about the residence hall guest policy", "breadth": "narrow"},
+    {"doc": null, "prompt": "Generate 5 MCQs about dorm quiet hours", "breadth": "narrow"},
+    {"doc": null, "prompt": "Generate 5 MCQs about cell biology", "breadth": "broad", "open_ended": true},
+    {"doc": null, "prompt": "Generate 5 MCQs about the Krebs cycle", "breadth": "narrow", "open_ended": true},
+    {"doc": null, "prompt": "Generate 5 MCQs about binary search", "breadth": "narrow", "open_ended": true}
+  ]
+}
