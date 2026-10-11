@@ -368,6 +368,8 @@ def _try_quiz_from_chat(req: "ChatRequest") -> dict | None:
 
 def _format_quiz_explanation(quiz: dict, question_number: int) -> str:
     questions = quiz.get("questions", [])
+    if question_number == -1:  # "the last question" (detect_quiz_followup)
+        question_number = len(questions)
     if not 1 <= question_number <= len(questions):
         return (
             f"This quiz only has {len(questions)} question(s), so there's no "

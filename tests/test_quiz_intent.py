@@ -113,6 +113,40 @@ def test_resolve_quiz_source_asks_rather_than_guesses_without_a_source():
     assert err and "Open-ended" in err
 
 
+# ---------- Task 58: recall fixes, checked on phrasings NOT in activity_gold_set ----------
+
+def test_task58_new_phrasings_trigger_quiz_creation():
+    for text, topic in [
+        ("I need 10 MCQs on genetics", "genetics"),
+        ("Could you make me a short multiple-choice quiz on Rome?", "Rome"),
+        ("can you get me some practice questions on calculus", "calculus"),
+        ("Generate a 12-question quiz about plate tectonics", "plate tectonics"),
+        ("I want a mock exam on organic chemistry", "organic chemistry"),
+    ]:
+        r = detect_quiz_intent(text)
+        assert r.activity == "quiz_create", text
+        assert r.topic == topic, (text, r.topic)
+    assert detect_quiz_intent("Generate a 12-question quiz about plate tectonics").count == 12
+
+
+def test_task58_new_verbs_do_not_hijack_ordinary_chat():
+    for text in [
+        "I need the quiz answers from yesterday", "I want to know when the quiz is",
+        "Can I get my quiz grade?", "I need help with my quiz schedule",
+        "write a unit test for this function", "I need a practice room in the library",
+        "Make the next quiz easier", "get me the dorm guest policy",
+    ]:
+        assert detect_quiz_intent(text).activity == "chat", text
+
+
+def test_task58_followup_ordinals_last_and_answer_wording():
+    assert detect_quiz_followup("Can you explain the second question?") == {"kind": "explain", "question_number": 2}
+    assert detect_quiz_followup("Show me the answer to the last question") == {"kind": "explain", "question_number": -1}
+    assert detect_quiz_followup("What was wrong with my answer on question 4?")["question_number"] == 4
+    assert detect_quiz_followup("Generate another 5 questions") == {"kind": "regenerate"}
+    assert detect_quiz_followup("More questions like these please") == {"kind": "regenerate"}
+
+
 # ---------- detect_quiz_followup ----------
 
 def test_explain_question_n_both_word_orders():

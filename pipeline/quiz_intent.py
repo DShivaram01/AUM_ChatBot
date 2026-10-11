@@ -28,15 +28,26 @@ from pipeline.classifier import _HOUSING_HINT_WORDS
 _DEFAULT_COUNT = 5
 _MIN_COUNT, _MAX_COUNT = 1, 20
 
-_TRIGGER_VERBS = r"(?:create|make|generate|build|write|give me|prepare|provide)"
+# Task 58: want/need/get added -- "I want a quiz on X", "Can I get 5 quiz
+# questions" were missed (Laya benchmark, activity_gold_set.jsonl).
+_TRIGGER_VERBS = r"(?:create|make|generate|build|write|give me|prepare|provide|want|need|get)"
 
 # Matches without needing a preceding count -- these nouns are
-# unambiguously about quiz content on their own.
+# unambiguously about quiz content on their own. The lookahead keeps
+# "quiz app", "quiz schedule", "the quiz answers", "my quiz results" etc.
+# out: those talk about a quiz, they don't ask for one.
 _QUIZ_NOUN_UNQUALIFIED = (
-    r"(?:mcqs?|multiple[- ]choice questions?|"
-    r"quiz(?:zes)?(?!\s+(?:app|application|website|program|system|schedule|time|date))|"
-    r"practice questions?|test questions?)"
+    r"(?:mcqs?|multiple[- ]choice (?:questions?|quiz(?:zes)?)|"
+    r"quiz(?:zes)?(?!\s+(?:app|application|website|program|system|schedule|time|date"
+    r"|answers?|results?|scores?|grades?|tomorrow|today"
+    # no difficulty feature exists: "make the next quiz easier" must not become
+    # a new quiz *about* "easier"
+    r"|easier|harder|simpler|more\s+difficult))|"
+    r"practice questions?|test questions?|(?:practice|mock|sample) (?:tests?|exams?))"
 )
+# Up to two words between article and noun ("a mock quiz", "a few
+# multiple-choice questions"); still anchored to a trigger verb + quiz noun.
+_FILLER = r"(?:[a-z]+[\s-]+){0,2}"
 
 # Bare "questions" is too generic a word to trust on its own (ordinary
 # chat says "I have questions about X" constantly) -- only counts as a
@@ -51,16 +62,20 @@ _QUIZ_NOUN_UNQUALIFIED = (
 # incorrectly matched. Three explicit alternatives instead, each either
 # requiring a real quiz-noun or requiring both a count AND "questions".
 _CREATE_RE = re.compile(
-    rf"{_TRIGGER_VERBS}\s+(?:me\s+)?(?:a\s+|an\s+|some\s+)?"
+    rf"\b{_TRIGGER_VERBS}\s+(?:me\s+)?(?:a\s+|an\s+|some\s+)?{_FILLER}"
     rf"(?:"
-    rf"(?P<count_a>\d{{1,2}})\s+{_QUIZ_NOUN_UNQUALIFIED}"  # "5 MCQs"
-    rf"|{_QUIZ_NOUN_UNQUALIFIED}"                            # "MCQs" (no count)
-    rf"|(?P<count_b>\d{{1,2}})\s+questions?"                # "10 questions" (count required)
+    rf"(?P<count_a>\d{{1,2}})[\s-]+{_FILLER}{_QUIZ_NOUN_UNQUALIFIED}"  # "5 MCQs"
+    rf"|{_QUIZ_NOUN_UNQUALIFIED}"                                       # "MCQs" (no count)
+    rf"|(?P<count_b>\d{{1,2}})[\s-]+questions?"  # "10 questions", "7-question" (count required)
     rf")\b",
     re.IGNORECASE,
 )
 
-_QUIZ_ME_RE = re.compile(r"\bquiz\s+me\b(?:\s+(?:on|about))?", re.IGNORECASE)
+# "quiz me", "quizzing me", "test me", "test my knowledge of X".
+_QUIZ_ME_RE = re.compile(
+    r"\b(?:quiz(?:zing)?\s+me|test\s+me|test\s+my\s+knowledge)\b(?:\s+(?:on|about|of))?",
+    re.IGNORECASE,
+)
 
 # Connector separating the trigger phrase from the actual subject, e.g.
 # "generate 5 MCQs **on** protein sequences" -> topic = "protein sequences".
@@ -168,10 +183,17 @@ def resolve_quiz_source(
 # mention "question 3" of some unrelated numbered list; without a quiz to
 # explain, there's nothing for this to match against in the first place.
 
-_QUESTION_NUM_RE = re.compile(r"\bquestion\s*(\d{1,2})\b", re.IGNORECASE)
-_EXPLAIN_TRIGGER_RE = re.compile(r"\b(?:explain|why)\b", re.IGNORECASE)
+_ORDINALS = {"first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5, "sixth": 6,
+             "seventh": 7, "eighth": 8, "ninth": 9, "tenth": 10, "last": -1}
+_QUESTION_NUM_RE = re.compile(
+    rf"\b(?:question\s*(\d{{1,2}})|({'|'.join(_ORDINALS)})\s+question)\b", re.IGNORECASE,
+)
+# Task 58: "answer"/"wrong" added ("show me the answer to the last question",
+# "what was wrong with my answer on question 4").
+_EXPLAIN_TRIGGER_RE = re.compile(r"\b(?:explain|why|answer|wrong)\b", re.IGNORECASE)
 _REGENERATE_RE = re.compile(
     r"\b(try again|regenerate|make another(?:\s+one|\s+quiz)?|"
+    r"(?:give me|generate|make) (?:another|more)\b|more questions|"
     r"give me another(?:\s+quiz)?|another quiz(?:\s+on the same topic)?|"
     r"new quiz(?:\s+on the same topic)?|redo (?:the|this) quiz)\b",
     re.IGNORECASE,
@@ -180,16 +202,17 @@ _REGENERATE_RE = re.compile(
 
 def detect_quiz_followup(text: str) -> dict | None:
     """Returns {"kind": "explain", "question_number": N} for "explain
-    question N" (in either word order, "why is question 2's answer X"
-    also matches); {"kind": "regenerate"} for "try again"/"regenerate"/
-    "make another one"/etc.; None otherwise."""
+    question N" / "the second question" (either word order; N == -1 means
+    "the last question"); {"kind": "regenerate"} for "try again"/
+    "regenerate"/"more questions"/etc.; None otherwise."""
     stripped = text.strip()
     if not stripped:
         return None
 
     question_match = _QUESTION_NUM_RE.search(stripped)
     if question_match and _EXPLAIN_TRIGGER_RE.search(stripped):
-        return {"kind": "explain", "question_number": int(question_match.group(1))}
+        digits, word = question_match.groups()
+        return {"kind": "explain", "question_number": int(digits) if digits else _ORDINALS[word.lower()]}
 
     if _REGENERATE_RE.search(stripped):
         return {"kind": "regenerate"}

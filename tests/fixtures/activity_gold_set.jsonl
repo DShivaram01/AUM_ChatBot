@@ -1,0 +1,60 @@
+{"id": "A01", "query": "Generate 5 MCQs about computational biology", "expected": "quiz_create", "source": "laya_doc"}
+{"id": "A02", "query": "Quiz me on the attached PDF", "expected": "quiz_create", "source": "laya_doc"}
+{"id": "A03", "query": "Make a 10 question quiz on photosynthesis", "expected": "quiz_create", "source": "novel"}
+{"id": "A04", "query": "Can you test me with a few multiple choice questions on World War 2?", "expected": "quiz_create", "source": "novel"}
+{"id": "A05", "query": "Give me practice questions for my statistics exam", "expected": "quiz_create", "source": "novel"}
+{"id": "A06", "query": "I want a quiz on the housing guest policy", "expected": "quiz_create", "source": "novel"}
+{"id": "A07", "query": "Create some MCQs from my lecture notes", "expected": "quiz_create", "source": "novel"}
+{"id": "A08", "query": "Prepare a short test on Python loops", "expected": "quiz_create", "source": "novel"}
+{"id": "A09", "query": "Quiz me on cell biology please", "expected": "quiz_create", "source": "novel"}
+{"id": "A10", "query": "Build me a multiple-choice quiz about the French revolution", "expected": "quiz_create", "source": "novel"}
+{"id": "A11", "query": "Write 3 practice questions on linear algebra", "expected": "quiz_create", "source": "novel"}
+{"id": "A12", "query": "Test my knowledge of the uploaded slides", "expected": "quiz_create", "source": "novel"}
+{"id": "A13", "query": "I need a mock quiz on thermodynamics", "expected": "quiz_create", "source": "novel"}
+{"id": "A14", "query": "Throw some questions at me about the dorm quiet hours policy", "expected": "quiz_create", "source": "novel"}
+{"id": "A15", "query": "Help me study by quizzing me on the attached document", "expected": "quiz_create", "source": "novel"}
+{"id": "A16", "query": "Generate a 7-question quiz from this PDF", "expected": "quiz_create", "source": "novel"}
+{"id": "A17", "query": "Turn my notes into multiple choice questions", "expected": "quiz_create", "source": "novel"}
+{"id": "A18", "query": "Can I get 5 quiz questions on machine learning basics?", "expected": "quiz_create", "source": "novel"}
+{"id": "A19", "query": "Create 5 MCQs on computational biology", "expected": "quiz_create", "source": "quiz_plan"}
+{"id": "A20", "query": "Generate 10 questions about housing rules", "expected": "quiz_create", "source": "quiz_plan"}
+{"id": "A21", "query": "Explain question 3 from my quiz", "expected": "quiz_followup", "source": "laya_doc"}
+{"id": "A22", "query": "Generate another 5 questions", "expected": "quiz_followup", "source": "laya_doc"}
+{"id": "A23", "query": "Why is the answer to question 2 B?", "expected": "quiz_followup", "source": "novel"}
+{"id": "A24", "query": "Try again", "expected": "quiz_followup", "source": "novel"}
+{"id": "A25", "query": "Give me another quiz on the same topic", "expected": "quiz_followup", "source": "novel"}
+{"id": "A26", "query": "Make it harder", "expected": "quiz_followup", "source": "novel"}
+{"id": "A27", "query": "Show me the answer to the last question", "expected": "quiz_followup", "source": "novel"}
+{"id": "A28", "query": "What was wrong with my answer on question 4?", "expected": "quiz_followup", "source": "novel"}
+{"id": "A29", "query": "Regenerate the quiz", "expected": "quiz_followup", "source": "novel"}
+{"id": "A30", "query": "Can you explain the second question?", "expected": "quiz_followup", "source": "novel"}
+{"id": "A31", "query": "Redo this quiz with different questions", "expected": "quiz_followup", "source": "novel"}
+{"id": "A32", "query": "I don't understand question 1, can you explain?", "expected": "quiz_followup", "source": "novel"}
+{"id": "A33", "query": "More questions like these please", "expected": "quiz_followup", "source": "novel"}
+{"id": "A34", "query": "Make the next quiz easier", "expected": "quiz_followup", "source": "novel"}
+{"id": "A35", "query": "Explain why option C is correct for question 5", "expected": "quiz_followup", "source": "novel"}
+{"id": "A36", "query": "What time is my quiz tomorrow?", "expected": "chat", "source": "laya_doc"}
+{"id": "A37", "query": "What is computational biology?", "expected": "chat", "source": "laya_doc"}
+{"id": "A38", "query": "When is the midterm quiz scheduled?", "expected": "chat", "source": "novel"}
+{"id": "A39", "query": "what is MCQ", "expected": "chat", "source": "quiz_plan"}
+{"id": "A40", "query": "how do I create a quiz app", "expected": "chat", "source": "quiz_plan"}
+{"id": "A41", "query": "summarize my quiz results", "expected": "chat", "source": "quiz_plan"}
+{"id": "A42", "query": "What are the quiet hours in the dorms?", "expected": "chat", "source": "novel"}
+{"id": "A43", "query": "Who mentored the GoFold project?", "expected": "chat", "source": "novel"}
+{"id": "A44", "query": "How do I register for classes at AUM?", "expected": "chat", "source": "novel"}
+{"id": "A45", "query": "Explain how binary search works", "expected": "chat", "source": "novel"}
+{"id": "A46", "query": "What does the attached document say about grading?", "expected": "chat", "source": "novel"}
+{"id": "A47", "query": "Is the quiz in class open book?", "expected": "chat", "source": "novel"}
+{"id": "A48", "query": "My professor gave us a quiz, how should I study?", "expected": "chat", "source": "novel"}
+{"id": "A49", "query": "What is the capital of Australia?", "expected": "chat", "source": "novel"}
+{"id": "A50", "query": "Can I have a pet in my dorm?", "expected": "chat", "source": "novel"}
+{"id": "A51", "query": "How many questions are usually on the final exam?", "expected": "chat", "source": "novel"}
+{"id": "A52", "query": "Explain photosynthesis simply", "expected": "chat", "source": "novel"}
+{"id": "A53", "query": "What is question answering in NLP?", "expected": "chat", "source": "novel"}
+{"id": "A54", "query": "Write a short poem about autumn", "expected": "chat", "source": "novel"}
+{"id": "A55", "query": "Summarize the document I uploaded", "expected": "chat", "source": "novel"}
+{"id": "A56", "query": "I failed my quiz yesterday, any advice?", "expected": "chat", "source": "novel"}
+{"id": "A57", "query": "What's the difference between a quiz and a test?", "expected": "chat", "source": "novel"}
+{"id": "A58", "query": "Who presented research on psychology at the symposium?", "expected": "chat", "source": "novel"}
+{"id": "A59", "query": "Translate good morning into Spanish", "expected": "chat", "source": "novel"}
+{"id": "A60", "query": "quiz schedule", "expected": "chat", "source": "quiz_plan"}
