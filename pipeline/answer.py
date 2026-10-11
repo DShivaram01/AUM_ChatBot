@@ -61,6 +61,11 @@ def _relative_threshold(cands, top_n=10, absolute_floor=EVIDENCE_SCORE_FLOOR):
 _PROMPT_MAX_CHARS = 3200
 _NO_REPEAT_NGRAM = 4
 _REPETITION_PENALTY = 1.1
+# Longer than _NO_REPEAT_NGRAM on purpose: blocking every 4-gram of an
+# earlier question also blocked re-using a proper name ("Willow Creek
+# Shuttle Service" is ~8 Mistral tokens) and garbled it ("Willlow Creek ShuttLE",
+# measured 2026-10-11); 12 still stops a 15-25 token question being re-written.
+_AVOID_NGRAM = 12
 
 
 class GeneratedOnlyRepetitionGuard(LogitsProcessor):
@@ -81,12 +86,20 @@ class GeneratedOnlyRepetitionGuard(LogitsProcessor):
     def __init__(self, prompt_len: int, ngram: int = _NO_REPEAT_NGRAM, penalty: float = _REPETITION_PENALTY,
                  banned_sequences: list[list[int]] | None = None):
         self.prompt_len, self.ngram, self.penalty = prompt_len, ngram, penalty
-        # Token sequences whose 4-grams must not be reproduced either (quiz:
+        # Token sequences whose 12-grams (_AVOID_NGRAM) must not be reproduced (quiz:
         # the already-asked questions). Measured on 2026-10-11: without this,
         # greedy decoding re-wrote the previous question verbatim and quiz
         # validity fell 11/12 -> 5/12 -- the old prompt-wide ban had been
         # doing this job by accident.
         self.banned_sequences = banned_sequences or []
+
+    @staticmethod
+    def _banned(tokens: list[int], sequences: list[list[int]], n: int) -> list[int]:
+        """Next tokens that would complete an n-gram already present in `sequences`."""
+        if len(tokens) < n - 1:
+            return []
+        prefix = tokens[len(tokens) - (n - 1):]
+        return [seq[i + n - 1] for seq in sequences for i in range(len(seq) - n + 1) if seq[i:i + n - 1] == prefix]
 
     def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor) -> torch.FloatTensor:
         generated = input_ids[:, self.prompt_len:]
@@ -95,14 +108,11 @@ class GeneratedOnlyRepetitionGuard(LogitsProcessor):
         picked = torch.gather(scores, 1, generated)
         picked = torch.where(picked < 0, picked * self.penalty, picked / self.penalty)
         scores = scores.scatter(1, generated, picked)
-        n = self.ngram
-        if generated.shape[1] >= n - 1:
-            for row, tokens in enumerate(generated.tolist()):
-                prefix = tokens[len(tokens) - (n - 1):]
-                banned = [seq[i + n - 1] for seq in [tokens, *self.banned_sequences]
-                          for i in range(len(seq) - n + 1) if seq[i:i + n - 1] == prefix]
-                if banned:
-                    scores[row, banned] = -float("inf")
+        for row, tokens in enumerate(generated.tolist()):
+            banned = self._banned(tokens, [tokens], self.ngram)
+            banned += self._banned(tokens, self.banned_sequences, _AVOID_NGRAM)
+            if banned:
+                scores[row, banned] = -float("inf")
         return scores
 
 

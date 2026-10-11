@@ -6,7 +6,7 @@ from transformers import NoRepeatNGramLogitsProcessor, RepetitionPenaltyLogitsPr
 
 from pipeline.answer import GeneratedOnlyRepetitionGuard
 
-VOCAB = 20
+VOCAB = 40
 # prompt contains "dues are $ 3 5 per" as ids 7 8 9 3 5 6; the answer is
 # copying the same span and is about to emit "5".
 PROMPT = [1, 7, 8, 9, 3, 5, 6, 2]
@@ -53,8 +53,11 @@ def test_guard_penalty_handles_negative_logits_and_batches():
 def test_guard_bans_reproducing_an_avoided_sequence_but_not_the_prompt():
     # quiz: the previous question (ids 11 12 13 14) must not be re-written,
     # while copying from the context in the prompt stays allowed.
-    guard = GeneratedOnlyRepetitionGuard(prompt_len=len(PROMPT), banned_sequences=[[11, 12, 13, 14]])
-    scores = guard(_ids(PROMPT + [11, 12, 13]), torch.ones(1, VOCAB))
-    assert scores[0, 14] == -float("inf")
+    previous = list(range(1, 20))  # a 19-token earlier question
+    guard = GeneratedOnlyRepetitionGuard(prompt_len=len(PROMPT), banned_sequences=[previous])
+    scores = guard(_ids(PROMPT + previous[:11]), torch.ones(1, VOCAB))
+    assert scores[0, 12] == -float("inf")  # 12th token of a re-written question
+    scores = guard(_ids(PROMPT + previous[:8]), torch.ones(1, VOCAB))
+    assert scores[0, 9] != -float("inf")  # a shared name-length span is fine
     scores = guard(_ids(PROMPT + GENERATED), torch.ones(1, VOCAB))
     assert scores[0, 5] == 1.0
