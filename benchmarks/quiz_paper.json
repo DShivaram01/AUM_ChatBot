@@ -1,0 +1,8 @@
+{
+  "_about": "Benchmark fixture for the quiz retrieval/generation experiments. The paper (unpublished manuscript) and its provisional gold set are NOT in git; they live in $QZ_BENCH_DIR (default ~/aum_benchmarks/quiz_paper) and are verified against these hashes.",
+  "paper_file": "paper.pdf",
+  "paper_sha256": "6bc726b11ef1f0b30d661200a7d7cd5ece94da18b096c7c98eafba1a77e17f0f",
+  "paper_pages": 20,
+  "gold_file": "gold.json",
+  "gold_status": "provisional (machine-drafted, not human-reviewed)"
+}

@@ -1,0 +1,656 @@
+{
+ "n_chunks": 43,
+ "chunk_chars": {
+  "min": 77,
+  "median": 1192,
+  "max": 2245
+ },
+ "chunk_tokens": {
+  "min": 21,
+  "median": 339,
+  "max": 650,
+  "total": 14119
+ },
+ "chunks_exceeding_view": 35,
+ "concepts_with_anchor_chunk": 30,
+ "concepts_visible_anywhere": 11,
+ "index_seconds": 0.277,
+ "query_ms_p50": 2.86,
+ "retrieval": {
+  "hit@1": 0.4,
+  "recall@5": 0.85,
+  "recall@10": 0.95,
+  "mrr@10": 0.6204100529100529,
+  "ndcg@10": 0.6954816973535891,
+  "visible_in_top6": 0.3333333333333333
+ },
+ "per_query": [
+  {
+   "id": "C01",
+   "hit@1": 0.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.5,
+   "ndcg@10": 0.6309297535714575,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    1
+   ]
+  },
+  {
+   "id": "C02",
+   "hit@1": 0.0,
+   "recall@5": 0.5,
+   "recall@10": 0.5,
+   "mrr@10": 0.2,
+   "ndcg@10": 0.23719771276929622,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    1,
+    30
+   ]
+  },
+  {
+   "id": "C03",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 0.0,
+   "anchor_chunks": [
+    6
+   ]
+  },
+  {
+   "id": "C04",
+   "hit@1": 0.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.5,
+   "ndcg@10": 0.6309297535714575,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    8
+   ]
+  },
+  {
+   "id": "C05",
+   "hit@1": 0.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.5,
+   "ndcg@10": 0.6309297535714575,
+   "visible_in_top6": 0.0,
+   "anchor_chunks": [
+    8
+   ]
+  },
+  {
+   "id": "C06",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 0.0,
+   "anchor_chunks": [
+    9
+   ]
+  },
+  {
+   "id": "C07",
+   "hit@1": 0.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.5,
+   "ndcg@10": 0.6309297535714575,
+   "visible_in_top6": 0.0,
+   "anchor_chunks": [
+    10
+   ]
+  },
+  {
+   "id": "C08",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    11
+   ]
+  },
+  {
+   "id": "C09",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 0.0,
+   "anchor_chunks": [
+    11
+   ]
+  },
+  {
+   "id": "C10",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    15
+   ]
+  },
+  {
+   "id": "C11",
+   "hit@1": 0.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.5,
+   "ndcg@10": 0.6309297535714575,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    17
+   ]
+  },
+  {
+   "id": "C12",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    18
+   ]
+  },
+  {
+   "id": "C13",
+   "hit@1": 0.0,
+   "recall@5": 0.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.1111111111111111,
+   "ndcg@10": 0.3010299956639812,
+   "visible_in_top6": 0.0,
+   "anchor_chunks": [
+    18
+   ]
+  },
+  {
+   "id": "C14",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 0.0,
+   "anchor_chunks": [
+    19
+   ]
+  },
+  {
+   "id": "C15",
+   "hit@1": 0.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.5,
+   "ndcg@10": 0.6309297535714575,
+   "visible_in_top6": 0.0,
+   "anchor_chunks": [
+    20
+   ]
+  },
+  {
+   "id": "C16",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 0.8503449055347546,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    20,
+    28
+   ]
+  },
+  {
+   "id": "C17",
+   "hit@1": 0.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.5,
+   "ndcg@10": 0.6309297535714575,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    21
+   ]
+  },
+  {
+   "id": "C18",
+   "hit@1": 0.0,
+   "recall@5": 0.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.125,
+   "ndcg@10": 0.31546487678572877,
+   "visible_in_top6": 0.0,
+   "anchor_chunks": [
+    23
+   ]
+  },
+  {
+   "id": "C19",
+   "hit@1": 0.0,
+   "recall@5": 0.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.14285714285714285,
+   "ndcg@10": 0.3333333333333333,
+   "visible_in_top6": 0.0,
+   "anchor_chunks": [
+    22
+   ]
+  },
+  {
+   "id": "C20",
+   "hit@1": 0.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.5,
+   "ndcg@10": 0.6309297535714575,
+   "visible_in_top6": 0.0,
+   "anchor_chunks": [
+    23
+   ]
+  },
+  {
+   "id": "C21",
+   "hit@1": 0.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.5,
+   "ndcg@10": 0.6309297535714575,
+   "visible_in_top6": 0.0,
+   "anchor_chunks": [
+    23
+   ]
+  },
+  {
+   "id": "C22",
+   "hit@1": 0.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.2,
+   "ndcg@10": 0.38685280723454163,
+   "visible_in_top6": 0.0,
+   "anchor_chunks": [
+    24
+   ]
+  },
+  {
+   "id": "C23",
+   "hit@1": 0.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.5,
+   "ndcg@10": 0.6309297535714575,
+   "visible_in_top6": 0.0,
+   "anchor_chunks": [
+    25
+   ]
+  },
+  {
+   "id": "C24",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 0.0,
+   "anchor_chunks": [
+    25
+   ]
+  },
+  {
+   "id": "C25",
+   "hit@1": 0.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.3333333333333333,
+   "ndcg@10": 0.5,
+   "visible_in_top6": 0.0,
+   "anchor_chunks": [
+    27
+   ]
+  },
+  {
+   "id": "C26",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    27
+   ]
+  },
+  {
+   "id": "C27",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 0.0,
+   "anchor_chunks": [
+    28
+   ]
+  },
+  {
+   "id": "C28",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 0.0,
+   "anchor_chunks": [
+    29
+   ]
+  },
+  {
+   "id": "C29",
+   "hit@1": 0.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.5,
+   "ndcg@10": 0.6309297535714575,
+   "visible_in_top6": 0.0,
+   "anchor_chunks": [
+    29
+   ]
+  },
+  {
+   "id": "C30",
+   "hit@1": 0.0,
+   "recall@5": 0.0,
+   "recall@10": 0.0,
+   "mrr@10": 0.0,
+   "ndcg@10": 0.0,
+   "visible_in_top6": 0.0,
+   "anchor_chunks": [
+    30
+   ]
+  }
+ ],
+ "quiz_requests": {
+  "A": {
+   "query": "this document",
+   "chunk_ids": [
+    31,
+    14,
+    12,
+    33,
+    15,
+    41
+   ],
+   "scores": [
+    0.153,
+    0.144,
+    0.12,
+    0.117,
+    0.087,
+    0.077
+   ],
+   "sections": [
+    "**2 Methods** > **2.3 Selected Pairwise Similarity Metrics**",
+    "**2 Methods** > **2.3 Selected Pairwise Similarity Metrics** > **2.3.2 Euclidean-Derived Similarity**",
+    "**2 Methods** > **2.3 Selected Pairwise Similarity Metrics** > **2.3.3 Radial Basis Function Similarity**",
+    "**4 Conclusions**",
+    "**References**",
+    "**Tables**"
+   ],
+   "pages": [
+    6,
+    13,
+    14,
+    18
+   ],
+   "visible_concepts": [
+    "C10"
+   ],
+   "n_visible_concepts": 1,
+   "target_concepts_visible": null,
+   "evidence_chars_retrieved": 3387,
+   "evidence_chars_shown": 1927,
+   "evidence_tokens_shown": 661,
+   "reference_chunks": 1,
+   "duplicate_ratio": 0.0
+  },
+  "B": {
+   "query": "this document",
+   "chunk_ids": [
+    31,
+    14,
+    12,
+    33,
+    15,
+    41
+   ],
+   "scores": [
+    0.153,
+    0.144,
+    0.12,
+    0.117,
+    0.087,
+    0.077
+   ],
+   "sections": [
+    "**2 Methods** > **2.3 Selected Pairwise Similarity Metrics**",
+    "**2 Methods** > **2.3 Selected Pairwise Similarity Metrics** > **2.3.2 Euclidean-Derived Similarity**",
+    "**2 Methods** > **2.3 Selected Pairwise Similarity Metrics** > **2.3.3 Radial Basis Function Similarity**",
+    "**4 Conclusions**",
+    "**References**",
+    "**Tables**"
+   ],
+   "pages": [
+    6,
+    13,
+    14,
+    18
+   ],
+   "visible_concepts": [
+    "C10"
+   ],
+   "n_visible_concepts": 1,
+   "target_concepts_visible": null,
+   "evidence_chars_retrieved": 3387,
+   "evidence_chars_shown": 1927,
+   "evidence_tokens_shown": 661,
+   "reference_chunks": 1,
+   "duplicate_ratio": 0.0
+  },
+  "C": {
+   "query": "this document",
+   "chunk_ids": [
+    31,
+    14,
+    12,
+    33,
+    15,
+    41
+   ],
+   "scores": [
+    0.153,
+    0.144,
+    0.12,
+    0.117,
+    0.087,
+    0.077
+   ],
+   "sections": [
+    "**2 Methods** > **2.3 Selected Pairwise Similarity Metrics**",
+    "**2 Methods** > **2.3 Selected Pairwise Similarity Metrics** > **2.3.2 Euclidean-Derived Similarity**",
+    "**2 Methods** > **2.3 Selected Pairwise Similarity Metrics** > **2.3.3 Radial Basis Function Similarity**",
+    "**4 Conclusions**",
+    "**References**",
+    "**Tables**"
+   ],
+   "pages": [
+    6,
+    13,
+    14,
+    18
+   ],
+   "visible_concepts": [
+    "C10"
+   ],
+   "n_visible_concepts": 1,
+   "target_concepts_visible": null,
+   "evidence_chars_retrieved": 3387,
+   "evidence_chars_shown": 1927,
+   "evidence_tokens_shown": 661,
+   "reference_chunks": 1,
+   "duplicate_ratio": 0.0
+  },
+  "D": {
+   "query": "the performance comparison against BLASTP",
+   "chunk_ids": [
+    26,
+    25,
+    24,
+    39,
+    5,
+    27
+   ],
+   "scores": [
+    0.508,
+    0.504,
+    0.459,
+    0.458,
+    0.422,
+    0.395
+   ],
+   "sections": [
+    "**1 Introduction**",
+    "**3 Results and Discussion** > **3.2 Performance Comparison Against BLASTP** > **3.2.1 Overall Performance on the PISCES Dataset**",
+    "**3 Results and Discussion** > **3.2 Performance Comparison Against BLASTP** > **3.2.2 Effect of Sequence Identity**",
+    "**3 Results and Discussion** > **3.2 Performance Comparison Against BLASTP** > **3.2.3 Effect of Structural Similarity Threshold**",
+    "**Figure legends**"
+   ],
+   "pages": [
+    3,
+    10,
+    11,
+    17
+   ],
+   "visible_concepts": [
+    "C26"
+   ],
+   "n_visible_concepts": 1,
+   "target_concepts_visible": "0/5",
+   "evidence_chars_retrieved": 7859,
+   "evidence_chars_shown": 2695,
+   "evidence_tokens_shown": 762,
+   "reference_chunks": 0,
+   "duplicate_ratio": 0.0
+  },
+  "E": {
+   "query": "the computational efficiency and storage of the models",
+   "chunk_ids": [
+    21,
+    9,
+    23,
+    34,
+    6,
+    38
+   ],
+   "scores": [
+    0.352,
+    0.293,
+    0.279,
+    0.278,
+    0.273,
+    0.273
+   ],
+   "sections": [
+    "**2 Methods** > **2.1 Overview of the Pipeline**",
+    "**2 Methods** > **2.2 Selected Protein Language Models** > **2.2.2 ESM-2**",
+    "**2 Methods** > **2.4 Benchmark Datasets, Methods to Compare, and Performance Evaluation**",
+    "**3 Results and Discussion** > **3.1 Effect of PLMs and Similarity Metrics**",
+    "**Figure legends**",
+    "**References**"
+   ],
+   "pages": [
+    4,
+    5,
+    8,
+    9,
+    14,
+    17
+   ],
+   "visible_concepts": [
+    "C17",
+    "C18"
+   ],
+   "n_visible_concepts": 2,
+   "target_concepts_visible": "1/3",
+   "evidence_chars_retrieved": 8103,
+   "evidence_chars_shown": 3000,
+   "evidence_tokens_shown": 909,
+   "reference_chunks": 1,
+   "duplicate_ratio": 0.071
+  },
+  "F": {
+   "query": "AlphaFold3 training procedures",
+   "chunk_ids": [
+    11,
+    3,
+    31,
+    36,
+    37,
+    41
+   ],
+   "scores": [
+    0.36,
+    0.303,
+    0.248,
+    0.234,
+    0.233,
+    0.232
+   ],
+   "sections": [
+    "**1 Introduction**",
+    "**2 Methods** > **2.2 Selected Protein Language Models** > **2.2.4 ProstT5**",
+    "**4 Conclusions**",
+    "**References**",
+    "**Tables**"
+   ],
+   "pages": [
+    2,
+    6,
+    13,
+    16,
+    18
+   ],
+   "visible_concepts": [
+    "C08"
+   ],
+   "n_visible_concepts": 1,
+   "target_concepts_visible": null,
+   "evidence_chars_retrieved": 6875,
+   "evidence_chars_shown": 2909,
+   "evidence_tokens_shown": 991,
+   "reference_chunks": 2,
+   "duplicate_ratio": 0.0
+  }
+ },
+ "chunker": "structured400",
+ "embedder": "sentence-transformers/all-MiniLM-L6-v2",
+ "view_chars": 500
+}
