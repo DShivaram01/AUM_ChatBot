@@ -62,7 +62,7 @@ def test_document_api_isolation_deletion_and_private_metadata():
         raise AssertionError("cross-session retrieval was allowed")
     assert client.delete(f"/api/documents/{document_id}", params={"session_id": "session-a"}).status_code == 200
     assert client.get(f"/api/documents/{document_id}", params={"session_id": "session-a"}).status_code == 404
-    invalid = client.post("/api/documents", data={"session_id": "session-a"}, files={"file": ("notes.docx", b"PK\x03\x04", "application/octet-stream")})  # .txt is supported since Task 57-B
+    invalid = client.post("/api/documents", data={"session_id": "session-a"}, files={"file": ("notes.xlsx", b"PK\x03\x04", "application/octet-stream")})  # .txt/.docx are supported since Task 57
     assert invalid.status_code == 400
 
 
@@ -104,7 +104,7 @@ def test_text_upload_rejects_binary_non_utf8_empty_and_unknown_types():
     service = DocumentService(FakeEmbedder())
     for name, data, message in [
         ("a.txt", b"abc\x00def", "text document"), ("a.txt", "caf\u00e9".encode("latin-1"), "UTF-8"),
-        ("a.md", b"   \n\n", "extractable text"), ("a.docx", b"PK\x03\x04", "Only PDF, TXT"),
+        ("a.md", b"   \n\n", "extractable text"), ("a.docx", b"PK\x03\x04", "valid Office document"), ("a.xlsx", b"PK", "Only PDF, TXT"),
         ("a.pdf", b"not a pdf", "Only PDF, TXT"),
     ]:
         try:
@@ -123,3 +123,85 @@ def test_markdown_upload_through_api_and_document_chat_sources():
     assert response.status_code == 200, response.text
     body = response.json()
     assert body["filename"] == "guide.md" and body["chunks"] == 1 and body["pages"] == 1
+
+
+# ---------- Task 57 phase 4: CSV / DOCX / PPTX ----------
+
+def _zip(files):
+    import zipfile
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        for name, data in files.items():
+            z.writestr(name, data)
+    return buf.getvalue()
+
+
+_WNS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"'
+_ANS = 'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"'
+
+
+def _docx():
+    def para(text, style=None):
+        props = '<w:pPr><w:pStyle w:val="%s"/></w:pPr>' % style if style else ""
+        return f"<w:p>{props}<w:r><w:t>{text}</w:t></w:r></w:p>"
+    body = (para("Parking Rules", "Heading1") + para("Permits cost $90 per year.") + para("Towing", "Heading2")
+            + para("Cars in fire lanes are towed.")
+            + "<w:tbl><w:tr><w:tc><w:p><w:r><w:t>Lot</w:t></w:r></w:p></w:tc><w:tc><w:p><w:r><w:t>Hours</w:t></w:r></w:p></w:tc></w:tr>"
+              "<w:tr><w:tc><w:p><w:r><w:t>Lot C</w:t></w:r></w:p></w:tc><w:tc><w:p><w:r><w:t>24/7</w:t></w:r></w:p></w:tc></w:tr></w:tbl>")
+    return _zip({"word/document.xml": f"<w:document {_WNS}><w:body>{body}</w:body></w:document>"})
+
+
+def _pptx():
+    slide = lambda *ps: f"<p:sld xmlns:p='x' {_ANS}>" + "".join(f"<a:p><a:r><a:t>{p}</a:t></a:r></a:p>" for p in ps) + "</p:sld>"  # noqa: E731
+    return _zip({"ppt/slides/slide1.xml": slide("Welcome", "Orientation week"),
+                 "ppt/slides/slide2.xml": slide("Library", "Open until midnight"),
+                 "ppt/slides/slide10.xml": slide("Contacts", "Call ext. 2200"),
+                 "ppt/slides/slide11.xml": f"<p:sld xmlns:p='x' {_ANS}><a:p><a:r><a:t>Market</a:t></a:r><a:br/>"
+                                           "<a:r><a:t>Trends</a:t></a:r></a:p></p:sld>"})
+
+
+def test_docx_headings_tables_and_pptx_slides_as_pages():
+    from core.document_service import DocumentService
+    service = DocumentService(FakeEmbedder())
+    doc = service.ingest("rules.docx", _docx(), "s1")
+    assert [c.heading_path for c in doc.chunks] == [("Parking Rules",), ("Parking Rules", "Towing")]
+    assert "Permits cost $90" in doc.chunks[0].text and "Lot C | 24/7" in doc.chunks[1].text
+    deck = service.ingest("orientation.pptx", _pptx(), "s1")
+    # slide10 sorts after slide2 (numeric, not lexical); short slides merge
+    # into one chunk spanning p.1-3, exactly like short PDF pages do
+    assert deck.version.page_count == 4
+    assert [(c.page, c.page_end) for c in deck.chunks] == [(1, 4)]
+    assert "Market Trends" in deck.chunks[0].text  # <a:br/> is a space, not glued
+    text = deck.chunks[0].text
+    assert text.index("Welcome") < text.index("Library") < text.index("Call ext. 2200")
+
+
+def test_csv_rows_are_self_describing():
+    from core.document_service import DocumentService
+    doc = DocumentService(FakeEmbedder()).ingest("rooms.csv", b"Room,Capacity\nE214,30\n\nB101,120\n", "s1")
+    assert doc.chunks[0].text == "Room: E214; Capacity: 30\n\nRoom: B101; Capacity: 120"
+    assert doc.source.mime_type == "text/csv"
+
+
+def test_office_zip_bomb_and_missing_parts_are_rejected():
+    from core.document_service import DocumentService
+    from ingestion import document_parser
+    service = DocumentService(FakeEmbedder())
+    for name, data, message in [("x.docx", _zip({"other.xml": "<a/>"}), "valid Office"),
+                                ("x.docx", _zip({"word/document.xml": "<not-closed"}), "valid Office")]:
+        try:
+            service.ingest(name, data, "s1")
+        except ValueError as exc:
+            assert message in str(exc)
+        else:
+            raise AssertionError(name)
+    old = document_parser._MAX_UNZIPPED_BYTES
+    document_parser._MAX_UNZIPPED_BYTES = 100
+    try:
+        service.ingest("big.docx", _zip({"word/document.xml": "x" * 1000}), "s1")
+    except ValueError as exc:
+        assert "too large" in str(exc)
+    else:
+        raise AssertionError("zip bomb accepted")
+    finally:
+        document_parser._MAX_UNZIPPED_BYTES = old

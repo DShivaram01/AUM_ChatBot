@@ -1,4 +1,4 @@
-"""Private document ingestion (PDF, TXT, Markdown) and per-document vector indexing."""
+"""Private document ingestion (PDF, TXT, Markdown, CSV, DOCX, PPTX) and per-document vector indexing."""
 
 import hashlib
 import tempfile
@@ -10,7 +10,7 @@ import numpy as np
 
 from core.schemas import Chunk, DocumentVersion, SourceRecord
 from ingestion.document_parser import (
-    TEXT_FORMATS, content_hash, document_format, extract_pdf_pages, structured_chunks, text_pages,
+    content_hash, document_format, extract_pages, extract_pdf_pages, structured_chunks,
 )
 from stores.document_store import DocumentStore, StoredDocument
 
@@ -37,8 +37,8 @@ class DocumentService:
                 pages = extract_pdf_pages(Path(uploaded.name))
             records = structured_chunks(pages)
         else:
-            pages = text_pages(filename, content)
-            records = structured_chunks(pages, headings=TEXT_FORMATS[kind][1])
+            pages, headings = extract_pages(kind, content)
+            records = structured_chunks(pages, headings=headings)
         if not records: raise ValueError("The document did not contain extractable text")
         chunks = []
         for position, record in enumerate(records):
