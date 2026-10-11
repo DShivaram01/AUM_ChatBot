@@ -1,4 +1,4 @@
-"""Private PDF ingestion and per-document vector indexing."""
+"""Private document ingestion (PDF, TXT, Markdown) and per-document vector indexing."""
 
 import hashlib
 import tempfile
@@ -9,7 +9,9 @@ import faiss
 import numpy as np
 
 from core.schemas import Chunk, DocumentVersion, SourceRecord
-from ingestion.document_parser import content_hash, extract_pdf_pages, structured_chunks, validate_pdf
+from ingestion.document_parser import (
+    TEXT_FORMATS, content_hash, document_format, extract_pdf_pages, structured_chunks, text_pages,
+)
 from stores.document_store import DocumentStore, StoredDocument
 
 
@@ -23,17 +25,21 @@ class DocumentService:
 
     def ingest(self, filename, content, session_id):
         if not session_id.strip(): raise ValueError("session_id is required")
-        validate_pdf(filename, content)
+        kind, mime_type = document_format(filename, content)
         digest = content_hash(content)
         identity = hashlib.sha256(f"{session_id}:{digest}".encode()).hexdigest()[:16]
         document_id, source_id = f"doc_{identity}", f"src_{identity}"
         version_id = f"ver_{digest[:16]}"
         now = datetime.now(timezone.utc)
-        with tempfile.NamedTemporaryFile(suffix=".pdf") as uploaded:
-            uploaded.write(content); uploaded.flush()
-            pages = extract_pdf_pages(Path(uploaded.name))
-        records = structured_chunks(pages)
-        if not records: raise ValueError("The PDF did not contain extractable text")
+        if kind == "pdf":
+            with tempfile.NamedTemporaryFile(suffix=".pdf") as uploaded:
+                uploaded.write(content); uploaded.flush()
+                pages = extract_pdf_pages(Path(uploaded.name))
+            records = structured_chunks(pages)
+        else:
+            pages = text_pages(filename, content)
+            records = structured_chunks(pages, headings=TEXT_FORMATS[kind][1])
+        if not records: raise ValueError("The document did not contain extractable text")
         chunks = []
         for position, record in enumerate(records):
             text = record["text"]
@@ -47,8 +53,8 @@ class DocumentService:
         index = faiss.IndexFlatIP(embeddings.shape[1]); index.add(embeddings)
         source = SourceRecord(
             source_id=source_id, source_type="user_upload", owner_scope="session",
-            original_filename=filename, mime_type="application/pdf", content_hash=digest,
-            parser_name=self.PARSER_NAME, parser_version=self.PARSER_VERSION,
+            original_filename=filename, mime_type=mime_type, content_hash=digest,
+            parser_name=self.PARSER_NAME if kind == "pdf" else "text", parser_version=self.PARSER_VERSION,
             created_at=now, expires_at=now + timedelta(hours=24),
         )
         version = DocumentVersion(document_id, source_id, version_id, digest, now, len(pages), self.PARSER_VERSION)
