@@ -30,7 +30,6 @@ import uuid
 import asyncio
 import logging
 import json
-from stores.session_store import SessionStore
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Literal, AsyncGenerator
@@ -56,6 +55,7 @@ from pipeline.classifier import (
     store_trace,
 )
 from pipeline.memory import query_fingerprint
+from stores.session_store import SessionStore
 from pipeline.quiz_intent import detect_quiz_followup, detect_quiz_intent, resolve_quiz_source
 from core.runtime_lock import RuntimeLock, RuntimeLockError
 import config
