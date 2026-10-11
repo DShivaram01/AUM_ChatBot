@@ -20,6 +20,7 @@ from models import loader
 from core.assistant_service import AssistantService
 from core.orchestrator import set_assistant_service
 from core.runtime_manager import RuntimeManager
+from evaluation.sanitizer import assert_production_secret
 
 _loaded = False
 
@@ -33,6 +34,7 @@ def load_everything():
     if _loaded:
         return
 
+    assert_production_secret()  # before any GPU load
     embedder           = loader.load_embedder()
     reranker            = loader.load_reranker()
     llm_tok, llm_model  = loader.load_llm()

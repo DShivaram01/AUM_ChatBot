@@ -17,6 +17,22 @@ from evaluation.schemas import EvaluationEvent
 _DEV_DEFAULT_SECRET = "dev-only-insecure-default-do-not-use-in-production"
 
 
+def assert_production_secret() -> None:
+    """Task 46: with AUM_ENV=production, refuse to run on a missing or
+    dev-default HMAC secret -- anyone reading this public repo could
+    otherwise recompute every "pseudonymous" session hash. Dev/tests (no
+    AUM_ENV) keep the zero-setup fallback. Rotating the secret breaks
+    linkage between old and new session hashes for the same session."""
+    if os.environ.get("AUM_ENV", "").strip().lower() != "production":
+        return
+    secret = os.environ.get("AUM_EVAL_HMAC_SECRET", "")
+    if not secret or secret == _DEV_DEFAULT_SECRET:
+        raise RuntimeError(
+            "AUM_ENV=production requires AUM_EVAL_HMAC_SECRET to be set to a "
+            "deployment-specific secret (not the dev default)."
+        )
+
+
 def session_hash(session_id: Optional[str]) -> str:
     """HMAC-SHA256(server_secret, session_id), truncated for readability.
     Never store or log the raw session_id past this point. The secret must

@@ -154,6 +154,39 @@ def test_feedback_endpoint_missing_trace_survives_a_broken_sink_with_utc_timesta
     assert "+" in event.timestamp_utc or event.timestamp_utc.endswith("Z")
 
 
+def test_production_secret_gate():
+    """Task 46: production refuses missing/dev-default secret; dev is untouched."""
+    import os
+    from evaluation.sanitizer import _DEV_DEFAULT_SECRET, assert_production_secret
+
+    saved = {k: os.environ.get(k) for k in ("AUM_ENV", "AUM_EVAL_HMAC_SECRET")}
+    try:
+        os.environ.pop("AUM_ENV", None)
+        os.environ.pop("AUM_EVAL_HMAC_SECRET", None)
+        assert_production_secret()  # dev: no error
+
+        os.environ["AUM_ENV"] = "production"
+        for bad in (None, "", _DEV_DEFAULT_SECRET):
+            if bad is None:
+                os.environ.pop("AUM_EVAL_HMAC_SECRET", None)
+            else:
+                os.environ["AUM_EVAL_HMAC_SECRET"] = bad
+            try:
+                assert_production_secret()
+                raise AssertionError(f"expected refusal for secret={bad!r}")
+            except RuntimeError:
+                pass
+
+        os.environ["AUM_EVAL_HMAC_SECRET"] = "a-real-deployment-secret"
+        assert_production_secret()
+    finally:
+        for k, v in saved.items():
+            if v is None:
+                os.environ.pop(k, None)
+            else:
+                os.environ[k] = v
+
+
 def test_session_traces_is_bounded():
     assert SESSION_TRACES.maxlen == 500
     before = len(SESSION_TRACES)
