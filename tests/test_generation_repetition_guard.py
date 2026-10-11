@@ -48,3 +48,13 @@ def test_guard_penalty_handles_negative_logits_and_batches():
     scores = guard(ids, -torch.ones(2, VOCAB))
     assert torch.isclose(scores[0, 5], torch.tensor(-1.1)) and scores[0, 6] == -1.0
     assert torch.isclose(scores[1, 6], torch.tensor(-1.1)) and scores[1, 5] == -1.0
+
+
+def test_guard_bans_reproducing_an_avoided_sequence_but_not_the_prompt():
+    # quiz: the previous question (ids 11 12 13 14) must not be re-written,
+    # while copying from the context in the prompt stays allowed.
+    guard = GeneratedOnlyRepetitionGuard(prompt_len=len(PROMPT), banned_sequences=[[11, 12, 13, 14]])
+    scores = guard(_ids(PROMPT + [11, 12, 13]), torch.ones(1, VOCAB))
+    assert scores[0, 14] == -float("inf")
+    scores = guard(_ids(PROMPT + GENERATED), torch.ones(1, VOCAB))
+    assert scores[0, 5] == 1.0

@@ -78,8 +78,15 @@ class GeneratedOnlyRepetitionGuard(LogitsProcessor):
     That breaks every grounded pipeline (COS / Housing / Document / Quiz),
     whose whole job is to repeat the context faithfully."""
 
-    def __init__(self, prompt_len: int, ngram: int = _NO_REPEAT_NGRAM, penalty: float = _REPETITION_PENALTY):
+    def __init__(self, prompt_len: int, ngram: int = _NO_REPEAT_NGRAM, penalty: float = _REPETITION_PENALTY,
+                 banned_sequences: list[list[int]] | None = None):
         self.prompt_len, self.ngram, self.penalty = prompt_len, ngram, penalty
+        # Token sequences whose 4-grams must not be reproduced either (quiz:
+        # the already-asked questions). Measured on 2026-10-11: without this,
+        # greedy decoding re-wrote the previous question verbatim and quiz
+        # validity fell 11/12 -> 5/12 -- the old prompt-wide ban had been
+        # doing this job by accident.
+        self.banned_sequences = banned_sequences or []
 
     def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor) -> torch.FloatTensor:
         generated = input_ids[:, self.prompt_len:]
@@ -92,7 +99,8 @@ class GeneratedOnlyRepetitionGuard(LogitsProcessor):
         if generated.shape[1] >= n - 1:
             for row, tokens in enumerate(generated.tolist()):
                 prefix = tokens[len(tokens) - (n - 1):]
-                banned = [tokens[i + n - 1] for i in range(len(tokens) - n + 1) if tokens[i:i + n - 1] == prefix]
+                banned = [seq[i + n - 1] for seq in [tokens, *self.banned_sequences]
+                          for i in range(len(seq) - n + 1) if seq[i:i + n - 1] == prefix]
                 if banned:
                     scores[row, banned] = -float("inf")
         return scores
@@ -129,6 +137,7 @@ def generate_streaming(
     prompt, tokenizer, model,
     query_id="Q", max_new_tokens=300,
     trace: QueryTrace = None,
+    avoid_texts: list[str] | None = None,
 ):
     MAX_CHARS = _PROMPT_MAX_CHARS
     if len(prompt) > MAX_CHARS:
@@ -167,7 +176,10 @@ def generate_streaming(
         max_new_tokens=max_new_tokens,
         do_sample=False,
         logits_processor=LogitsProcessorList(
-            [GeneratedOnlyRepetitionGuard(int(inputs["input_ids"].shape[1]))]
+            [GeneratedOnlyRepetitionGuard(
+                int(inputs["input_ids"].shape[1]),
+                banned_sequences=[tokenizer(t, add_special_tokens=False)["input_ids"] for t in (avoid_texts or [])],
+            )]
         ),
         eos_token_id=tokenizer.eos_token_id,
         pad_token_id=tokenizer.eos_token_id,

@@ -51,7 +51,7 @@ def test_ask_detects_quiz_intent_and_returns_structured_quiz_not_prose():
     real_generate_streaming = quiz_module.generate_streaming
     call_count = {"n": 0}
 
-    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300):
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300, avoid_texts=None):
         call_count["n"] += 1
         yield _fake_single_question_response(call_count["n"])
 
@@ -98,7 +98,7 @@ def test_ask_ordinary_question_is_not_hijacked_into_a_quiz():
     import core.assistant_service as assistant_service_module
     real_generate_streaming = assistant_service_module.generate_streaming
 
-    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300):
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300, avoid_texts=None):
         yield "it is not a quiz"
 
     assistant_service_module.generate_streaming = fake_generate_streaming
@@ -122,7 +122,7 @@ def test_ask_stream_detects_quiz_intent_and_emits_quiz_in_done_event():
     real_generate_streaming = quiz_module.generate_streaming
     call_count = {"n": 0}
 
-    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300):
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300, avoid_texts=None):
         # detect_quiz_intent defaults to 5 questions when no count is
         # stated ("quiz me on X") -- each needs genuinely distinct text or
         # generate_quiz()'s own duplicate-question rejection kicks in.
@@ -156,7 +156,7 @@ def _generate_a_chat_quiz(client, session_id, count=3):
     real_generate_streaming = quiz_module.generate_streaming
     call_count = {"n": 0}
 
-    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300):
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300, avoid_texts=None):
         call_count["n"] += 1
         yield _fake_single_question_response(call_count["n"])
 
@@ -234,7 +234,7 @@ def test_regenerate_followup_reuses_the_same_params():
     real_generate_streaming = quiz_module.generate_streaming
     call_count = {"n": 100}  # distinct text from the first batch
 
-    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300):
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300, avoid_texts=None):
         call_count["n"] += 1
         yield _fake_single_question_response(call_count["n"])
 

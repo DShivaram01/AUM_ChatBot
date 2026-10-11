@@ -282,6 +282,7 @@ def generate_quiz(
                 # 350-550; 320 is a smaller, quiz-appropriate raise, not a
                 # match to those longer free-form answers.
                 query_id=f"{query_id}-q{q_num}a{attempt}", max_new_tokens=320,
+                avoid_texts=seen_texts,
             ):
                 full = partial
             try:

@@ -85,7 +85,7 @@ def test_quiz_pretrained_mode_needs_no_evidence_and_succeeds():
     real_generate_streaming = quiz_module.generate_streaming
     call_count = {"n": 0}
 
-    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300):
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300, avoid_texts=None):
         assert "<context>" not in prompt  # pretrained mode must not inject any evidence
         call_count["n"] += 1
         yield _fake_single_question_response(call_count["n"], evidence_refs=[])
@@ -112,7 +112,7 @@ def test_generate_quiz_caps_each_context_chunk_so_prompt_stays_well_under_trunca
     real_generate_streaming = quiz_module.generate_streaming
     seen_prompts = []
 
-    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300):
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300, avoid_texts=None):
         seen_prompts.append(prompt)
         yield _fake_single_question_response(1, evidence_refs=[1])
 
@@ -176,7 +176,7 @@ def test_quiz_document_mode_uses_best_scoring_chunks_across_all_attached_documen
     real_generate_streaming = quiz_module.generate_streaming
     seen_prompts = []
 
-    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300):
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300, avoid_texts=None):
         seen_prompts.append(prompt)
         yield _fake_single_question_response(1, evidence_refs=[1])
 
@@ -198,7 +198,7 @@ def test_quiz_generation_failure_is_a_controlled_error_not_a_malformed_quiz():
     import pipeline.quiz as quiz_module
     real_generate_streaming = quiz_module.generate_streaming
 
-    def always_broken(prompt, tokenizer, model, query_id=None, max_new_tokens=300):
+    def always_broken(prompt, tokenizer, model, query_id=None, max_new_tokens=300, avoid_texts=None):
         yield "this is not json at all"
 
     quiz_module.generate_streaming = always_broken
