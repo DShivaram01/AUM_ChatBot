@@ -293,8 +293,14 @@ const QUIZ_SOURCE_LABELS = {
   document: 'Quiz source: your attached document',
 };
 
-function renderQuizCard(quiz, sourceMode) {
+// Task 57-A: `record` is the stored chat message ({kind: 'quiz', quiz_id,
+// quiz, source_mode, progress}). Selections and the submitted score are
+// written back into record.progress and persisted, so reopening the chat
+// restores the interactive quiz exactly as the user left it.
+function renderQuizCard(quiz, sourceMode, record) {
   ensureActiveChat();
+  const quizId = record.quiz_id;
+  const progress = record.progress || (record.progress = { answers: [], submitted: false });
   const card = document.createElement('div');
   card.className = 'quiz-card';
 
@@ -324,8 +330,13 @@ function renderQuizCard(quiz, sourceMode) {
       label.className = 'quiz-option';
       const radio = document.createElement('input');
       radio.type = 'radio';
-      radio.name = `quiz-${quiz.title}-${qi}`;
+      radio.name = `quiz-${quizId}-${qi}`;
       radio.value = String(oi);
+      radio.checked = progress.answers[qi] === oi;
+      radio.addEventListener('change', () => {
+        progress.answers[qi] = oi;
+        saveActiveChatIfNeeded();
+      });
       label.appendChild(radio);
       label.append(opt);
       optsWrap.appendChild(label);
@@ -351,7 +362,7 @@ function renderQuizCard(quiz, sourceMode) {
   scoreEl.className = 'quiz-score';
   card.appendChild(scoreEl);
 
-  submitBtn.addEventListener('click', () => {
+  const grade = () => {
     let correct = 0;
     card.querySelectorAll('.quiz-question').forEach((qWrap) => {
       const correctIndex = parseInt(qWrap.dataset.correctIndex, 10);
@@ -369,7 +380,14 @@ function renderQuizCard(quiz, sourceMode) {
     });
     scoreEl.textContent = `Score: ${correct} / ${quiz.questions.length}`;
     submitBtn.disabled = true;
+    return correct;
+  };
+  submitBtn.addEventListener('click', () => {
+    progress.score = grade();
+    progress.submitted = true;
+    saveActiveChatIfNeeded();
   });
+  if (progress.submitted) grade();
 
   messagesEl.appendChild(card);
   messagesEl.scrollTop = messagesEl.scrollHeight;
@@ -381,8 +399,14 @@ function ensureActiveChat() {
 
 async function saveActiveChatIfNeeded() {
   if (!activeChat || activeChat.temporary) return;
-  const existing = chats.find((c) => c.id === activeChat.id);
-  if (!existing) chats.unshift(activeChat);
+  // persistChats() replaces `chats` with IPC copies, so after the first save
+  // the entry here is no longer `activeChat` -- the old `if (!existing)` then
+  // re-saved that stale copy and every exchange after the first was lost.
+  // Messages come from activeChat; pin/project/title edits made through the
+  // chat menu live on the stored entry and are kept.
+  const i = chats.findIndex((c) => c.id === activeChat.id);
+  if (i === -1) chats.unshift(activeChat);
+  else chats[i] = { ...chats[i], messages: activeChat.messages, title: chats[i].title || activeChat.title };
   await persistChats();
   renderChatList();
 }
@@ -551,7 +575,8 @@ function renderActiveChatMessages() {
     return;
   }
   activeChat.messages.forEach((m) => {
-    addCard({ text: m.text, who: m.who, topic: m.topic, query_id: m.query_id, skipStore: true });
+    if (m.kind === 'quiz' && m.quiz) renderQuizCard(m.quiz, m.source_mode, m);
+    else addCard({ text: m.text, who: m.who, topic: m.topic, query_id: m.query_id, skipStore: true });
   });
 }
 
@@ -778,16 +803,16 @@ composer.addEventListener('submit', async (e) => {
       // (server/api_server.py:ask_stream) was only ever meant to show
       // progress; drop it rather than leaving it as a stray bot bubble.
       pendingCard.remove();
-      renderQuizCard(data.quiz, data.source_mode);
-      // Known scope cut for this pass (see workspace.md TASK 53): a
-      // chat-originated quiz renders live but is stored here only as a
-      // text summary, not as a reloadable interactive quiz -- reopening
-      // this chat later will show this line, not the quiz itself.
-      activeChat.messages.push({
-        who: 'bot',
+      // Task 57-A: stored as the full quiz (plus a text summary so older
+      // code paths and the chat list still have something to show).
+      const record = {
+        who: 'bot', kind: 'quiz', topic: 'quiz', query_id: null,
+        quiz_id: crypto.randomUUID(), quiz: data.quiz, source_mode: data.source_mode,
+        progress: { answers: [], submitted: false },
         text: `Generated a ${data.quiz.questions.length}-question quiz: "${data.quiz.title}"`,
-        topic: 'quiz', query_id: null,
-      });
+      };
+      activeChat.messages.push(record);
+      renderQuizCard(data.quiz, data.source_mode, record);
     } else {
       pendingCard.classList.remove('pending');
       pendingCard.classList.add(`topic-${data.topic_used}`);
