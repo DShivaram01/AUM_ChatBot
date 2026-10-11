@@ -47,6 +47,16 @@ def test_run_benchmark_touches_no_global_state_and_counts_calls_per_arm():
     assert results["always_housing"]["accuracy"] == 2 / 3
 
 
+def test_holdout_split_has_no_prototype_leakage():
+    from pipeline.routing_benchmark import load_gold_set
+    from pipeline.semantic_router import ROUTING_EXAMPLES
+    holdout, calib = load_gold_set(split="holdout"), load_gold_set(split="calibration")
+    assert holdout and calib and len(holdout) + len(calib) == len(load_gold_set())
+    assert all(r["proto_max_sim"] < 0.85 for r in holdout)
+    protos = {e.lower().strip() for exs in ROUTING_EXAMPLES.values() for e in exs}
+    assert not any(r["query"].lower().strip() in protos for r in holdout)
+
+
 def test_score_macro_f1_exposes_a_router_that_ignores_a_class():
     truth = ["cos"] * 8 + ["out_of_scope"] * 2
     never_oos = ["cos"] * 10

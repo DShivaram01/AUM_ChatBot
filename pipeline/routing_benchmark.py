@@ -44,9 +44,14 @@ class _CountingModel:
         return getattr(self._model, name)
 
 
-def load_gold_set(path: Path = GOLD_SET_PATH) -> list[dict]:
+def load_gold_set(path: Path = GOLD_SET_PATH, split: str | None = None) -> list[dict]:
+    """split: None (all rows), "calibration" (tune thresholds here) or
+    "holdout" (report numbers here). Task 49: rows whose query is a near-copy
+    of a semantic_router prototype (proto_max_sim >= 0.85) are calibration-only
+    -- scoring them would measure the router recognizing its own examples."""
     with open(path) as f:
-        return [json.loads(line) for line in f if line.strip()]
+        rows = [json.loads(line) for line in f if line.strip()]
+    return [r for r in rows if split is None or r.get("split") == split]
 
 
 def production_routers(runtime) -> dict[str, Router]:
