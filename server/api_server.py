@@ -30,7 +30,7 @@ import uuid
 import asyncio
 import logging
 import json
-from collections import deque
+from stores.session_store import SessionStore
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Literal, AsyncGenerator
@@ -149,20 +149,22 @@ _session_pending: dict[str, list] = {}
 # format_history's own docstring) -- and NOT quiz, which has its own
 # separate per-session memory for follow-ups (_session_last_quiz, below).
 _HISTORY_MAX_TURNS = 4
-_session_history: dict[str, deque] = {}
+# Task 57 phase 2: SQLite-backed (in-memory unless AUM_SESSION_STORE_PATH is
+# set -- see stores/session_store.py for the privacy/TTL notes).
+_session_history = SessionStore("history")
 
 
 def _get_history(session_id: str | None) -> list[dict]:
-    if not session_id or session_id not in _session_history:
+    if not session_id:
         return []
-    return list(_session_history[session_id])
+    return _session_history.get(session_id, [])
 
 
 def _record_turn(session_id: str | None, question: str, answer: str) -> None:
     if not session_id or not question.strip() or not answer.strip():
         return
-    history = _session_history.setdefault(session_id, deque(maxlen=_HISTORY_MAX_TURNS))
-    history.append({"question": question, "answer": answer})
+    history = _session_history.get(session_id, []) + [{"question": question, "answer": answer}]
+    _session_history[session_id] = history[-_HISTORY_MAX_TURNS:]
 
 
 # Task 54: quiz follow-ups ("explain question 3", "try again") need their
@@ -172,7 +174,7 @@ def _record_turn(session_id: str | None, question: str, answer: str) -> None:
 # Keyed by session_id, holds exactly the one most recently generated quiz
 # per session (not a bounded history of many -- "explain question 3"
 # always means the last one shown).
-_session_last_quiz: dict[str, dict] = {}
+_session_last_quiz = SessionStore("last_quiz")
 
 
 def _record_last_quiz(
