@@ -55,7 +55,11 @@ class MistralLM:
         return len(self.tok(text, add_special_tokens=False)["input_ids"])
 
     def generate(self, prompt: str, max_new_tokens: int, avoid_texts=None, truncate: bool = False,
-                 prefix_allowed_tokens_fn=None, logits_processors=()) -> str:
+                 prefix_allowed_tokens_fn=None, logits_processors=(), in_answer_guard: bool = True) -> str:
+        """in_answer_guard=False disables the production in-answer 4-gram ban and
+        repetition penalty (still bans re-writing avoid_texts). Multi-question
+        JSON must repeat its keys ("options": [ ...) once per question, which the
+        in-answer ban forbids; batch/structured arms record this setting."""
         import torch
         from transformers import LogitsProcessorList
         from pipeline.answer import GeneratedOnlyRepetitionGuard, _PROMPT_MAX_CHARS, _truncate_prompt
@@ -65,7 +69,8 @@ class MistralLM:
         inputs = self.tok(prompt, return_tensors="pt", truncation=True, max_length=8192).to(self.model.device)
         n_in = int(inputs["input_ids"].shape[1])
         guard = GeneratedOnlyRepetitionGuard(
-            n_in, banned_sequences=[self.tok(x, add_special_tokens=False)["input_ids"] for x in (avoid_texts or [])])
+            n_in, banned_sequences=[self.tok(x, add_special_tokens=False)["input_ids"] for x in (avoid_texts or [])],
+            **({} if in_answer_guard else {"ngram": 10**6, "penalty": 1.0}))
         t = time.perf_counter()
         with self.lock, torch.no_grad():
             out = self.model.generate(
