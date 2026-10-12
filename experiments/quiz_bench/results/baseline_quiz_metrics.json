@@ -1,0 +1,279 @@
+{
+ "session": "eval-qz-457734",
+ "document_id": "doc_b6a8f39465fed0f9",
+ "n_chunks": 43,
+ "requests": {
+  "A": {
+   "prompt": "Generate 5 MCQs about this document",
+   "scope": "whole",
+   "latency_s": 31.6,
+   "kind": "quiz",
+   "topic_used": "quiz",
+   "valid": true,
+   "gpu_used_gib_max": 15.19,
+   "quiz_ids": [
+    "QZ0001"
+   ],
+   "model_calls": 5,
+   "retries": 0,
+   "input_tokens_per_call": {
+    "min": 891,
+    "median": 946,
+    "max": 993
+   },
+   "input_tokens_total": 4723,
+   "truncation_warnings": 0,
+   "failures": {
+    "duplicate": 0,
+    "evidence": 0,
+    "parse": 0,
+    "other": 0
+   },
+   "generation_failed": false,
+   "requested": 5,
+   "n_questions": 5,
+   "near_duplicate_pairs": 1,
+   "repeated_correct_answers": 1,
+   "distinct_cited_chunks": 2,
+   "cited_pages": [
+    6,
+    18
+   ],
+   "cited_sections": [
+    "**2 Methods** > **2.3 Selected Pairwise Similarity Metrics** > **2.3.2 Euclidean-Derived Similarity**",
+    "**Tables**"
+   ],
+   "cites_references_section": 0,
+   "lexically_supported_answers": 4,
+   "gold_concepts_touched": []
+  },
+  "B": {
+   "prompt": "Generate 10 MCQs about this document",
+   "scope": "whole",
+   "latency_s": 65.5,
+   "kind": "quiz",
+   "topic_used": "quiz",
+   "valid": true,
+   "gpu_used_gib_max": 15.19,
+   "quiz_ids": [
+    "QZ0002"
+   ],
+   "model_calls": 10,
+   "retries": 0,
+   "input_tokens_per_call": {
+    "min": 891,
+    "median": 999.5,
+    "max": 1006
+   },
+   "input_tokens_total": 9753,
+   "truncation_warnings": 5,
+   "failures": {
+    "duplicate": 0,
+    "evidence": 0,
+    "parse": 0,
+    "other": 0
+   },
+   "generation_failed": false,
+   "requested": 10,
+   "n_questions": 10,
+   "near_duplicate_pairs": 5,
+   "repeated_correct_answers": 4,
+   "distinct_cited_chunks": 3,
+   "cited_pages": [
+    6,
+    18
+   ],
+   "cited_sections": [
+    "**2 Methods** > **2.3 Selected Pairwise Similarity Metrics** > **2.3.2 Euclidean-Derived Similarity**",
+    "**2 Methods** > **2.3 Selected Pairwise Similarity Metrics** > **2.3.3 Radial Basis Function Similarity**",
+    "**Tables**"
+   ],
+   "cites_references_section": 0,
+   "lexically_supported_answers": 7,
+   "gold_concepts_touched": [
+    "C10"
+   ]
+  },
+  "C": {
+   "prompt": "Generate 20 MCQs about this document",
+   "scope": "whole",
+   "latency_s": 128.3,
+   "kind": "quiz",
+   "topic_used": "quiz",
+   "valid": true,
+   "gpu_used_gib_max": 15.19,
+   "quiz_ids": [
+    "QZ0003"
+   ],
+   "model_calls": 20,
+   "retries": 0,
+   "input_tokens_per_call": {
+    "min": 891,
+    "median": 1006.0,
+    "max": 1006
+   },
+   "input_tokens_total": 19813,
+   "truncation_warnings": 15,
+   "failures": {
+    "duplicate": 0,
+    "evidence": 0,
+    "parse": 0,
+    "other": 0
+   },
+   "generation_failed": false,
+   "requested": 20,
+   "n_questions": 20,
+   "near_duplicate_pairs": 17,
+   "repeated_correct_answers": 7,
+   "distinct_cited_chunks": 3,
+   "cited_pages": [
+    6,
+    18
+   ],
+   "cited_sections": [
+    "**2 Methods** > **2.3 Selected Pairwise Similarity Metrics** > **2.3.2 Euclidean-Derived Similarity**",
+    "**2 Methods** > **2.3 Selected Pairwise Similarity Metrics** > **2.3.3 Radial Basis Function Similarity**",
+    "**Tables**"
+   ],
+   "cites_references_section": 0,
+   "lexically_supported_answers": 14,
+   "gold_concepts_touched": [
+    "C10"
+   ]
+  },
+  "D": {
+   "prompt": "Generate 10 MCQs about the performance comparison against BLASTP",
+   "scope": "topic",
+   "latency_s": 75.3,
+   "kind": "quiz",
+   "topic_used": "quiz",
+   "valid": true,
+   "gpu_used_gib_max": 15.19,
+   "quiz_ids": [
+    "QZ0004"
+   ],
+   "model_calls": 10,
+   "retries": 0,
+   "input_tokens_per_call": {
+    "min": 955,
+    "median": 955.0,
+    "max": 955
+   },
+   "input_tokens_total": 9550,
+   "truncation_warnings": 10,
+   "failures": {
+    "duplicate": 0,
+    "evidence": 0,
+    "parse": 0,
+    "other": 0
+   },
+   "generation_failed": false,
+   "requested": 10,
+   "n_questions": 10,
+   "near_duplicate_pairs": 8,
+   "repeated_correct_answers": 8,
+   "distinct_cited_chunks": 2,
+   "cited_pages": [
+    10,
+    17
+   ],
+   "cited_sections": [
+    "**3 Results and Discussion** > **3.2 Performance Comparison Against BLASTP** > **3.2.1 Overall Performance on the PISCES Dataset**",
+    "**Figure legends**"
+   ],
+   "cites_references_section": 0,
+   "lexically_supported_answers": 10,
+   "gold_concepts_touched": [
+    "C22"
+   ]
+  },
+  "E": {
+   "prompt": "Generate 10 MCQs about the computational efficiency and storage of the models",
+   "scope": "narrow",
+   "latency_s": 85.1,
+   "kind": "quiz",
+   "topic_used": "quiz",
+   "valid": true,
+   "gpu_used_gib_max": 15.2,
+   "quiz_ids": [
+    "QZ0005"
+   ],
+   "model_calls": 10,
+   "retries": 0,
+   "input_tokens_per_call": {
+    "min": 975,
+    "median": 975.0,
+    "max": 975
+   },
+   "input_tokens_total": 9750,
+   "truncation_warnings": 10,
+   "failures": {
+    "duplicate": 0,
+    "evidence": 0,
+    "parse": 0,
+    "other": 0
+   },
+   "generation_failed": false,
+   "requested": 10,
+   "n_questions": 10,
+   "near_duplicate_pairs": 3,
+   "repeated_correct_answers": 0,
+   "distinct_cited_chunks": 2,
+   "cited_pages": [
+    4,
+    5
+   ],
+   "cited_sections": [
+    "**2 Methods** > **2.1 Overview of the Pipeline**",
+    "**2 Methods** > **2.2 Selected Protein Language Models** > **2.2.2 ESM-2**"
+   ],
+   "cites_references_section": 0,
+   "lexically_supported_answers": 6,
+   "gold_concepts_touched": [
+    "C03"
+   ]
+  },
+  "F": {
+   "prompt": "Generate 10 MCQs about AlphaFold3 training procedures",
+   "scope": "unsupported",
+   "latency_s": 81.0,
+   "kind": "quiz",
+   "topic_used": "quiz",
+   "valid": true,
+   "gpu_used_gib_max": 15.28,
+   "quiz_ids": [
+    "QZ0006"
+   ],
+   "model_calls": 10,
+   "retries": 0,
+   "input_tokens_per_call": {
+    "min": 1049,
+    "median": 1049.0,
+    "max": 1049
+   },
+   "input_tokens_total": 10490,
+   "truncation_warnings": 10,
+   "failures": {
+    "duplicate": 0,
+    "evidence": 0,
+    "parse": 0,
+    "other": 0
+   },
+   "generation_failed": false,
+   "requested": 10,
+   "n_questions": 10,
+   "near_duplicate_pairs": 4,
+   "repeated_correct_answers": 5,
+   "distinct_cited_chunks": 1,
+   "cited_pages": [
+    6
+   ],
+   "cited_sections": [
+    "**2 Methods** > **2.2 Selected Protein Language Models** > **2.2.4 ProstT5**"
+   ],
+   "cites_references_section": 0,
+   "lexically_supported_answers": 7,
+   "gold_concepts_touched": []
+  }
+ }
+}

@@ -4,5 +4,7 @@
   "paper_sha256": "6bc726b11ef1f0b30d661200a7d7cd5ece94da18b096c7c98eafba1a77e17f0f",
   "paper_pages": 20,
   "gold_file": "gold.json",
-  "gold_status": "provisional (machine-drafted, not human-reviewed)"
+  "gold_status": "provisional (machine-drafted, not human-reviewed)",
+  "bench_subdir": "quiz_paper",
+  "_status": "INACTIVE since 2026-10-12 at the owner's request; kept for provenance of the e7c28d3/89c483e results only."
 }
