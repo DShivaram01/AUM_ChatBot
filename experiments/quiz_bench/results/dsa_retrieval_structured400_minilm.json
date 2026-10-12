@@ -1,0 +1,740 @@
+{
+ "n_chunks": 37,
+ "chunk_chars": {
+  "min": 94,
+  "median": 326,
+  "max": 972
+ },
+ "chunk_tokens": {
+  "min": 27,
+  "median": 103,
+  "max": 255,
+  "total": 3957
+ },
+ "chunks_exceeding_view": 4,
+ "concepts_with_anchor_chunk": 35,
+ "concepts_visible_anywhere": 34,
+ "index_seconds": 0.226,
+ "query_ms_p50": 2.75,
+ "retrieval": {
+  "hit@1": 0.8,
+  "recall@5": 1.0,
+  "recall@10": 1.0,
+  "mrr@10": 0.8809523809523808,
+  "ndcg@10": 0.911222550306125,
+  "visible_in_top6": 0.9714285714285714
+ },
+ "per_query": [
+  {
+   "id": "C01",
+   "hit@1": 0.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.5,
+   "ndcg@10": 0.6309297535714575,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    2
+   ]
+  },
+  {
+   "id": "C02",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    2
+   ]
+  },
+  {
+   "id": "C03",
+   "hit@1": 0.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.3333333333333333,
+   "ndcg@10": 0.5,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    2
+   ]
+  },
+  {
+   "id": "C04",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    3
+   ]
+  },
+  {
+   "id": "C05",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    1
+   ]
+  },
+  {
+   "id": "C06",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    5
+   ]
+  },
+  {
+   "id": "C07",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    5
+   ]
+  },
+  {
+   "id": "C08",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    7
+   ]
+  },
+  {
+   "id": "C09",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    9
+   ]
+  },
+  {
+   "id": "C10",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    11
+   ]
+  },
+  {
+   "id": "C11",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    11
+   ]
+  },
+  {
+   "id": "C12",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    13
+   ]
+  },
+  {
+   "id": "C13",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    13
+   ]
+  },
+  {
+   "id": "C14",
+   "hit@1": 0.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.5,
+   "ndcg@10": 0.6309297535714575,
+   "visible_in_top6": 0.0,
+   "anchor_chunks": [
+    13
+   ]
+  },
+  {
+   "id": "C15",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    15
+   ]
+  },
+  {
+   "id": "C16",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    15
+   ]
+  },
+  {
+   "id": "C17",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    16
+   ]
+  },
+  {
+   "id": "C18",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    18
+   ]
+  },
+  {
+   "id": "C19",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    18
+   ]
+  },
+  {
+   "id": "C20",
+   "hit@1": 0.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.3333333333333333,
+   "ndcg@10": 0.5,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    20
+   ]
+  },
+  {
+   "id": "C21",
+   "hit@1": 0.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.3333333333333333,
+   "ndcg@10": 0.5,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    20
+   ]
+  },
+  {
+   "id": "C22",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    22
+   ]
+  },
+  {
+   "id": "C23",
+   "hit@1": 0.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.3333333333333333,
+   "ndcg@10": 0.5,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    22
+   ]
+  },
+  {
+   "id": "C24",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    24
+   ]
+  },
+  {
+   "id": "C25",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    24
+   ]
+  },
+  {
+   "id": "C26",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    26
+   ]
+  },
+  {
+   "id": "C27",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    26
+   ]
+  },
+  {
+   "id": "C28",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    28
+   ]
+  },
+  {
+   "id": "C29",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    30
+   ]
+  },
+  {
+   "id": "C30",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    31
+   ]
+  },
+  {
+   "id": "C31",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    31
+   ]
+  },
+  {
+   "id": "C32",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    33
+   ]
+  },
+  {
+   "id": "C33",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    35
+   ]
+  },
+  {
+   "id": "C34",
+   "hit@1": 1.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 1.0,
+   "ndcg@10": 1.0,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    35
+   ]
+  },
+  {
+   "id": "C35",
+   "hit@1": 0.0,
+   "recall@5": 1.0,
+   "recall@10": 1.0,
+   "mrr@10": 0.5,
+   "ndcg@10": 0.6309297535714575,
+   "visible_in_top6": 1.0,
+   "anchor_chunks": [
+    35
+   ]
+  }
+ ],
+ "quiz_requests": {
+  "A": {
+   "query": "this document",
+   "chunk_ids": [
+    24,
+    0,
+    12,
+    11,
+    32,
+    22
+   ],
+   "scores": [
+    0.215,
+    0.205,
+    0.15,
+    0.13,
+    0.126,
+    0.124
+   ],
+   "sections": [
+    "Data Structures & Algorithms: Comprehensive Course Notes",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 3: Singly and Doubly Linked Lists > Comparison: Arrays vs. Linked Lists",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 3: Singly and Doubly Linked Lists > Comparison: Arrays vs. Linked Lists > Quiz Benchmark Questions:",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 7: Trees & Binary Search Trees (BST)",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 7: Trees & Binary Search Trees (BST) > BST Node Insertion and Inorder Traversal (Python) > Tree Traversal Taxonomies:",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 9: Hash Tables & Collision Resolution > Open Addressing Probing Techniques: > Quiz Benchmark Questions:"
+   ],
+   "pages": [
+    1,
+    3,
+    7,
+    9
+   ],
+   "visible_concepts": [
+    "C10",
+    "C11",
+    "C22",
+    "C23",
+    "C24",
+    "C25"
+   ],
+   "n_visible_concepts": 6,
+   "target_concepts_visible": null,
+   "evidence_chars_retrieved": 1904,
+   "evidence_chars_shown": 1904,
+   "evidence_tokens_shown": 592,
+   "reference_chunks": 0,
+   "duplicate_ratio": 0.0
+  },
+  "B": {
+   "query": "this document",
+   "chunk_ids": [
+    24,
+    0,
+    12,
+    11,
+    32,
+    22
+   ],
+   "scores": [
+    0.215,
+    0.205,
+    0.15,
+    0.13,
+    0.126,
+    0.124
+   ],
+   "sections": [
+    "Data Structures & Algorithms: Comprehensive Course Notes",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 3: Singly and Doubly Linked Lists > Comparison: Arrays vs. Linked Lists",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 3: Singly and Doubly Linked Lists > Comparison: Arrays vs. Linked Lists > Quiz Benchmark Questions:",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 7: Trees & Binary Search Trees (BST)",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 7: Trees & Binary Search Trees (BST) > BST Node Insertion and Inorder Traversal (Python) > Tree Traversal Taxonomies:",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 9: Hash Tables & Collision Resolution > Open Addressing Probing Techniques: > Quiz Benchmark Questions:"
+   ],
+   "pages": [
+    1,
+    3,
+    7,
+    9
+   ],
+   "visible_concepts": [
+    "C10",
+    "C11",
+    "C22",
+    "C23",
+    "C24",
+    "C25"
+   ],
+   "n_visible_concepts": 6,
+   "target_concepts_visible": null,
+   "evidence_chars_retrieved": 1904,
+   "evidence_chars_shown": 1904,
+   "evidence_tokens_shown": 592,
+   "reference_chunks": 0,
+   "duplicate_ratio": 0.0
+  },
+  "C": {
+   "query": "this document",
+   "chunk_ids": [
+    24,
+    0,
+    12,
+    11,
+    32,
+    22
+   ],
+   "scores": [
+    0.215,
+    0.205,
+    0.15,
+    0.13,
+    0.126,
+    0.124
+   ],
+   "sections": [
+    "Data Structures & Algorithms: Comprehensive Course Notes",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 3: Singly and Doubly Linked Lists > Comparison: Arrays vs. Linked Lists",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 3: Singly and Doubly Linked Lists > Comparison: Arrays vs. Linked Lists > Quiz Benchmark Questions:",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 7: Trees & Binary Search Trees (BST)",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 7: Trees & Binary Search Trees (BST) > BST Node Insertion and Inorder Traversal (Python) > Tree Traversal Taxonomies:",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 9: Hash Tables & Collision Resolution > Open Addressing Probing Techniques: > Quiz Benchmark Questions:"
+   ],
+   "pages": [
+    1,
+    3,
+    7,
+    9
+   ],
+   "visible_concepts": [
+    "C10",
+    "C11",
+    "C22",
+    "C23",
+    "C24",
+    "C25"
+   ],
+   "n_visible_concepts": 6,
+   "target_concepts_visible": null,
+   "evidence_chars_retrieved": 1904,
+   "evidence_chars_shown": 1904,
+   "evidence_tokens_shown": 592,
+   "reference_chunks": 0,
+   "duplicate_ratio": 0.0
+  },
+  "D": {
+   "query": "hash tables and collision resolution",
+   "chunk_ids": [
+    30,
+    32,
+    31,
+    3,
+    17,
+    26
+   ],
+   "scores": [
+    0.745,
+    0.491,
+    0.332,
+    0.309,
+    0.307,
+    0.274
+   ],
+   "sections": [
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 1: Foundations of Algorithm Analysis & Asymptotic Notation > Common Asymptotic Growth Classes",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 5: Recursion & Divide-and-Conquer Paradigm > Binary Search Implementation & Recurrence Analysis (Python) > Quiz Benchmark Questions:",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 8: Self-Balancing Trees (AVL) & Heaps",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 9: Hash Tables & Collision Resolution",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 9: Hash Tables & Collision Resolution > Open Addressing Probing Techniques:",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 9: Hash Tables & Collision Resolution > Open Addressing Probing Techniques: > Quiz Benchmark Questions:"
+   ],
+   "pages": [
+    1,
+    5,
+    8,
+    9
+   ],
+   "visible_concepts": [
+    "C04",
+    "C26",
+    "C27",
+    "C29",
+    "C30",
+    "C31"
+   ],
+   "n_visible_concepts": 6,
+   "target_concepts_visible": "3/3",
+   "evidence_chars_retrieved": 2401,
+   "evidence_chars_shown": 2353,
+   "evidence_tokens_shown": 794,
+   "reference_chunks": 0,
+   "duplicate_ratio": 0.0
+  },
+  "E": {
+   "query": "AVL tree rotations",
+   "chunk_ids": [
+    28,
+    29,
+    26,
+    24,
+    22,
+    25
+   ],
+   "scores": [
+    0.622,
+    0.534,
+    0.521,
+    0.362,
+    0.287,
+    0.264
+   ],
+   "sections": [
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 7: Trees & Binary Search Trees (BST)",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 7: Trees & Binary Search Trees (BST) > BST Node Insertion and Inorder Traversal (Python) > Quiz Benchmark Questions:",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 7: Trees & Binary Search Trees (BST) > BST Node Insertion and Inorder Traversal (Python) > Tree Traversal Taxonomies:",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 8: Self-Balancing Trees (AVL) & Heaps",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 8: Self-Balancing Trees (AVL) & Heaps > Binary Min-Heap Array Representation & Percolate Up (C++) > AVL Tree Rotation Rules summary:",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 8: Self-Balancing Trees (AVL) & Heaps > Binary Min-Heap Array Representation & Percolate Up (C++) > Quiz Benchmark Questions:"
+   ],
+   "pages": [
+    7,
+    8
+   ],
+   "visible_concepts": [
+    "C22",
+    "C23",
+    "C24",
+    "C25",
+    "C26",
+    "C27",
+    "C28"
+   ],
+   "n_visible_concepts": 7,
+   "target_concepts_visible": "2/2",
+   "evidence_chars_retrieved": 2163,
+   "evidence_chars_shown": 2163,
+   "evidence_tokens_shown": 635,
+   "reference_chunks": 0,
+   "duplicate_ratio": 0.0
+  },
+  "F": {
+   "query": "red-black tree recoloring",
+   "chunk_ids": [
+    28,
+    22,
+    25,
+    24,
+    26,
+    23
+   ],
+   "scores": [
+    0.305,
+    0.28,
+    0.238,
+    0.234,
+    0.233,
+    0.19
+   ],
+   "sections": [
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 7: Trees & Binary Search Trees (BST)",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 7: Trees & Binary Search Trees (BST) > BST Node Insertion and Inorder Traversal (Python)",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 7: Trees & Binary Search Trees (BST) > BST Node Insertion and Inorder Traversal (Python) > Quiz Benchmark Questions:",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 7: Trees & Binary Search Trees (BST) > BST Node Insertion and Inorder Traversal (Python) > Tree Traversal Taxonomies:",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 8: Self-Balancing Trees (AVL) & Heaps",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 8: Self-Balancing Trees (AVL) & Heaps > Binary Min-Heap Array Representation & Percolate Up (C++) > AVL Tree Rotation Rules summary:"
+   ],
+   "pages": [
+    7,
+    8
+   ],
+   "visible_concepts": [
+    "C22",
+    "C23",
+    "C24",
+    "C25",
+    "C26",
+    "C27",
+    "C28"
+   ],
+   "n_visible_concepts": 7,
+   "target_concepts_visible": null,
+   "evidence_chars_retrieved": 1942,
+   "evidence_chars_shown": 1942,
+   "evidence_tokens_shown": 564,
+   "reference_chunks": 0,
+   "duplicate_ratio": 0.0
+  }
+ },
+ "chunker": "structured400",
+ "embedder": "sentence-transformers/all-MiniLM-L6-v2",
+ "view_chars": 500
+}
