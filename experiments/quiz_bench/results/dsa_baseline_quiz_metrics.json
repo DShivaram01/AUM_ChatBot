@@ -1,0 +1,259 @@
+{
+ "session": "eval-qz-b23463",
+ "document_id": "doc_b0cd408beae988a6",
+ "n_chunks": 37,
+ "requests": {
+  "A": {
+   "prompt": "Generate 5 MCQs about this document",
+   "scope": "whole",
+   "latency_s": 31.0,
+   "kind": "quiz",
+   "topic_used": "quiz",
+   "valid": true,
+   "gpu_used_gib_max": 15.29,
+   "quiz_ids": [
+    "QZ0007"
+   ],
+   "model_calls": 5,
+   "retries": 0,
+   "input_tokens_per_call": {
+    "min": 822,
+    "median": 878,
+    "max": 935
+   },
+   "input_tokens_total": 4405,
+   "truncation_warnings": 0,
+   "failures": {
+    "duplicate": 0,
+    "evidence": 0,
+    "parse": 0,
+    "other": 0
+   },
+   "generation_failed": false,
+   "requested": 5,
+   "n_questions": 5,
+   "near_duplicate_pairs": 8,
+   "repeated_correct_answers": 3,
+   "distinct_cited_chunks": 2,
+   "cited_pages": [
+    1,
+    3
+   ],
+   "cited_sections": [
+    "Data Structures & Algorithms: Comprehensive Course Notes",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 3: Singly and Doubly Linked Lists > Comparison: Arrays vs. Linked Lists > Quiz Benchmark Questions:"
+   ],
+   "cites_references_section": 0,
+   "lexically_supported_answers": 0,
+   "gold_concepts_touched": []
+  },
+  "B": {
+   "prompt": "Generate 10 MCQs about this document",
+   "scope": "whole",
+   "latency_s": 58.7,
+   "kind": "quiz",
+   "topic_used": "quiz",
+   "valid": true,
+   "gpu_used_gib_max": 15.29,
+   "quiz_ids": [
+    "QZ0008"
+   ],
+   "model_calls": 10,
+   "retries": 0,
+   "input_tokens_per_call": {
+    "min": 822,
+    "median": 946.5,
+    "max": 960
+   },
+   "input_tokens_total": 9203,
+   "truncation_warnings": 4,
+   "failures": {
+    "duplicate": 0,
+    "evidence": 0,
+    "parse": 0,
+    "other": 0
+   },
+   "generation_failed": false,
+   "requested": 10,
+   "n_questions": 10,
+   "near_duplicate_pairs": 30,
+   "repeated_correct_answers": 5,
+   "distinct_cited_chunks": 3,
+   "cited_pages": [
+    1,
+    3
+   ],
+   "cited_sections": [
+    "Data Structures & Algorithms: Comprehensive Course Notes",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 3: Singly and Doubly Linked Lists > Comparison: Arrays vs. Linked Lists",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 3: Singly and Doubly Linked Lists > Comparison: Arrays vs. Linked Lists > Quiz Benchmark Questions:"
+   ],
+   "cites_references_section": 0,
+   "lexically_supported_answers": 0,
+   "gold_concepts_touched": [
+    "C11"
+   ]
+  },
+  "C": {
+   "prompt": "Generate 20 MCQs about this document",
+   "scope": "whole",
+   "latency_s": 117.6,
+   "kind": "quiz",
+   "topic_used": "quiz",
+   "valid": true,
+   "gpu_used_gib_max": 15.29,
+   "quiz_ids": [
+    "QZ0009"
+   ],
+   "model_calls": 20,
+   "retries": 0,
+   "input_tokens_per_call": {
+    "min": 822,
+    "median": 960.0,
+    "max": 960
+   },
+   "input_tokens_total": 18803,
+   "truncation_warnings": 14,
+   "failures": {
+    "duplicate": 0,
+    "evidence": 0,
+    "parse": 0,
+    "other": 0
+   },
+   "generation_failed": false,
+   "requested": 20,
+   "n_questions": 20,
+   "near_duplicate_pairs": 110,
+   "repeated_correct_answers": 15,
+   "distinct_cited_chunks": 4,
+   "cited_pages": [
+    1,
+    3,
+    7
+   ],
+   "cited_sections": [
+    "Data Structures & Algorithms: Comprehensive Course Notes",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 3: Singly and Doubly Linked Lists > Comparison: Arrays vs. Linked Lists",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 3: Singly and Doubly Linked Lists > Comparison: Arrays vs. Linked Lists > Quiz Benchmark Questions:",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 7: Trees & Binary Search Trees (BST) > BST Node Insertion and Inorder Traversal (Python) > Tree Traversal Taxonomies:"
+   ],
+   "cites_references_section": 0,
+   "lexically_supported_answers": 2,
+   "gold_concepts_touched": [
+    "C11",
+    "C24",
+    "C25"
+   ]
+  },
+  "D": {
+   "prompt": "Generate 10 MCQs about hash tables and collision resolution",
+   "scope": "topic",
+   "latency_s": 78.0,
+   "kind": "answer",
+   "topic_used": "quiz_unavailable",
+   "valid": false,
+   "gpu_used_gib_max": 15.29,
+   "quiz_ids": [
+    "QZ0010"
+   ],
+   "model_calls": 7,
+   "retries": 2,
+   "input_tokens_per_call": {
+    "min": 1027,
+    "median": 1078,
+    "max": 1078
+   },
+   "input_tokens_total": 7480,
+   "truncation_warnings": 5,
+   "failures": {
+    "duplicate": 0,
+    "evidence": 0,
+    "parse": 0,
+    "other": 3
+   },
+   "generation_failed": true,
+   "requested": 10,
+   "answer": "Could not generate a valid quiz from the model output. Please try again."
+  },
+  "E": {
+   "prompt": "Generate 10 MCQs about AVL tree rotations",
+   "scope": "narrow",
+   "latency_s": 78.8,
+   "kind": "quiz",
+   "topic_used": "quiz",
+   "valid": true,
+   "gpu_used_gib_max": 15.29,
+   "quiz_ids": [
+    "QZ0011"
+   ],
+   "model_calls": 11,
+   "retries": 1,
+   "input_tokens_per_call": {
+    "min": 868,
+    "median": 948,
+    "max": 948
+   },
+   "input_tokens_total": 10233,
+   "truncation_warnings": 6,
+   "failures": {
+    "duplicate": 0,
+    "evidence": 1,
+    "parse": 0,
+    "other": 0
+   },
+   "generation_failed": false,
+   "requested": 10,
+   "n_questions": 10,
+   "near_duplicate_pairs": 7,
+   "repeated_correct_answers": 2,
+   "distinct_cited_chunks": 4,
+   "cited_pages": [
+    7,
+    8
+   ],
+   "cited_sections": [
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 7: Trees & Binary Search Trees (BST)",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 8: Self-Balancing Trees (AVL) & Heaps",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 8: Self-Balancing Trees (AVL) & Heaps > Binary Min-Heap Array Representation & Percolate Up (C++) > AVL Tree Rotation Rules summary:",
+    "Data Structures & Algorithms: Comprehensive Course Notes > Chapter 8: Self-Balancing Trees (AVL) & Heaps > Binary Min-Heap Array Representation & Percolate Up (C++) > Quiz Benchmark Questions:"
+   ],
+   "cites_references_section": 0,
+   "lexically_supported_answers": 7,
+   "gold_concepts_touched": [
+    "C23",
+    "C27",
+    "C28"
+   ]
+  },
+  "F": {
+   "prompt": "Generate 10 MCQs about red-black tree recoloring",
+   "scope": "unsupported",
+   "latency_s": 69.1,
+   "kind": "answer",
+   "topic_used": "quiz_unavailable",
+   "valid": false,
+   "gpu_used_gib_max": 15.29,
+   "quiz_ids": [
+    "QZ0012"
+   ],
+   "model_calls": 10,
+   "retries": 2,
+   "input_tokens_per_call": {
+    "min": 799,
+    "median": 872.5,
+    "max": 927
+   },
+   "input_tokens_total": 8756,
+   "truncation_warnings": 3,
+   "failures": {
+    "duplicate": 0,
+    "evidence": 3,
+    "parse": 0,
+    "other": 0
+   },
+   "generation_failed": true,
+   "requested": 10,
+   "answer": "Could not generate a valid quiz from the model output. Please try again."
+  }
+ }
+}

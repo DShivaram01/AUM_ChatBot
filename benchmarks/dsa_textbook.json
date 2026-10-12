@@ -1,0 +1,9 @@
+{
+  "_about": "Active benchmark fixture: CS-201 'Data Structures & Algorithms' course notes (10 pages, user-supplied 2026-10-12). PDF and provisional gold set are NOT in git; they live in $QZ_BENCH_DIR (default ~/aum_benchmarks/dsa_textbook) and are verified against these hashes.",
+  "bench_subdir": "dsa_textbook",
+  "paper_file": "paper.pdf",
+  "paper_sha256": "d5b33bba444871b28197e2b3aa73eed1cc8711114ff7b7f7ebf415c48a694fdd",
+  "paper_pages": 10,
+  "gold_file": "gold.json",
+  "gold_status": "provisional (machine-drafted, not human-reviewed)"
+}

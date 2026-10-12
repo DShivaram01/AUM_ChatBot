@@ -14,11 +14,15 @@ from functools import lru_cache
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-CONFIG = ROOT / "benchmarks" / "quiz_paper.json"
+# Select the fixture with QZ_FIXTURE (a benchmarks/<name>.json); the
+# research paper (quiz_paper) is inactive at the owner's request.
+FIXTURE = os.environ.get("QZ_FIXTURE", "dsa_textbook")
+CONFIG = ROOT / "benchmarks" / f"{FIXTURE}.json"
 
 
 def bench_dir() -> Path:
-    return Path(os.environ.get("QZ_BENCH_DIR", Path.home() / "aum_benchmarks" / "quiz_paper"))
+    default = Path.home() / "aum_benchmarks" / json.loads(CONFIG.read_text()).get("bench_subdir", FIXTURE)
+    return Path(os.environ.get("QZ_BENCH_DIR", default))
 
 
 def _sha(path: Path) -> str:
