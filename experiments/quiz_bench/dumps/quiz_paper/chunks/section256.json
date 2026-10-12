@@ -1,0 +1,680 @@
+[
+ {
+  "text": "Evaluating Protein Language Model Embeddings and Similarity Metrics for Alignment-Free Protein Structural Similarity in the Twilight Zone\n\nShivaram Danwada<sup>1</sup> , Priscilla Udomprasert<sup>1</sup> , Nilanjana Raychawdhary<sup>2</sup> , Cheryl D. Seals<sup>2</sup> , Lei Wu<sup>1</sup> , Sutanu Bhattacharya<sup>1*</sup>\n\n- 1Department of Computer Science and Computer Information Systems, Auburn University at Montgomery, Montgomery, AL 36117, USA.\n\n- 2Department of Computer Science, Auburn University, Auburn, AL 36849, USA.\n\n- *Corresponding author(s). E-mail(s): sbhatta4@aum.edu;",
+  "page": 1,
+  "page_end": 1,
+  "heading_path": []
+ },
+ {
+  "text": "- Contributing authors: sdanwada@aum.edu; pudompr1@aum.edu; nzr0044@auburn.edu; sealscd@auburn.edu; lwu@aum.edu;",
+  "page": 1,
+  "page_end": 1,
+  "heading_path": []
+ },
+ {
+  "text": "Evaluating protein structural similarity remains challenging in the proteinsequence twilight zone (20\u201335% sequence identity), where traditional methods often fail. In this study, we evaluate whether mean-pooled embeddings from four protein language models (PLMs): ESM-1b, ESM-2, ProtT5, and ProstT5 can estimate pairwise structural similarity without performing sequence alignment. The benchmark dataset includes 20,445 PISCES protein pairs with sequence identity **_\u2264_ 30%** , representing the protein-sequence twilight zone, with TM-alignderived **TMmin** used as the structural ground truth. Protein embeddings are compared using cosine similarity, Euclidean- and Manhattan-derived similarities, an RBF kernel, and dot product. Among these similarity metrics, cosine similarity performs best across all four models. Moreover, ProstT5 achieves the highest Spearman correlation with **TMmin** , followed by ESM-2, ProtT5, and ESM-1b, while all four PLMs outperform BLASTP overall.",
+  "page": 1,
+  "page_end": 1,
+  "heading_path": [
+   "Abstract"
+  ]
+ },
+ {
+  "text": "Furthermore, the advantage of PLM embeddings is most pronounced for protein pairs with the lowest sequence identity. ProstT5 also provides the best discrimination between structurally similar and dissimilar protein pairs. Moreover, it offers a favorable balance between similarity performance and the computational requirements\n\n1\n\nof residue-level embedding generation and storage. Overall, these findings support pairwise similarity between PLM embeddings as an effective alignment-free approach for detecting structural relationships among proteins in the twilight zone.\n\n**Keywords:** protein language models, protein embeddings, structural similarity, remote homology, protein-sequence twilight zone, alignment-free protein homology",
+  "page": 1,
+  "page_end": 2,
+  "heading_path": [
+   "Abstract"
+  ]
+ },
+ {
+  "text": "The rapid growth of protein-sequence databases [1, 2] allows recent advances in natural language processing (NLP) to be transferred to protein representation learning [3, 4]. Protein language models (PLMs) [5\u20138] treat amino acids or residues as tokens and learn statistical regularities from large collections of naturally occurring sequences. Similar to transformer-based language models developed for NLP [9, 10], many PLMs use a self-supervised learning objective in which individual residues or contiguous residue spans from protein sequences extracted from large protein-sequence databases are masked and then reconstructed from the remaining sequence context [11]. Successful reconstruction requires the model to determine which positions in the input provide relevant contextual information. The self-attention mechanism of the transformer architecture supports this process by assigning context-dependent weights to residues throughout the sequence. During pretraining, the model consequently builds high-dimensional representations of individual residues and entire protein sequences [11]. Because these representations are learned without labels for a specific biological task, they can subsequently be used directly in zero-shot settings or adapted to a variety of downstream applications.",
+  "page": 2,
+  "page_end": 2,
+  "heading_path": [
+   "1 Introduction"
+  ]
+ },
+ {
+  "text": "Representations derived from PLMs are useful for a wide range of proteinprediction problems, including secondary-structure prediction [7], subcellularlocalization prediction [7, 12], inference of evolutionary relationships [13], and classification at the family and superfamily levels [14, 15]. More importantly, several studies report that PLMs can learn structural information while trained only on amino-acid sequences [5, 7, 16, 17]. For example, TAPE [16] shows that pretrained sequence representations support secondary-structure prediction, remote-homology detection, and protein-engineering tasks. ESM-1b [17] representations contain signals associated with secondary structure, long-range residue contacts, mutational effects, and homology. The ESM-2 family [18] extends this line of work from millions to billions of parameters and provides the sequence representations used by ESMFold for atomiclevel structure prediction.",
+  "page": 2,
+  "page_end": 2,
+  "heading_path": [
+   "1 Introduction"
+  ]
+ },
+ {
+  "text": "Although sequence-only language models do not replace structure-prediction systems such as AlphaFold2 [19], their performance indicates that large-scale sequence pretraining recovers substantial information about the structural constraints acting on proteins.\n\nThe view that PLMs acquire structure-related information is biologically plausible because their training corpora contain the outcomes of evolutionary selection across a vast region of protein-sequence space. Protein function imposes constraints\n\n2\n\non three-dimensional conformation, and the requirements of a stable and functional conformation restrict amino-acid substitutions that are tolerated during evolution [20]. The resulting selective pressures are therefore transmitted from function through structure to sequence. Function typically changes more slowly than structure, while protein structure remains substantially more conserved than primary sequence [21]. A model trained on millions of evolutionarily sampled sequences may consequently recover statistical patterns that reflect both local biochemical preferences and global structural constraints.",
+  "page": 2,
+  "page_end": 3,
+  "heading_path": [
+   "1 Introduction"
+  ]
+ },
+ {
+  "text": "Structural and functional relationships are usually recognizable above approximately 30% sequence identity [22\u201329], but below this threshold direct sequence comparison becomes increasingly unreliable even when proteins retain related folds or functions [29\u201332]. This low-identity regime, known as the protein-sequence twilight zone, therefore provides a stringent setting for testing whether PLMs encode structure-relevant information beyond obvious sequence similarity.\n\nHowever, it remains unclear whether sequence-level PLM embeddings can serve directly as reliable measures of pairwise structural similarity in the twilight zone, and which combination of PLM and similarity metric most effectively preserves structural relationships. Existing studies largely evaluate PLMs through remote-homology classification [4, 33], residue-level embedding alignment [3, 34\u201337], or end-to-end structure prediction [18] rather than through continuous pairwise structural-similarity scoring across multiple models and embedding-space metrics.",
+  "page": 3,
+  "page_end": 3,
+  "heading_path": [
+   "1 Introduction"
+  ]
+ },
+ {
+  "text": "To address this gap, we examine this question in a zero-shot setting, using each pretrained PLM only as a fixed feature extractor, and ask whether similarity between mean-pooled protein embeddings tracks experimentally determined structural similarity. The benchmark is restricted to protein pairs with no more than 30% sequence identity and is further divided into 0% _\u2264 x \u2264_ 10%, 10% _< x \u2264_ 20%, and 20% _< x \u2264_ 30% intervals to determine whether performance remains stable across the twilight zone.",
+  "page": 3,
+  "page_end": 3,
+  "heading_path": [
+   "1 Introduction"
+  ]
+ },
+ {
+  "text": "We evaluate four representative transformer-based PLMs \u2014 ESM-1b [17], ESM-2 [18], ProtT5 [7], and ProstT5 [38] \u2014 covering encoder-only and T5-based architectures, as well as sequence-only and structure-aware pretraining. For each protein pair, the sequence-level embeddings are compared using cosine similarity, Euclidean-derived similarity, an RBF kernel, Manhattan-derived similarity, and dot product, since different metrics capture different aspects of embedding geometry and may behave differently across models. BLASTP [39, 40], a traditional protein sequence alignment tool, serves as the baseline that does not use embeddings. Overall, the results show that PLM embeddings capture meaningful structural similarity throughout the twilight zone and consistently outperform BLASTP. Among the evaluated models, ProstT5 provides the strongest structure-aware representations, while cosine similarity emerges as the most reliable metric across architectures. All our code is made publicly available at https://github.com/sutanubh1/RemoteProtBench.",
+  "page": 3,
+  "page_end": 3,
+  "heading_path": [
+   "1 Introduction"
+  ]
+ },
+ {
+  "text": "The main contributions of this study are:\n\n- We provide a systematic zero-shot evaluation of pairwise similarity between meanpooled embeddings from four protein language models using five similarity metrics\n\n3\n\nfor alignment-free estimation of structural similarity among proteins with low sequence identity.\n\n- Using cosine similarity, we examine how PLM-based structural similarity behaves across increasing sequence divergence, structural similarity classes, and sequencelength imbalance, and compare these results with BLASTP as a traditional sequence-alignment baseline.\n\n- We jointly assess similarity performance and computational cost, including residuelevel embedding-generation time and storage, to characterize the practical trade-offs among sequence-only and structure-aware PLMs.",
+  "page": 3,
+  "page_end": 4,
+  "heading_path": [
+   "1 Introduction"
+  ]
+ },
+ {
+  "text": "As shown in Figure 1, given an input pair of protein sequences, _P_ 1 and _P_ 2, with lengths _L_ 1 and _L_ 2, respectively, each sequence is processed independently by a pretrained PLM. The PLM generates residue-level embeddings:\n\nwhere _D_ denotes the embedding dimension of the model, and **H** _P_ 1 of dimension ( _L_ 1 _\u00d7 D_ ) and **H** _P_ 2 of dimension ( _L_ 2 _\u00d7 D_ ) are residue-level embeddings for _P_ 1 and _P_ 2, respectively. After removing model-specific special and padding tokens, the sequencelevel representations of _P_ 1 and _P_ 2 are obtained by mean pooling the residue-level embeddings across the sequence length as follows:",
+  "page": 4,
+  "page_end": 4,
+  "heading_path": [
+   "2 Methods",
+   "2.1 Overview of the Pipeline"
+  ]
+ },
+ {
+  "text": "where **E** _P_ 1 and **E** _P_ 2 are the sequence-level representations of _P_ 1 and _P_ 2, respectively. Mean pooling produces one _D_ -dimensional vector for each protein, irrespective of the original sequence length. Finally, the pairwise similarity score between the two proteins is calculated by applying a selected similarity metric _fk_ to the mean-pooled embeddings as follows:",
+  "page": 4,
+  "page_end": 4,
+  "heading_path": [
+   "2 Methods",
+   "2.1 Overview of the Pipeline"
+  ]
+ },
+ {
+  "text": "We evaluate four representative transformer-based PLMs: ESM-1b [17], ESM-2 [18], ProtT5 [7], and ProstT5 [38]. The models span encoder-only and encoder\u2013decoder architectures, differ in parameter scale and embedding dimensionality, and include\n\n4\n\nboth sequence-only and structure-aware pretraining strategies. Table 1 summarizes the key properties of each model, which are described below.",
+  "page": 4,
+  "page_end": 5,
+  "heading_path": [
+   "2 Methods",
+   "2.2 Selected Protein Language Models"
+  ]
+ },
+ {
+  "text": "ESM-1b [17] is a 33-layer bidirectional transformer encoder with approximately 650 million parameters and a residue-level embedding dimension of 1,280. It is pretrained on evolutionary-scale protein-sequence data using masked language modeling, in which selected amino-acid tokens are reconstructed from their surrounding sequence context. For a protein of length _L_ , ESM-1b produces a residue-level representation **H** _P \u2208_ R<sup>_L\u00d7_1280</sup> after beginning-of-sequence and end-of-sequence tokens are removed. Because the model has a finite input-context length, sequences longer than 1,022 residues are divided into overlapping windows, embedded separately, and recombined to recover a complete residue-level representation. ESM-1b is included because it is among the first large PLMs to demonstrate that structural, evolutionary, and functional information emerges from sequence-only self-supervised pretraining.",
+  "page": 5,
+  "page_end": 5,
+  "heading_path": [
+   "2 Methods",
+   "2.2 Selected Protein Language Models",
+   "2.2.1 ESM-1b"
+  ]
+ },
+ {
+  "text": "ESM-2 [18] extends the ESM framework through architectural refinements, larger training collections, and model sizes ranging from millions to billions of parameters. We use the 3-billion-parameter variant ( `esm2` ~~`t`~~ `36` ~~`3`~~ `B` ~~`U`~~ `R50D` ), which contains 36 transformer layers and produces a 2,560-dimensional representation for each residue. For a sequence of length _L_ , the extracted embedding matrix has dimensions **H** _P \u2208_ R<sup>_L\u00d7_2560</sup> after beginning-of-sequence and end-of-sequence tokens are excluded. Representations are obtained from transformer layer 33, following the default ESM-family extraction configuration used by the embedding-based alignment toolkit [34]. As with ESM1b, sequences exceeding 1,022 residues are processed through overlapping windows and reconstructed into complete residue-level embeddings.",
+  "page": 5,
+  "page_end": 5,
+  "heading_path": [
+   "2 Methods",
+   "2.2 Selected Protein Language Models",
+   "2.2.2 ESM-2"
+  ]
+ },
+ {
+  "text": "ESM-2 is trained using masked-residue prediction on large UniRef-derived sequence collections and provides the representations used by the ESMFold structure-prediction framework.",
+  "page": 5,
+  "page_end": 5,
+  "heading_path": [
+   "2 Methods",
+   "2.2 Selected Protein Language Models",
+   "2.2.2 ESM-2"
+  ]
+ },
+ {
+  "text": "ProtT5 [7] belongs to the T5 encoder\u2013decoder family and is developed as part of the ProtTrans framework [7]. It is pretrained on large protein-sequence collections derived from UniRef50 [2] and the Big Fantastic Database (BFD) [1], which contains extensive genomic and metagenomic sequence diversity. The complete model contains approximately 3 billion parameters, and its encoder consists of 24 transformer layers. We use the `prot t5` ~~`x`~~ `l uniref50` checkpoint, and only the encoder output is used in this study; embeddings are computed in full (32-bit) precision. For a protein of length _L_ , ProtT5 produces a residue-level representation **H** _P \u2208_ R<sup>_L\u00d7_1024</sup> after padding and nonresidue tokens are removed. Unlike the ESM models, ProtT5 processes long benchmark sequences without any sliding-window procedure. Its self-supervised denoising objective trains the model to reconstruct corrupted amino-acid tokens from the surrounding sequence context.",
+  "page": 5,
+  "page_end": 5,
+  "heading_path": [
+   "2 Methods",
+   "2.2 Selected Protein Language Models",
+   "2.2.3 ProtT5"
+  ]
+ },
+ {
+  "text": "5",
+  "page": 5,
+  "page_end": 5,
+  "heading_path": [
+   "2 Methods",
+   "2.2 Selected Protein Language Models",
+   "2.2.3 ProtT5"
+  ]
+ },
+ {
+  "text": "ProstT5 [38] builds on the ProtT5 architecture and pretrained weights and undergoes an additional structure-aware pretraining stage. Protein structures are represented using Foldseek-derived [41] 3Di tokens, and the model learns bidirectional translation between amino-acid sequences and structural-token sequences. ProstT5 retains the 24-layer encoder and 1,024-dimensional residue representation **H** _P \u2208_ R<sup>_L\u00d7_1024</sup> of ProtT5. During inference, each amino-acid sequence is prepended with the recommended `<AA2fold>` control token to specify amino-acid-to-structure encoding mode. The control token and padding positions are removed from the final output, yielding **H** _P \u2208_ R<sup>_L\u00d7_1024</sup> after the control token and padding positions are removed. No 3Di tokens or structural coordinates are supplied during benchmark inference, and long sequences are processed without the ESM-specific windowing procedure.",
+  "page": 6,
+  "page_end": 6,
+  "heading_path": [
+   "2 Methods",
+   "2.2 Selected Protein Language Models",
+   "2.2.4 ProstT5"
+  ]
+ },
+ {
+  "text": "ProstT5 is therefore structure-aware through pretraining while remaining sequence-based at inference time.",
+  "page": 6,
+  "page_end": 6,
+  "heading_path": [
+   "2 Methods",
+   "2.2 Selected Protein Language Models",
+   "2.2.4 ProstT5"
+  ]
+ },
+ {
+  "text": "For every protein pair and every PLM, we compute five pairwise measures between the mean-pooled embeddings **E** _P_ 1 _,_ **E** _P_ 2 _\u2208_ R<sup>_D_</sup> defined in Equations (2) and (3).",
+  "page": 6,
+  "page_end": 6,
+  "heading_path": [
+   "2 Methods",
+   "2.3 Selected Pairwise Similarity Metrics"
+  ]
+ },
+ {
+  "text": "Cosine similarity uses L2-normalised vectors, so it measures direction only and ignores embedding magnitude:\n\nEuclidean-derived similarity is computed on the raw, unnormalised embeddings:",
+  "page": 6,
+  "page_end": 6,
+  "heading_path": [
+   "2 Methods",
+   "2.3 Selected Pairwise Similarity Metrics"
+  ]
+ },
+ {
+  "text": "The Radial Basis Function (RBF) kernel similarity applies a Gaussian decay to the squared Euclidean distance:\n\nwhere _\u03c3_ is the model-specific RBF bandwidth, set to the median pairwise Euclidean distance computed over all benchmark pairs for that model.",
+  "page": 6,
+  "page_end": 6,
+  "heading_path": [
+   "2 Methods",
+   "2.3 Selected Pairwise Similarity Metrics",
+   "2.3.3 Radial Basis Function Similarity"
+  ]
+ },
+ {
+  "text": "Manhattan-derived similarity uses the _L_ 1 distance, normalised by the embedding dimension _D_ :\n\n6\n\n(8)\n\n_f_ man( **E** _P_ 1 _,_ **E** _P_ 2) = _e_<sup>_\u2212\u2225_</sup><sup>**E**</sup><sup>_P_1</sup><sup>_\u2212_</sup><sup>**E**</sup><sup>_P_2</sup><sup>_\u2225_1</sup><sup>_/D_</sup>\n\nwhere _D_ is the embedding dimension, used to scale the _L_ 1 distance onto a comparable numeric range.",
+  "page": 6,
+  "page_end": 7,
+  "heading_path": [
+   "2 Methods",
+   "2.3 Selected Pairwise Similarity Metrics",
+   "2.3.4 Manhattan-Derived Similarity"
+  ]
+ },
+ {
+  "text": "The dot product is computed directly on the unnormalised vectors:\n\n_f_ dot( **E** _P_ 1 _,_ **E** _P_ 2) = **E** _P_ 1 _\u00b7_ **E** _P_ 2 (9)\n\nCosine similarity is the only metric computed on normalised vectors. Equations (6)\u2013(9) are computed on raw, unnormalised embeddings so that each metric remains mathematically distinct from cosine and from one another. This design also allows magnitude-related effects in each model\u2019s embedding space to be observed directly rather than removed by upstream normalisation.",
+  "page": 7,
+  "page_end": 7,
+  "heading_path": [
+   "2 Methods",
+   "2.3 Selected Pairwise Similarity Metrics",
+   "2.3.5 Dot Product"
+  ]
+ },
+ {
+  "text": "For benchmarking, we use the PISCES dataset [43], containing 20,466 unique protein pairs from 3,500 representative X-ray structures with resolutions ranging from 0.48 to 2.00<sup>\u02da</sup> A. All protein pairs share _\u2264_ 30% sequence identity, placing the entire dataset within the homology twilight zone [22]. Pairs for which no valid precomputed structural alignment score is available are subsequently excluded, yielding a final benchmark of _N_ = 20 _,_ 445 unique protein pairs [34]. To ensure a fair comparison, the same pair list is used across all PLMs and similarity metrics.",
+  "page": 7,
+  "page_end": 7,
+  "heading_path": [
+   "2 Methods",
+   "2.4 Benchmark Datasets, Methods to Compare, and Performance Evaluation"
+  ]
+ },
+ {
+  "text": "On this dataset, we evaluate embeddings generated by ESM-1b, ESM-2, ProtT5, and ProstT5 using cosine similarity, Euclidean-distance-derived similarity, Manhattandistance-derived similarity, the radial basis function kernel, and the dot product. To determine whether PLM embeddings identify remote structural relationships beyond those detectable by traditional sequence alignment, we include BLASTP [39, 40] as a sequence-alignment baseline. BLASTP is applied to the same protein pairs, and its logtransformed E-value is used as the primary baseline score. The purpose of including BLASTP is to highlight the performance difference between a traditional approach and alignment-free PLM representations, particularly for remotely related proteins with limited sequence identity.",
+  "page": 7,
+  "page_end": 7,
+  "heading_path": [
+   "2 Methods",
+   "2.4 Benchmark Datasets, Methods to Compare, and Performance Evaluation"
+  ]
+ },
+ {
+  "text": "TM-score, calculated using TM-align [44], is used as the ground-truth measure of structural similarity. TM-align requires the three-dimensional coordinates of both proteins, performs a structural superposition, and reports a length-normalised score ranging from 0 to 1. Higher TM-scores indicate better global structural similarity, and values 0.5 or above commonly suggest that two proteins share a similar fold [44]. Because TM-align normalises the structural comparison using each protein length separately, it reports two directional TM-scores for every protein pair. Following prior studies [3, 34], we define TMmin as the smaller of the two scores and use it as the primary ground truth in this study.\n\n7",
+  "page": 7,
+  "page_end": 7,
+  "heading_path": [
+   "2 Methods",
+   "2.4 Benchmark Datasets, Methods to Compare, and Performance Evaluation"
+  ]
+ },
+ {
+  "text": "For each PLM and similarity metric, performance is evaluated using Spearman correlation coefficient, _\u03c1_ , between the embedding-based pairwise similarity scores and TMmin. To further evaluate performance under different levels of sequence divergence, correlations are calculated separately for the 0% _\u2264 x \u2264_ 10%, 10% _< x \u2264_ 20%, and 20% _< x \u2264_ 30% sequence-identity intervals. We also evaluate the ability of each method to classify structurally similar protein pairs using TMmin as the cutoff, since protein pairs with TM-scores (measured by TM-align) greater than or equal to 0.5 are generally considered to share a similar fold [44]. Protein pairs with TMmin _\u2265_ 0 _._ 5 are therefore treated as the positive, structurally similar class, whereas those with TMmin _<_ 0 _._ 5 are treated as the negative, structurally dissimilar class.",
+  "page": 8,
+  "page_end": 8,
+  "heading_path": [
+   "2 Methods",
+   "2.4 Benchmark Datasets, Methods to Compare, and Performance Evaluation"
+  ]
+ },
+ {
+  "text": "The receiver operating characteristic (ROC) curves and corresponding area under the ROC curve (AUC) values are calculated across all score thresholds to evaluate each method\u2019s ability to distinguish structurally similar protein pairs from structurally dissimilar pairs. Furthermore, we examine whether sequence-length imbalance affects the performance of PLMs. For each protein pair, the symmetric length ratio is calculated by dividing the length of the shorter sequence by that of the longer sequence. Values close to 1 indicate proteins of comparable length, whereas smaller values indicate greater length imbalance. The benchmark is divided into length-imbalanced pairs with a length ratio _\u2264_ 0 _._ 5 and more length-balanced pairs with a ratio _>_ 0 _._ 5, and Spearman correlations with TMmin are calculated separately for the two groups to study the impact of sequence-length imbalance on embedding-based similarity performance.",
+  "page": 8,
+  "page_end": 8,
+  "heading_path": [
+   "2 Methods",
+   "2.4 Benchmark Datasets, Methods to Compare, and Performance Evaluation"
+  ]
+ },
+ {
+  "text": "Because the efficiency of our approach depends heavily on generating and storing PLM embeddings, we evaluate the computational cost associated with these two steps. The embedding-generation time is measured on the H100 GPU nodes and reported as the average time required by each PLM to generate residue-level embeddings for one protein sequence. We also examine runtime across different sequence-length intervals to determine how embedding-generation time changes with protein length. The storage cost is calculated using the complete set of residue-level embeddings generated for all 3,500 benchmark proteins and represents only the disk space required to store these embeddings. Because storage depends on both the total number of residues and the embedding dimension of each model, this analysis provides a practical comparison of the 1,024-, 1,280-, and 2,560-dimensional representations produced by the evaluated PLMs. We consider residue-level embeddings rather than only the mean-pooled sequence vectors because the complete embedding matrices are typically retained for residue-level analysis, sequence alignment, and other downstream applications. The reported runtime and storage costs do not include similarity calculations or any other downstream processing.",
+  "page": 8,
+  "page_end": 8,
+  "heading_path": [
+   "2 Methods",
+   "2.4 Benchmark Datasets, Methods to Compare, and Performance Evaluation"
+  ]
+ },
+ {
+  "text": "Table 2 reports Spearman correlation between the embedding-based pairwise similarity scores and TMmin, the structural ground truth computed using TM-align, across all 20,445 PISCES protein pairs with sequence identity _\u2264_ 30%. We evaluate four\n\n8",
+  "page": 8,
+  "page_end": 8,
+  "heading_path": [
+   "3 Results and Discussion",
+   "3.1 Effect of PLMs and Similarity Metrics"
+  ]
+ },
+ {
+  "text": "transformer-based PLMs: ESM-1b, ESM-2, ProtT5, and ProstT5, and use cosine similarity, Euclidean-derived similarity, RBF similarity, Manhattan-derived similarity, and the dot product for each PLM to evaluate the effect of different PLM embeddings and similarity metrics on the performance of protein sequence similarity in the twilight zone. As shown in Table 2, ProstT5 with cosine similarity achieves the highest overall Spearman correlation with TMmin, reaching _\u03c1_ = 0 _._ 676. Moreover, ESM-2 (with cosine similarity) provides the next-highest correlation at 0.623, followed by ProtT5 (with cosine similarity) at 0.557 and ESM-1b (with cosine similarity) at 0.483. Moreover, across all five similarity metrics, ProstT5 consistently achieves the highest correlation among the evaluated PLMs, further demonstrating the benefit of its structure-aware pretraining.",
+  "page": 9,
+  "page_end": 9,
+  "heading_path": [
+   "3 Results and Discussion",
+   "3.1 Effect of PLMs and Similarity Metrics"
+  ]
+ },
+ {
+  "text": "It is worth mentioning that ProstT5 is the only model exposed to explicit structure-derived 3Di tokens during pretraining; the remaining models are trained on sequence alone. Moreover, the performance improvement over ProtT5 (with cosine similarity), from which ProstT5 inherits both architecture and initial weights, is 0.119, which is consistent with a benefit from ProstT5\u2019s structure-aware pretraining rather than an architectural difference. It is also noted that no structural information is supplied at inference time, indicating that structural signal acquired during pretraining is retained in the sequence-derived embedding space.",
+  "page": 9,
+  "page_end": 9,
+  "heading_path": [
+   "3 Results and Discussion",
+   "3.1 Effect of PLMs and Similarity Metrics"
+  ]
+ },
+ {
+  "text": "Furthermore, cosine similarity is the best-performing metric for all four PLMs, indicating that it is the most reliable metric for extracting structure-relevant information from the evaluated sequence-level embeddings. In particular, for ProstT5, the bestperforming model, cosine similarity reaches 0.676 and leads the Euclidean-derived and RBF measures at 0.653, Manhattan-derived similarity at 0.648, and the dot product at 0.491. ProtT5 and ESM-1b show a similar pattern, with cosine similarity outperforming other metrics. Moreover, ESM-2, the second-best model, shows a markedly different profile.",
+  "page": 9,
+  "page_end": 9,
+  "heading_path": [
+   "3 Results and Discussion",
+   "3.1 Effect of PLMs and Similarity Metrics"
+  ]
+ },
+ {
+  "text": "Cosine similarity attains a strong correlation of 0.623, and RBF and Manhattanderived similarities remain competitive at 0.617 and 0.616, but the Euclidean-derived measure sharply drops to 0.166 and the dot product to 0.044. Since all five scores are computed from the same ESM-2 embeddings, these differences show that structuralsimilarity performance is not determined by the PLM alone; it also depends strongly on how the embedding space is compared. Cosine similarity evaluates only the angular relationship between two embeddings. In contrast, the dot product and unnormalized distance measures remain sensitive to embedding magnitude.",
+  "page": 9,
+  "page_end": 9,
+  "heading_path": [
+   "3 Results and Discussion",
+   "3.1 Effect of PLMs and Similarity Metrics"
+  ]
+ },
+ {
+  "text": "Figure 2 further shows the joint distribution of cosine similarity of embeddings for each PLM and TMmin. ESM-1b and ESM-2 concentrate most protein pairs within a narrow cosine-similarity range of approximately 0.85\u20131.00, despite a broad distribution of TMmin values. This compressed cosine-similarity distribution limits the effective dynamic range available to distinguish protein pairs. In contrast, ProtT5 distributes pairs across the full interval from 0 to 1, and ProstT5 spans roughly 0.25 to 1.00. This broader dynamic range may facilitate threshold-based discrimination by providing greater separation among protein pairs.\n\nOverall, these results show that ProstT5 is the best-performing PLM for alignmentfree protein structural similarity in the twilight zone and cosine similarity as the\n\n9\n\nmost reliable metric across all four PLMs. Therefore, cosine similarity is used in all subsequent analyses.",
+  "page": 9,
+  "page_end": 10,
+  "heading_path": [
+   "3 Results and Discussion",
+   "3.1 Effect of PLMs and Similarity Metrics"
+  ]
+ },
+ {
+  "text": "Figure 3a compares the performance of cosine similarity computed from the meanpooled embeddings of four transformer-based PLMs with that of BLASTP, a traditional protein sequence alignment tool, by reporting their Spearman correlations with TMmin across the same 20,445 protein pairs. BLASTP, acting as a baseline, attains a Spearman correlation of 0.393 with TMmin, and all four PLMs exceed this baseline. In particular, ESM-1b, the weakest of the four, reaches a Spearman correlation of 0.483 with TMmin, an improvement of 0.090 over the baseline. ProtT5 reaches 0.557 and ESM-2 reaches 0.623, corresponding to gains of 0.164 and 0.230 over the baseline, respectively. The largest margin is obtained with ProstT5, which reaches a Spearman correlation of 0.676 with TMmin and exceeds the baseline by 0.283.",
+  "page": 10,
+  "page_end": 10,
+  "heading_path": [
+   "3 Results and Discussion",
+   "3.2 Performance Comparison Against BLASTP",
+   "3.2.1 Overall Performance on the PISCES Dataset"
+  ]
+ },
+ {
+  "text": "It is also worth mentioning that BLASTP fails for 1,410 of the 20,445 protein pairs, whereas each PLM generates an embedding-based similarity score for every pair. Overall, these results demonstrate that mean-pooled PLM embeddings capture structural relationships in the twilight zone more effectively than traditional local sequence alignment.",
+  "page": 10,
+  "page_end": 10,
+  "heading_path": [
+   "3 Results and Discussion",
+   "3.2 Performance Comparison Against BLASTP",
+   "3.2.1 Overall Performance on the PISCES Dataset"
+  ]
+ },
+ {
+  "text": "We further evaluate the performance of PLM embedding-based similarity and BLASTP by splitting the PISCES dataset into three sequence-identity bins: 0% _\u2264 x \u2264_ 10% ( _n_ = 1 _,_ 382), 10% _< x \u2264_ 20% ( _n_ = 14 _,_ 671), and 20% _< x \u2264_ 30% ( _n_ = 4 _,_ 392), containing 1,382, 14,671, and 4,392 protein pairs, respectively. As shown in Figure 3b, the Spearman correlations with TMmin generally increase with sequence identity for both PLM-based similarity and BLASTP.",
+  "page": 10,
+  "page_end": 10,
+  "heading_path": [
+   "3 Results and Discussion",
+   "3.2 Performance Comparison Against BLASTP",
+   "3.2.2 Effect of Sequence Identity"
+  ]
+ },
+ {
+  "text": "In the most difficult 0\u201310% identity interval, ProstT5 achieves the highest correlation at _\u03c1_ = 0 _._ 561, followed by ESM-2 at 0.470, ProtT5 at 0.468, and ESM-1b at 0.389. In contrast, BLASTP is nearly uninformative in this interval, reaching a correlation of only 0.019. At 10\u201320% sequence identity, BLASTP improves to 0.274 but remains below all four PLMs, which reach 0.620 for ProstT5, 0.553 for ESM-2, 0.487 for ProtT5, and 0.433 for ESM-1b. The performance gap over BLASTP remains substantial at 0.346 for the best-performing PLM, ProstT5, and 0.279 for the second best, ESM-2.",
+  "page": 10,
+  "page_end": 10,
+  "heading_path": [
+   "3 Results and Discussion",
+   "3.2 Performance Comparison Against BLASTP",
+   "3.2.2 Effect of Sequence Identity"
+  ]
+ },
+ {
+  "text": "At 20\u201330% identity, BLASTP reaches a correlation of 0.726 and becomes considerably more competitive, outperforming both ESM-1b at 0.591 and ProtT5 at 0.689. The two best-performing PLMs, ProstT5 and ESM-2, reach correlations of 0.808 and 0.780, respectively, continuing to lead, but the performance gap drops to 0.082 for ProstT5 and 0.054 for ESM-2. At the same time, the gap between ProstT5 and ESM-2 narrows from 0.091 in the 0\u201310% interval to 0.067 and 0.028 in the 10\u201320% and 20\u201330% intervals, respectively, while ProstT5 remains the best-performing model throughout and shows its largest advantage in the most challenging range. Overall, the result shows that embedding-based\n\n10",
+  "page": 10,
+  "page_end": 10,
+  "heading_path": [
+   "3 Results and Discussion",
+   "3.2 Performance Comparison Against BLASTP",
+   "3.2.2 Effect of Sequence Identity"
+  ]
+ },
+ {
+  "text": "similarity provides its greatest advantage over BLASTP at very low sequence identity and also highlights the value of ProstT5\u2019s structure-aware pretraining for highly divergent protein pairs.",
+  "page": 11,
+  "page_end": 11,
+  "heading_path": [
+   "3 Results and Discussion",
+   "3.2 Performance Comparison Against BLASTP",
+   "3.2.2 Effect of Sequence Identity"
+  ]
+ },
+ {
+  "text": "We further assessed whether the evaluated methods can distinguish protein pairs that share a similar fold from those with different folds by using TMmin = 0 _._ 5 as the structural-similarity threshold. Protein pairs with TMmin _\u2265_ 0 _._ 5 were treated as the similar-fold class, yielding 8,998 positive and 11,447 negative pairs, and receiver operating characteristic (ROC) analysis was performed across all possible score thresholds. Cosine similarity is used as the predicted similarity metric for each PLM, whereas the transformed BLASTP log E-value is used for the sequence-alignment baseline. As shown in Figure 4, ProstT5 achieves the best performance in distinguishing structurally similar protein pairs from structurally dissimilar pairs, with an area under the ROC curve (AUC) of 0.831, followed by ESM-2 at 0.806, ProtT5 at 0.766, and ESM-1b at 0.744, whereas BLASTP reaches an AUC of 0.681.",
+  "page": 11,
+  "page_end": 11,
+  "heading_path": [
+   "3 Results and Discussion",
+   "3.2 Performance Comparison Against BLASTP",
+   "3.2.3 Effect of Structural Similarity Threshold"
+  ]
+ },
+ {
+  "text": "Overall, these results show that PLM-based cosine similarity distinguishes structurally similar from structurally dissimilar protein pairs more effectively than BLASTP in the twilight zone, with ProstT5 achieving the best classification performance.\n\nThese results collectively demonstrate that PLM-based cosine similarity provides a reliable, alignment-free alternative to BLASTP in the twilight zone, with ProstT5 consistently leading across all evaluated sequence-identity ranges and structural-similarity thresholds.",
+  "page": 11,
+  "page_end": 11,
+  "heading_path": [
+   "3 Results and Discussion",
+   "3.2 Performance Comparison Against BLASTP",
+   "3.2.3 Effect of Structural Similarity Threshold"
+  ]
+ },
+ {
+  "text": "We next examine how pairwise sequence-length ratio affects the agreement between PLM embedding-based cosine similarity and TMmin. The symmetric length ratio was calculated by dividing the length of the shorter sequence by that of the longer sequence, and the protein pairs were divided into strongly length-imbalanced pairs with a ratio of 0\u20130.5 (2,837 pairs) and more length-balanced pairs with a ratio of 0.5\u20131.0 (17,608 pairs). As shown in Figure 5, the Spearman correlation with TMmin is higher in the more length-balanced group for all four PLMs. ESM-1b shows the largest improvement, increasing by 0.152, from 0.294 to 0.446, followed by ESM-2, which improves by 0.116, from 0.468 to 0.584. ProtT5 and ProstT5 are less affected by sequence-length imbalance, showing smaller improvements of 0.027 and 0.028, respectively.",
+  "page": 11,
+  "page_end": 11,
+  "heading_path": [
+   "3 Results and Discussion",
+   "3.3 Effect of Pairwise Sequence Length Ratio"
+  ]
+ },
+ {
+  "text": "ProstT5 remains the best-performing model in both groups, indicating that its structure-aware representations are comparatively robust to differences in sequence length. Overall, these results suggest that protein sequence similarity obtained from global meanpooled PLM embeddings is influenced by sequence-length imbalance, with PLM-based protein sequence similarity generally becoming less reliable when one protein is substantially shorter than the other, and ProstT5 and ProtT5 showing greater robustness than ESM-1b and ESM-2.\n\n11",
+  "page": 11,
+  "page_end": 11,
+  "heading_path": [
+   "3 Results and Discussion",
+   "3.3 Effect of Pairwise Sequence Length Ratio"
+  ]
+ },
+ {
+  "text": "We compare the time required to generate residue-level embeddings and the storage required to retain them for the four PLMs. These measurements focus specifically on residue-level embedding generation and storage and do not include mean pooling, similarity calculations, or other downstream processing. It is noted that ESM-2 uses 36 transformer layers and produces a 2,560-dimensional representation per residue, whereas ESM-1b uses 33 layers at 1,280 dimensions, and the two T5 encoders use 24 layers at 1,024 dimensions. Figure 6a reports the average residue-level embeddinggeneration time per protein with respect to protein sequence length on H100 GPU nodes. ESM-1b is the fastest model overall, followed by ProtT5 and then ProstT5; the three are closely comparable, differing by a small margin at every length interval. ESM-2 is clearly the most expensive of the four, and its residue-level embeddinggeneration time increases considerably more steeply with sequence length.",
+  "page": 12,
+  "page_end": 12,
+  "heading_path": [
+   "3 Results and Discussion",
+   "3.4 Computational Efficiency of Residue-Level Embedding Generation and Storage"
+  ]
+ },
+ {
+  "text": "Overall, the best-performing PLM in terms of Spearman correlation with TMmin, ProstT5, remains close in residue-level embedding-generation time with ESM-1b and ProtT5, whereas the second-best, ESM-2, becomes increasingly expensive as sequence length increases. Moreover, Figure 6b compares the total storage required for the complete residue-level embedding collection of all 3,500 benchmark proteins. ProtT5 requires the least storage at 3.08 GB, followed closely by ProstT5 at 3.20 GB. ESM-1b requires 3.85 GB, whereas ESM-2 requires 7.71 GB. Thus, the ESM-2 embeddings require more than twice the storage of the T5-based representations, primarily because of their 2,560-dimensional residue-level output. Overall, ProstT5 offers the most favorable overall trade-off: it achieves the highest correlation with TMmin while requiring residue-level embeddinggeneration time comparable to the fastest models and maintaining one of the smallest residue-level embedding storage requirements.",
+  "page": 12,
+  "page_end": 12,
+  "heading_path": [
+   "3 Results and Discussion",
+   "3.4 Computational Efficiency of Residue-Level Embedding Generation and Storage"
+  ]
+ },
+ {
+  "text": "In contrast, ESM-2, the second-most accurate model, is the most expensive on both axes, requiring substantially more time to generate residue-level embeddings for longer sequences and 2.4 times the storage of ProstT5.",
+  "page": 12,
+  "page_end": 12,
+  "heading_path": [
+   "3 Results and Discussion",
+   "3.4 Computational Efficiency of Residue-Level Embedding Generation and Storage"
+  ]
+ },
+ {
+  "text": "Accurately identifying protein similarity in the twilight zone remains a major challenge in computational biology. This study evaluates whether sequence-level embeddings from ESM-1b, ESM-2, ProtT5, and ProstT5 can be used to estimate pairwise structural similarity among highly divergent proteins without performing sequence alignment. The evaluation is conducted on the PISCES dataset, which contains protein pairs with sequence identity _\u2264_ 30% and is therefore suitable for studying protein similarity in the twilight zone, with TM-align-derived TMmin used as the structural ground truth. Across the evaluated similarity metrics, cosine similarity provides the most consistent agreement with the structural ground truth, suggesting that the angular relationships between protein embeddings preserve structure-relevant information more effectively than differences in embedding magnitude. Moreover, all four PLMs outperform the BLASTP baseline overall, with the advantage being most evident for protein pairs with very low sequence identity. ProstT5 consistently performs\n\n12",
+  "page": 12,
+  "page_end": 12,
+  "heading_path": [
+   "4 Conclusions"
+  ]
+ },
+ {
+  "text": "best across the correlation, sequence-identity, and structural-similarity analyses, consistent with a benefit from structure-aware pretraining. The results also show that agreement between global embedding similarity and TMmin is generally lower for sequence-length-imbalanced protein pairs, although the T5-based models are comparatively less affected. In addition, ProstT5 provides a favorable balance between similarity performance and the time and storage required to generate and retain residue-level embeddings. Overall, these findings support pairwise similarity between PLM embeddings as an effective alignment-free approach for identifying structural relationships among highly divergent proteins using only amino-acid sequences. A limitation of this study is the use of global mean pooling and a single representation layer. Future work will investigate alternative pooling strategies, layer-wise and residue-level representations, broader structural benchmarks, and more recent PLMs.\n\n**Acknowledgments.** This work was made possible in part by a grant of highperformance computing resources and technical support from the Alabama Supercomputer Authority.",
+  "page": 13,
+  "page_end": 13,
+  "heading_path": [
+   "4 Conclusions"
+  ]
+ },
+ {
+  "text": "**Funding.** This work is partially supported by the NSF grant 2435093 (to SB). **Data availability.** The PISCES dataset is publicly available at http://dunbrack. fccc.edu/pisces/.\n\n**Code availability.** The source code is available at https://github.com/sutanubh1/ RemoteProtBench and https://zenodo.org/records/22016747.\n\n**Competing interests.** The authors declare that they have no competing interests.",
+  "page": 13,
+  "page_end": 13,
+  "heading_path": [
+   "4 Conclusions"
+  ]
+ },
+ {
+  "text": "- [1] Steinegger, M., Mirdita, M. & S\u00a8oding, J. Protein-level assembly increases protein sequence recovery from metagenomic samples manyfold. _Nat. Methods_ **16** , 603\u2013 606 (2019).\n\n- [2] The UniProt Consortium. UniProt: the universal protein knowledgebase in 2021. _Nucleic Acids Res._ **49** , D480\u2013D489 (2021).\n\n- [3] Spicer, R. _et al._ Evaluating the significance of embedding-based protein sequence alignment with clustering and double dynamic programming for remote homology. _Sci. Rep._ **15** , 39601 (2025).",
+  "page": 13,
+  "page_end": 13,
+  "heading_path": [
+   "References"
+  ]
+ },
+ {
+  "text": "- [4] Kabir, A., Moldwin, A., Bromberg, Y. & Shehu, A. In the twilight zone of protein sequence homology: do protein language models learn protein structure? _Bioinformatics Adv._ **4** , vbae119 (2024).\n\n- [5] Heinzinger, M. _et al._ Modeling aspects of the language of life through transferlearning protein sequences. _BMC Bioinformatics_ **20** , 723 (2019).\n\n- [6] Bepler, T. & Berger, B. Learning the protein language: evolution, structure, and function. _Cell Syst._ **12** , 654\u2013669.e3 (2021).\n\n13\n\n- [7] Elnaggar, A. _et al._ ProtTrans: toward understanding the language of life through self-supervised learning. _IEEE Trans. Pattern Anal. Mach. Intell._ **44** , 7112\u20137127 (2022).",
+  "page": 13,
+  "page_end": 14,
+  "heading_path": [
+   "References"
+  ]
+ },
+ {
+  "text": "- [8] Elnaggar, A. _et al._ Ankh: optimized protein language model unlocks generalpurpose modelling. Preprint at https://arxiv.org/abs/2301.06568 (2023).\n\n- [9] Devlin, J., Chang, M.-W., Lee, K. & Toutanova, K. BERT: pre-training of deep bidirectional transformers for language understanding. In _Proc. 2019 Conference of the North American Chapter of the Association for Computational Linguistics_ 4171\u20134186 (Association for Computational Linguistics, 2019).\n\n- [10] OpenAI. GPT-4 technical report. Preprint at https://arxiv.org/abs/2303.08774 (2023).",
+  "page": 14,
+  "page_end": 14,
+  "heading_path": [
+   "References"
+  ]
+ },
+ {
+  "text": "- [11] Vaswani, A. _et al._ Attention is all you need. In _Advances in Neural Information Processing Systems_ Vol. 30, 5998\u20136008 (Curran Associates, 2017).\n\n- [12] St\u00a8ark, H., Dallago, C., Heinzinger, M. & Rost, B. Light attention predicts protein location from the language of life. _Bioinformatics Adv._ **1** , vbab035 (2021).\n\n- [13] Hie, B., Yang, L. & Kim, P. S. Evolutionary velocity with protein language models predicts evolutionary dynamics of diverse proteins. _Cell Syst._ **13** , 274\u2013285.e6 (2022).\n\n- [14] Kabir, A. & Shehu, A. Transformer neural networks attending to both sequence and structure for protein prediction tasks. Preprint at https://arxiv.org/abs/ 2206.11057 (2022).",
+  "page": 14,
+  "page_end": 14,
+  "heading_path": [
+   "References"
+  ]
+ },
+ {
+  "text": "- [15] Nambiar, A. _et al._ Transforming the language of life: transformer neural networks for protein prediction tasks. In _Proc. 11th ACM International Conference on Bioinformatics, Computational Biology and Health Informatics_ 1\u20138 (ACM, 2020).\n\n- [16] Rao, R. _et al._ Evaluating protein transfer learning with TAPE. In _Advances in Neural Information Processing Systems_ Vol. 32, 9689\u20139701 (Curran Associates, 2019).\n\n- [17] Rives, A. _et al._ Biological structure and function emerge from scaling unsupervised learning to 250 million protein sequences. _Proc. Natl. Acad. Sci. U.S.A._ **118** , e2016239118 (2021).",
+  "page": 14,
+  "page_end": 14,
+  "heading_path": [
+   "References"
+  ]
+ },
+ {
+  "text": "- [18] Lin, Z. _et al._ Evolutionary-scale prediction of atomic-level protein structure with a language model. _Science_ **379** , 1123\u20131130 (2023).\n\n- [19] Jumper, J. _et al._ Highly accurate protein structure prediction with AlphaFold. _Nature_ **596** , 583\u2013589 (2021).\n\n14\n\n- [20] Marquet, C. _et al._ Embeddings from protein language models predict conservation and variant effects. _Hum. Genet._ **141** , 1629\u20131647 (2022).\n\n- [21] Illerg\u02daard, K., Ardell, D. H. & Elofsson, A. Structure is three to ten times more conserved than sequence \u2014 a study of structural response in protein cores. _Proteins_ **77** , 499\u2013508 (2009).",
+  "page": 14,
+  "page_end": 15,
+  "heading_path": [
+   "References"
+  ]
+ },
+ {
+  "text": "- [22] Rost, B. Twilight zone of protein sequence alignments. _Protein Eng._ **12** , 85\u201394 (1999).\n\n- [23] Bhattacharya, S., Roche, R., Moussad, B. & Bhattacharya, D. DisCovER: distance- and orientation-based covariational threading for weakly homologous proteins. _Proteins_ **90** , 579\u2013588 (2022).\n\n- [24] Bhattacharya, S. & Bhattacharya, D. Evaluating the significance of contact maps in low-homology protein modeling using contact-assisted threading. _Sci. Rep._ **10** , 2908 (2020).\n\n- [25] Bhattacharya, S. & Bhattacharya, D. Does inclusion of residue-residue contact information boost protein threading? _Proteins_ **87** , 596\u2013606 (2019).",
+  "page": 15,
+  "page_end": 15,
+  "heading_path": [
+   "References"
+  ]
+ },
+ {
+  "text": "- [26] Bhattacharya, S., Roche, R., Shuvo, M. H. & Bhattacharya, D. Recent advances in protein homology detection propelled by inter-residue interaction map threading. _Front. Mol. Biosci._ **8** , 643752 (2021).\n\n- [27] Shuvo, M. H., Bhattacharya, S. & Bhattacharya, D. QDeep: distance-based protein model quality estimation by residue-level ensemble error classifications using stacked deep residual neural networks. _Bioinformatics_ **36** , i285\u2013i291 (2020).\n\n- [28] McGehee, A., Bhattacharya, S., Roche, R. & Bhattacharya, D. PolyFold: an interactive visual simulator for distance-based protein folding. _PLOS ONE_ **15** , e0243331 (2020).",
+  "page": 15,
+  "page_end": 15,
+  "heading_path": [
+   "References"
+  ]
+ },
+ {
+  "text": "- [29] Roche, R., Bhattacharya, S. & Bhattacharya, D. Hybridized distance- and contact-based hierarchical structure modeling for folding soluble and membrane proteins. _PLOS Comput. Biol._ **17** , e1008753 (2021).\n\n- [30] Baker, K., Hughes, N. & Bhattacharya, S. An interactive visualization tool for educational outreach in protein contact map overlap analysis. _Front. Bioinform._ **4** , 1358550 (2024).\n\n- [31] Roche, R., Bhattacharya, S., Shuvo, M. H. & Bhattacharya, D. rrQNet: protein contact map quality estimation by deep evolutionary reconciliation. _Proteins_ **90** , 2023\u20132034 (2022).",
+  "page": 15,
+  "page_end": 15,
+  "heading_path": [
+   "References"
+  ]
+ },
+ {
+  "text": "- [32] Kryshtafovych, A. _et al._ Modeling SARS-CoV-2 proteins in the CASP-commons experiment. _Proteins_ **89** , 1987\u20131996 (2021).\n\n15\n\n- [33] Hamamsy, T. _et al._ Protein remote homology detection and structural alignment using deep learning. _Nat. Biotechnol._ **42** , 975\u2013985 (2024).\n\n- [34] Pantolini, L. _et al._ Embedding-based alignment: combining protein language models with dynamic programming alignment to detect structural similarities in the twilight-zone. _Bioinformatics_ **40** , btad786 (2024).",
+  "page": 15,
+  "page_end": 16,
+  "heading_path": [
+   "References"
+  ]
+ },
+ {
+  "text": "- [35] Malec, J., Rusen, K., Golding, G. B. & Ilie, L. Ankh-Score produces better sequence alignments than AlphaFold3. _Proteins_ https://doi.org/10.1002/prot. 70143 (2026).\n\n- [36] Malec, J., Golding, G. B. & Ilie, L. Protein embeddings and local alignments. _Comput. Struct. Biotechnol. J._ **31** , 24\u201337 (2026).\n\n- [37] Ashrafzadeh, S., Golding, G. B., Ilie, S. & Ilie, L. Scoring alignments by embedding vector similarity. _Brief. Bioinform._ **25** , bbae178 (2024).\n\n- [38] Heinzinger, M. _et al._ Bilingual language model for protein sequence and structure. _NAR Genom. Bioinform._ **6** , lqae150 (2024).",
+  "page": 16,
+  "page_end": 16,
+  "heading_path": [
+   "References"
+  ]
+ },
+ {
+  "text": "- [39] Altschul, S. F., Gish, W., Miller, W., Myers, E. W. & Lipman, D. J. Basic local alignment search tool. _J. Mol. Biol._ **215** , 403\u2013410 (1990).\n\n- [40] Camacho, C. _et al._ BLAST+: architecture and applications. _BMC Bioinformatics_ **10** , 421 (2009).\n\n- [41] van Kempen, M. _et al._ Fast and accurate protein structure search with Foldseek. _Nat. Biotechnol._ **42** , 243\u2013246 (2024).\n\n- [42] Varadi, M. _et al._ AlphaFold Protein Structure Database: massively expanding the structural coverage of protein-sequence space with high-accuracy models. _Nucleic Acids Res._ **50** , D439\u2013D444 (2022).",
+  "page": 16,
+  "page_end": 16,
+  "heading_path": [
+   "References"
+  ]
+ },
+ {
+  "text": "- [43] Wang, G. & Dunbrack, R. L. Jr. PISCES: a protein sequence culling server. _Bioinformatics_ **19** , 1589\u20131591 (2003).\n\n- [44] Zhang, Y. & Skolnick, J. TM-align: a protein structure alignment algorithm based on the TM-score. _Nucleic Acids Res._ **33** , 2302\u20132309 (2005).",
+  "page": 16,
+  "page_end": 16,
+  "heading_path": [
+   "References"
+  ]
+ },
+ {
+  "text": "**Authors\u2019 contributions.** S.D.: Writing \u2013 review & editing, Writing \u2013 original draft, Software, Methodology, Formal analysis, Data curation, Validation; P.U.: Writing \u2013 review & editing, Data curation, Validation; N.R.: Writing \u2013 review & editing, Writing \u2013 original draft, Validation; C.D.S.: Writing \u2013 review & editing, Writing \u2013 original draft, Validation; L.W.: Writing \u2013 review & editing, Writing \u2013 original draft, Validation; S.B.: Writing \u2013 review & editing, Writing \u2013 original draft, Visualization, Validation, Supervision, Project administration, Methodology, Investigation, Funding\n\n16\n\nacquisition, Formal analysis, Data curation, Conceptualization. All authors approve the final version.",
+  "page": 16,
+  "page_end": 17,
+  "heading_path": [
+   "References"
+  ]
+ },
+ {
+  "text": "**Figure 1.** Overview of the embedding-based pipeline. Two input protein sequences, _P_ 1 and _P_ 2, of lengths _L_ 1 and _L_ 2, are independently processed by the same pretrained PLM to generate residue-level embeddings, **H** _P_ 1 of dimension ( _L_ 1 _\u00d7 D_ ) and **H** _P_ 2 of dimension ( _L_ 2 _\u00d7 D_ ). D denotes the embedding dimension of the PLM. Mean pooling across residue positions produces fixed-length protein representations, **E** _P_ 1 and **E** _P_ 2, each of dimension 1 _\u00d7 D_ . A pairwise similarity metric _fk_ is then applied to the pooled embeddings to obtain the alignment-free similarity score, _S_ ( _P_ 1 _, P_ 2).",
+  "page": 17,
+  "page_end": 17,
+  "heading_path": [
+   "Figure legends"
+  ]
+ },
+ {
+  "text": "**Figure 2.** Relationship between cosine similarity and TMmin (measured by TM-align) for the four evaluated protein language models across 20,445 PISCES protein pairs with sequence identity _\u2264_ 30%. Each panel shows the joint density of TMmin and the cosine similarity between mean-pooled sequence embeddings from ESM-1b, ESM-2, ProtT5, and ProstT5. Darker regions indicate a higher density of protein pairs, and the Spearman correlation coefficient ( _\u03c1_ ) is reported in each panel.",
+  "page": 17,
+  "page_end": 17,
+  "heading_path": [
+   "Figure legends"
+  ]
+ },
+ {
+  "text": "**Figure 3.** Performance comparison of PLM embedding-based similarity and BLASTP in the protein-sequence twilight zone. ( **a** ) Overall Spearman correlation with TMmin across 20,445 PISCES protein pairs with sequence identity _\u2264_ 30%, for cosine similarity derived from the mean-pooled embeddings of ESM-1b, ESM-2, ProtT5, and ProstT5, together with the transformed BLASTP score used as the baseline. Values in parentheses indicate the absolute improvement in Spearman correlation over BLASTP; the dashed line marks the BLASTP baseline. ( **b** ) The same comparison split into three sequence-identity intervals: 0% _\u2264 x \u2264_ 10% ( _n_ = 1 _,_ 382), 10% _< x \u2264_ 20% ( _n_ = 14 _,_ 671), and 20% _< x \u2264_ 30% ( _n_ = 4 _,_ 392).",
+  "page": 17,
+  "page_end": 17,
+  "heading_path": [
+   "Figure legends"
+  ]
+ },
+ {
+  "text": "Higher correlation values indicate stronger agreement with structural similarity. Model colours are shared between panels.\n\n**Figure 4.** Classification of structurally similar protein pairs using PLM embedding similarities and BLASTP in the protein-sequence twilight zone. Protein pairs with TMmin _\u2265_ 0 _._ 5 are treated as the positive, structurally similar class, whereas pairs with TMmin _<_ 0 _._ 5 are treated as the negative, structurally dissimilar class. ROC curves plot the true-positive rate against the false-positive rate, with AUC values reported in parentheses. Cosine similarities derived from ESM-1b, ESM-2, ProtT5, and ProstT5 embeddings are compared with the transformed BLASTP score. The diagonal dashed line represents random classification with an AUC of 0.5.",
+  "page": 17,
+  "page_end": 17,
+  "heading_path": [
+   "Figure legends"
+  ]
+ },
+ {
+  "text": "**Figure 5.** Effect of pairwise sequence-length ratio on protein sequence similarity in the twilight zone. Protein pairs are grouped by symmetric length ratio, defined as the shorter sequence length divided by the longer sequence length, into length-imbalanced pairs ( _\u2264_ 0 _._ 5; _n_ = 2 _,_ 837) and more length-balanced pairs ( _>_ 0 _._ 5; _n_ = 17 _,_ 608). Bars show the Spearman correlation between TMmin and cosine similarity computed from the mean-pooled embeddings of each PLM. Values above the second group indicate the absolute increase in correlation relative to the length-imbalanced group, and _D_ denotes the embedding dimension.\n\n17",
+  "page": 17,
+  "page_end": 17,
+  "heading_path": [
+   "Figure legends"
+  ]
+ },
+ {
+  "text": "**Figure 6.** Computational efficiency of residue-level embedding generation and storage for the evaluated PLMs. (a) Average embedding-generation time per protein sequence across five sequence-length bins for ESM-1b, ESM-2, ProtT5, and ProstT5. (b) Total storage required for the residue-level embeddings of all 3,500 PISCES protein sequences. _D_ denotes the embedding dimension. Both measurements were obtained using NVIDIA H100 GPU nodes.",
+  "page": 18,
+  "page_end": 18,
+  "heading_path": [
+   "Figure legends"
+  ]
+ },
+ {
+  "text": "18",
+  "page": 18,
+  "page_end": 18,
+  "heading_path": [
+   "Tables"
+  ]
+ },
+ {
+  "text": "|**Input**|Amino acid sequence||Amino acid sequence||Amino acid sequence|Amino acid sequence /<br>|3Di tokens 1|-acid sequences are provided|for structure-aware sequence||\n|---|---|---|---|---|---|---|---|---|---|---|\n|**Embedding**<br>**Dimension**|1280||2560||1024|1024||this study, amino|zinger _et al._ [38]||\n|**# Parameters**|650M||3B||3B|3B||okens as input. In|mmendation of Hein||\n|**# Layers**|33||36||24|24||3Di structural t|lowing the reco||\n|**cture**|only|tyle)|only|tyle)|der\u2013Decoder|der\u2013Decoder||ldseek-derived|okenization, fol||\n|**Archite**|Encoder|(BERT-s|Encoder|(BERT-s|T5 Enco|T5 Enco||ence and Fo|ded before t|erence time.|\n|**Dataset**|2]||2]||2] + BFD [1]|2] + BFD [1] +|DB [42] (3Di)|amino-acid sequ|trol token prepen|s are used at inf|\n|**Training **|b [17]<br>UniRef50 [||[18]<br>UniRef50 [||5 [7]<br>UniRef50 [|5 [38]<br>UniRef50 [|AlphaFold|ostT5 supports both|h the `<AA2fold>` con|oding. No 3Di token|\n|**M**|M-1||M-2||tT|stT||Pr|wit|enc|\n|**PL**|ES||ES||Pro|Pro||1|||",
+  "page": 19,
+  "page_end": 19,
+  "heading_path": [
+   "Tables"
+  ]
+ },
+ {
+  "text": "19\n\n**Table 2** Spearman correlations between embedding-based pairwise similarity scores and TMmin (measured by TM-align) for 20,445 protein pairs from the PISCES dataset with _\u2264_ 30% sequence identity. Sequence-level embeddings from ESM-1b, ESM-2, ProtT5, and ProstT5 are compared using cosine similarity, Euclidean-derived similarity, the radial basis function (RBF) kernel, Manhattan-derived similarity, and dot product. Higher correlation values indicate stronger agreement with TMmin. The highest correlation for each PLM is shown in bold.",
+  "page": 19,
+  "page_end": 20,
+  "heading_path": [
+   "Tables"
+  ]
+ },
+ {
+  "text": "|**PLM**|**Cosine**<br>(Eq. 5)|**Euclidean**<br>(Eq. 6)|**RBF**<br>(Eq. 7)|**Manhattan**<br>(Eq. 8)|**Dot Product**<br>(Eq. 9)|\n|---|---|---|---|---|---|\n|ProstT5|**0.676**|0.653|0.653|0.648|0.491|\n|ESM-2|**0.623**|0.166|0.617|0.616|0.044|\n|ProtT5|**0.557**|0.491|0.491|0.492|0.457|\n|ESM-1b|**0.483**|0.475|0.475|0.470|0.333|\n\n20",
+  "page": 20,
+  "page_end": 20,
+  "heading_path": [
+   "Tables"
+  ]
+ }
+]
