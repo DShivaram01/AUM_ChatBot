@@ -1,0 +1,122 @@
+[
+ {
+  "text": "# Data Structures & Algorithms: Comprehensive Course Notes \n\nCourse Code: CS-201 | Subject: Fundamentals of Data Structures, Algorithm Analysis, and Complexity Theory \n\n## Chapter 1: Foundations of Algorithm Analysis & Asymptotic Notation \n\nAn algorithm is a finite sequence of well-defined instructions designed to solve a specific computational problem. When evaluating algorithms, we focus on efficiency: Time Complexity (how runtime scales with input size n) and Space Complexity (how memory usage scales). Rather than measuring execution time in seconds\u2014which depends heavily on hardware, compiler optimizations, and processor load\u2014we analyze asymptotic growth using Big-O, BigOmega (\u03a9), and Big-Theta (\u0398) notations. \n\n#### Asymptotic Notation Definitions: \n\n- Big-O (O) - Upper Bound: f(n) = O(g(n)) if there exist positive constants c and n0 such that f(n) \u2264 c \u00b7 g(n) for all n \u2265 n0. Represents worst-case running time. \n\n- Big-Omega (\u03a9) - Lower Bound: f(n) = \u03a9(g(n)) if f(n) \u2265 c \u00b7 g(n) for all n \u2265 n0. Represents best-case running time. \n\n- Big-Theta (\u0398) - Tight Bound: f(n) = \u0398(g(n)) if c1 \u00b7 g(n) \u2264 f(n) \u2264 c2 \u00b7 g(n). Represents exact growth rate. \n\n### Common Asymptotic Growth Classes",
+  "page": 1,
+  "page_end": 1,
+  "heading_path": [
+   "Data Structures & Algorithms: Comprehensive Course Notes"
+  ]
+ },
+ {
+  "text": "### Common Asymptotic Growth Classes \n\n|Class Name|Notation|Example Operation / Algorithm|Scale behavior (n = 10<sup>6</sup>)|\n|---|---|---|---|\n|Constant|O(1)|Array indexing, Hash Map lookup|1 operation|\n|Logarithmic|O(log n)|Binary Search, Balanced BST search|~20 operations|\n|Linear|O(n)|Linear Search, Single pass traversals|1,000,000 operations|\n|Linearithmic|O(n log n)|Merge Sort, Quick Sort (average case)|~20,000,000 operations|\n|Quadratic|O(n<sup>2</sup>)|Bubble Sort, Nested loop iteration|10<sup>12</sup>operations|\n\n\n\n#### Quiz Benchmark Questions: \n\n1. What is the formal mathematical condition required for a function f(n) to belong to \u0398(g(n))? \n\n2. If an algorithm processes n elements in 3n<sup>2</sup> + 15n + 100 steps, what is its tight Big-O bound? \n\nPage 1 of 10 \n\nCS-201: Data Structures & Algorithms\n\n## Chapter 2: Linear Data Structures - Arrays & Dynamic Vectors",
+  "page": 1,
+  "page_end": 2,
+  "heading_path": [
+   "Common Asymptotic Growth Classes"
+  ]
+ },
+ {
+  "text": "Page 1 of 10 \n\nCS-201: Data Structures & Algorithms\n\n## Chapter 2: Linear Data Structures - Arrays & Dynamic Vectors \n\nAn Array is a contiguous block of memory allocated to store homogeneous elements. Because elements reside sequentially in physical memory, accessing any element by its index i occurs in constant time O(1) via the address formula: Address(A[i]) = BaseAddress + i \u00d7 ElementSize. However, insertions and deletions at arbitrary positions require shifting elements, incurring an O(n) time complexity. Dynamic Arrays (such as C++ `std::vector` or Python `list`) overcome fixed-size constraints by automatically resizing when full. \n\n### Dynamic Vector Amortized Insertion Analysis (C++) \n\n#include <iostream> template <typename T> class DynamicArray { private: T* data; size_t capacit \n\n#### Amortized Complexity Analysis of Doubling Strategy: \n\nWhen capacity doubles at powers of 2, inserting n elements causes copies at steps 1, 2, 4, 8, ..., 2<sup>k</sup> . Total copies = \u2211i=0k 2i = 2k+1 - 1 < 2n. Averaged across all n insertions, each `push_back` costs O(2n / n) = O(1) amortized time. \n\n#### Quiz Benchmark Questions: \n\n1. Why does a dynamic array capacity doubling strategy yield O(1) amortized insertion, whereas increasing capacity by a fixed constant k yields O(n) amortized time?",
+  "page": 1,
+  "page_end": 2,
+  "heading_path": [
+   "Quiz Benchmark Questions:"
+  ]
+ },
+ {
+  "text": "#### Quiz Benchmark Questions: \n\n1. Why does a dynamic array capacity doubling strategy yield O(1) amortized insertion, whereas increasing capacity by a fixed constant k yields O(n) amortized time? \n\n2. Given a 0-indexed array with base address 0x1000 and 4-byte integers, calculate the memory location of `A[12]`. \n\nPage 2 of 10 \n\nCS-201: Data Structures & Algorithms\n\n## Chapter 3: Singly and Doubly Linked Lists \n\nA Linked List is a linear data structure where elements (nodes) are stored non-contiguously in memory. Each node contains data and a pointer (reference) to the next node. Unlike arrays, linked lists allow O(1) insertions and deletions at known pointer locations without shifting elements. However, random access is impossible; accessing the k-th element requires traversing nodes sequentially in O(k) time. \n\n### Singly Linked List Node Insertion & Traversal (Python) \n\nclass Node: def __init__(self, data): self.data = data self.next = None class LinkedList: def _ \n\n### Comparison: Arrays vs. Linked Lists",
+  "page": 2,
+  "page_end": 3,
+  "heading_path": [
+   "Quiz Benchmark Questions:"
+  ]
+ },
+ {
+  "text": "class Node: def __init__(self, data): self.data = data self.next = None class LinkedList: def _ \n\n### Comparison: Arrays vs. Linked Lists \n\n|Operation|Array / Vector|Singly Linked List|Doubly Linked List|\n|---|---|---|---|\n|Random Access (i-th element)|O(1)|O(n)|O(n)|\n|Insertion / Deletion at Head|O(n)|O(1)|O(1)|\n|Insertion / Deletion at Tail|O(1)Amortized|O(n)(without tail ptr)|O(1)(with tail ptr)|\n|Extra Memory Overhead|Minimal (unused capacity)|1 Pointer per node|2 Pointers per node|\n\n\n\n#### Quiz Benchmark Questions: \n\n1. Trace the pointer updates during iterative singly linked list reversal. What are the values of `prev`, `current`, and `next_node` after 2 iterations on list `1 -> 2 -> 3 -> 4`? \n\n2. How does Floyd's Cycle-Finding Algorithm (Tortoise and Hare) detect loops in a linked list in O(n) time and O(1) space? \n\nPage 3 of 10 \n\nCS-201: Data Structures & Algorithms\n\n## Chapter 4: Stacks, Queues, and Monotonic Variants",
+  "page": 3,
+  "page_end": 4,
+  "heading_path": [
+   "Singly Linked List Node Insertion & Traversal (Python)"
+  ]
+ },
+ {
+  "text": "Page 3 of 10 \n\nCS-201: Data Structures & Algorithms\n\n## Chapter 4: Stacks, Queues, and Monotonic Variants \n\nStacks follow a Last-In, First-Out (LIFO) discipline, while Queues operate on a First-In, First-Out (FIFO) basis. Both are abstract data types (ADTs) restricted to specific access points. Stacks support `push`, `pop`, and `peek` operations in O(1) time, making them essential for function call stacks, expression evaluation, and backtracking. Queues support `enqueue` and `dequeue` in O(1) time, operating as buffers for BFS traversals and process scheduling. \n\nMonotonic Decreasing Stack for Next Greater Element (C++) \n\n#include <vector> #include <stack> std::vector<int> nextGreaterElement(const std::vector<int>& \n\nStack Applications: Infix to Postfix Conversion (Shunting-Yard Algorithm) \n\nWhen parsing mathematical expressions like `(A + B) * C`, operators are pushed onto an operator stack according to precedence rules, while operands pass directly to output. The resulting postfix expression `A B + C *` eliminates parenthesis ambiguity during stack-based evaluation. \n\n#### Quiz Benchmark Questions: \n\n1. Evaluate the postfix expression `5 3 2 * + 8 2 / -` using a stack execution model. Show the stack state at each token.",
+  "page": 3,
+  "page_end": 4,
+  "heading_path": [
+   "Quiz Benchmark Questions:"
+  ]
+ },
+ {
+  "text": "#### Quiz Benchmark Questions: \n\n1. Evaluate the postfix expression `5 3 2 * + 8 2 / -` using a stack execution model. Show the stack state at each token. \n\n2. Explain how to implement a Queue using two Stacks such that `enqueue` is O(1) and `dequeue` is O(1) amortized time. \n\nPage 4 of 10 \n\nCS-201: Data Structures & Algorithms\n\n## Chapter 5: Recursion & Divide-and-Conquer Paradigm \n\nRecursion is a programming technique where a function solves a problem by calling reduced instances of itself. Every recursive function must define one or more base cases (stopping conditions) and a recursive step that moves toward the base case. Unbounded recursion results in stack overflow errors due to call stack memory exhaustion. The Divide-and-Conquer paradigm breaks a problem into disjoint subproblems, recursively solves them, and combines their solutions. \n\n### Binary Search Implementation & Recurrence Analysis (Python) \n\ndef binary_search(arr, low, high, target): if low > high: return -1 # Base Case: Element not pr",
+  "page": 4,
+  "page_end": 5,
+  "heading_path": [
+   "Quiz Benchmark Questions:"
+  ]
+ },
+ {
+  "text": "### Binary Search Implementation & Recurrence Analysis (Python) \n\ndef binary_search(arr, low, high, target): if low > high: return -1 # Base Case: Element not pr \n\nThe Master Theorem for Divide-and-Conquer Recurrences: For recurrences of the form T(n) = a T(n/b) + f(n), where a \u2265 1, b > 1: Case 1: If f(n) = O(n<sup>logba - \u03b5</sup> ), then T(n) = \u0398(n<sup>logba</sup> ). Case 2: If f(n) = \u0398(n<sup>logba</sup> log<sup>k</sup> n), then T(n) = \u0398(n<sup>logba</sup> log<sup>k+1</sup> n). Case 3: If f(n) = \u03a9(n<sup>logba + \u03b5</sup> ) and regularity holds, then T(n) = \u0398(f(n)). \n\n#### Quiz Benchmark Questions: \n\n1. Apply the Master Theorem to solve T(n) = 2 T(n/2) + n. Identify values for a, b, and the matching case. \n\n2. Why is `mid = low + (high - low) // 2` preferred over `mid = (low + high) // 2` in typed languages like C++ or Java? \n\nPage 5 of 10 \n\nCS-201: Data Structures & Algorithms\n\n## Chapter 6: Sorting Algorithms - Comparison & Non-Comparison",
+  "page": 5,
+  "page_end": 6,
+  "heading_path": [
+   "Binary Search Implementation & Recurrence Analysis (Python)"
+  ]
+ },
+ {
+  "text": "Page 5 of 10 \n\nCS-201: Data Structures & Algorithms\n\n## Chapter 6: Sorting Algorithms - Comparison & Non-Comparison \n\nSorting arranges elements in a specified order. Comparison-based algorithms have a lower bound proof of \u03a9(n log n) time complexity. Quadratic algorithms (O(n<sup>2</sup> )) like Bubble, Selection, and Insertion Sort are inefficient for large inputs, whereas Merge Sort and Quick Sort achieve O(n log n). Non-comparison sorts (Counting Sort, Radix Sort) break the \u03a9(n log n) barrier by exploiting key distribution properties. \n\n### Quick Sort with Hoare's Partitioning Scheme (C++) \n\nint partition(std::vector<int>& arr, int low, int high) { int pivot = arr[low + (high - low) / \n\n### Sorting Algorithms Comprehensive Complexity Matrix \n\n|Algorithm|Best Time|Average Time|Worst Time|Space|Stable?|\n|---|---|---|---|---|---|\n|Insertion Sort|O(n)|O(n<sup>2</sup>)|O(n<sup>2</sup>)|O(1)|Yes|\n|Merge Sort|O(n log n)|O(n log n)|O(n log n)|O(n)|Yes|\n|Quick Sort|O(n log n)|O(n log n)|O(n<sup>2</sup>)|O(log n)|No|\n|Counting Sort|O(n + k)|O(n + k)|O(n + k)|O(k)|Yes|",
+  "page": 5,
+  "page_end": 6,
+  "heading_path": [
+   "Quiz Benchmark Questions:"
+  ]
+ },
+ {
+  "text": "#### Quiz Benchmark Questions: \n\n1. Why does Quick Sort degenerate to O(n<sup>2</sup> ) time complexity when bad pivot choices (e.g., sorted input with first element as pivot) occur? \n\n2. What is meant by algorithmic \"stability\", and why is Merge Sort preferred over Quick Sort when stability is mandatory? \n\nPage 6 of 10 \n\nCS-201: Data Structures & Algorithms\n\n## Chapter 7: Trees & Binary Search Trees (BST) \n\nA Tree is a hierarchical non-linear data structure consisting of nodes connected by edges. A Binary Tree restricts each node to at most two children (left and right). A Binary Search Tree (BST) enforces the structural property: for any node X, all keys in the left subtree are strictly smaller than X.key, and all keys in the right subtree are strictly greater. Inorder traversal of a BST yields elements in sorted ascending order. \n\n### BST Node Insertion and Inorder Traversal (Python) \n\nclass BSTNode: def __init__(self, key): self.key = key self.left = None self.right = None def i \n\n#### Tree Traversal Taxonomies: \n\n- Pre-order (Root, Left, Right): Used for tree cloning and serialization. \n\n- In-order (Left, Root, Right): Visits BST nodes in ascending sorted sequence. \n\n- Post-order (Left, Right, Root): Used for node deletion and expression tree evaluation. Level-order (BFS): Explores nodes level-by-level using an auxiliary queue.",
+  "page": 6,
+  "page_end": 7,
+  "heading_path": [
+   "Sorting Algorithms Comprehensive Complexity Matrix"
+  ]
+ },
+ {
+  "text": "- Post-order (Left, Right, Root): Used for node deletion and expression tree evaluation. Level-order (BFS): Explores nodes level-by-level using an auxiliary queue. \n\n#### Quiz Benchmark Questions: \n\n1. In a degenerate (skewed) BST created by inserting sorted numbers `1, 2, 3, 4, 5`, what are the worst-case search and insertion times? \n\n2. Given Pre-order sequence `[F, B, A, D, C, E, G, I, H]` and In-order sequence `[A, B, C, D, E, F, G, H, I]`, reconstruct the tree. \n\nPage 7 of 10 \n\nCS-201: Data Structures & Algorithms\n\n## Chapter 8: Self-Balancing Trees (AVL) & Heaps \n\nTo prevent BST degradation to linear linked lists (O(n) search), self-balancing trees enforce height invariants. An AVL Tree requires that for every node, the height difference between left and right subtrees (Balance Factor) is at most \u00b11: BF = Height(Left) - Height(Right) \u2208 {-1, 0, 1}. Violations trigger rotations (LL, RR, LR, RL). A Binary Heap is a complete binary tree satisfying the heap property: Max-Heap (Parent \u2265 Child) or Min-Heap (Parent \u2264 Child). \n\n### Binary Min-Heap Array Representation & Percolate Up (C++)",
+  "page": 7,
+  "page_end": 8,
+  "heading_path": [
+   "Tree Traversal Taxonomies:"
+  ]
+ },
+ {
+  "text": "### Binary Min-Heap Array Representation & Percolate Up (C++) \n\n#include <vector> #include <algorithm> class MinHeap { private: std::vector<int> heap; void hea \n\n#### AVL Tree Rotation Rules summary: \n\n- Single Left Rotation (RR Insertion): Applied when a right child's right subtree causes imbalance. Single Right Rotation (LL Insertion): Applied when a left child's left subtree causes imbalance. Double Rotation (LR / RL Insertion): Performed as a combination of sub-tree single rotation followed by root rotation. \n\n#### Quiz Benchmark Questions: \n\n1. Starting with an empty AVL tree, insert keys `10, 20, 30` in order. Show the resulting tree before and after the balancing rotation. \n\n2. Why does building a binary heap from an unsorted array of n elements using `buildHeap` cost O(n) time instead of O(n log n)? \n\nPage 8 of 10 \n\nCS-201: Data Structures & Algorithms\n\n## Chapter 9: Hash Tables & Collision Resolution \n\nA Hash Table maps keys to values using a Hash Function h(k), computing array indices in average O(1) time. A good hash function distributes keys uniformly across slots. When two keys map to the same index (h(k1) = h(k2)), a Collision occurs. The two primary collision resolution techniques are Separate Chaining (linked lists per bucket) and Open Addressing (probing contiguous memory slots). \n\nHash Table with Separate Chaining Implementation (Python)",
+  "page": 8,
+  "page_end": 9,
+  "heading_path": [
+   "Binary Min-Heap Array Representation & Percolate Up (C++)"
+  ]
+ },
+ {
+  "text": "Hash Table with Separate Chaining Implementation (Python) \n\nclass HashTable: def __init__(self, capacity=11): self.capacity = capacity self.table = [[] for \n\n#### Open Addressing Probing Techniques: \n\n- Linear Probing: h(k, i) = (h'(k) + i) mod m. Simple, but suffers from Primary Clustering. \n\n- Quadratic Probing: h(k, i) = (h'(k) + c1i + c2i<sup>2</sup> ) mod m. Reduces primary clustering. \n\n- Double Hashing: h(k, i) = (h1(k) + i \u00b7 h2(k)) mod m. Eliminates secondary clustering. \n\n#### Quiz Benchmark Questions: \n\n1. Given a hash table of size 10 using h(k) = k mod 10 and Linear Probing, insert keys `12, 22, 32, 42`. State the final array index for each key. \n\n2. What is the Load Factor (\u03b1) of a hash table, and at what threshold should resizing (rehashing) be triggered to maintain O(1) operations? \n\nPage 9 of 10 \n\nCS-201: Data Structures & Algorithms\n\n## Chapter 10: Graph Algorithms - BFS, DFS & Shortest Paths",
+  "page": 9,
+  "page_end": 10,
+  "heading_path": [
+   "Chapter 9: Hash Tables & Collision Resolution"
+  ]
+ },
+ {
+  "text": "Page 9 of 10 \n\nCS-201: Data Structures & Algorithms\n\n## Chapter 10: Graph Algorithms - BFS, DFS & Shortest Paths \n\nA Graph G = (V, E) consists of vertices (nodes) and edges (connections), which can be directed or undirected, weighted or unweighted. Graphs are represented using Adjacency Matrices (O(V<sup>2</sup> ) space, fast edge lookup) or Adjacency Lists (O(V + E) space, preferred for sparse graphs). Graph traversals underpin routing protocols, social network analysis, and topological sorting. \n\n### Dijkstra's Shortest Path Algorithm with Priority Queue (C++) \n\n#include <vector> #include <queue> const int INF = 1e9; using pii = std::pair<int, int>; // {di \n\n### Graph Traversal & Shortest Path Complexity Matrix \n\n|Algorithm|Primary Use Case|Time Complexity|Space Complexity|\n|---|---|---|---|\n|Breadth-First Search (BFS)|Unweighted Shortest Path|O(V + E)|O(V)|\n|Depth-First Search (DFS)|Cycle Detection / Topological Sort|O(V + E)|O(V)|\n|Dijkstra's Algorithm|Weighted Shortest Path (Non-negative)|O((V + E) log V)|O(V)|\n|Bellman-Ford Algorithm|Shortest Path with Negative Edges|O(V \u00b7 E)|O(V)|\n\n\n\n#### Quiz Benchmark Questions:",
+  "page": 9,
+  "page_end": 10,
+  "heading_path": [
+   "Quiz Benchmark Questions:"
+  ]
+ },
+ {
+  "text": "#### Quiz Benchmark Questions: \n\n1. Why does Dijkstra's algorithm fail on graphs containing negative edge weights, and why does Bellman-Ford correctly handle or detect them? \n\n2. Explain how Kahn's algorithm (indegree-based BFS) performs Topological Sorting on a Directed Acyclic Graph (DAG). \n\nPage 10 of 10 \n\nCS-201: Data Structures & Algorithms",
+  "page": 10,
+  "page_end": 10,
+  "heading_path": [
+   "Graph Traversal & Shortest Path Complexity Matrix"
+  ]
+ }
+]
