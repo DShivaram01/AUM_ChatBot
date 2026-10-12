@@ -1,0 +1,1512 @@
+{
+ "direct@10": {
+  "items": [
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0024",
+    "chapter": "ch7",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0000",
+    "chapter": "front",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0012",
+    "chapter": "ch3",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0011",
+    "chapter": "ch3",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0032",
+    "chapter": "ch9",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0022",
+    "chapter": "ch7",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0024",
+    "chapter": "ch7",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0000",
+    "chapter": "front",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0012",
+    "chapter": "ch3",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0011",
+    "chapter": "ch3",
+    "focus": "the passage"
+   }
+  ],
+  "questions": [
+   {
+    "question": "Which traversal method is used for tree cloning and serialization?",
+    "options": [
+     "Pre-order",
+     "In-order",
+     "Post-order",
+     "Level-order"
+    ],
+    "correct_index": 0,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0024"
+    ]
+   },
+   {
+    "question": "Which of the following traversal methods is most suitable for cloning and serialize a tree structure in the context of Fundamentals of Data Structures?",
+    "options": [
+     "Breadth-First Search (BFS)",
+     "Depth-First Search - Inorder (DFS-I)",
+     "Depth First Search - Preorder (DFs-P)",
+     "Depth first Search - Postorder (DF-Po)"
+    ],
+    "correct_index": 2,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0000"
+    ]
+   },
+   {
+    "question": "After 2 iterations of the iterative singly linked list reversal, what are the values of `prev`, `current`, and `next_node` for the given list `1 -> 2 -> 3 -> 4`?",
+    "options": [
+     "(1, 2, 3)",
+     "(2, 1, 4)",
+     "(2 ,3, 1)",
+     "(3, 2 ,4)"
+    ],
+    "correct_index": 2,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0012"
+    ]
+   },
+   {
+    "question": "Given a hash table of size 10 using h(k) = k mod 10 and Linear Probing, which array indices will be occupied by the keys `12`, `22`, `32`, and `42` in that order?",
+    "options": [
+     "1, 6, 7, 4",
+     "6, 1, 7 ,4",
+     "7, 6 ,1, 4",
+     "4, 7  ,6, 4"
+    ],
+    "correct_index": 0,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0032"
+    ]
+   },
+   {
+    "question": "What is the structural property enforced by a Binary Search Tree (BST)?",
+    "options": [
+     "All keys in the left subtree are equal to X.key.",
+     "All keys in any subtree can be greater than or less than X.key, but not both.",
+     "All nodes have exactly three children: left, right, and center.",
+     "For any node X, all keys in the right subtree are strictly smaller than X. key, and all keys in both subtrees can be equal."
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0022"
+    ]
+   },
+   {
+    "question": "Which traversal method would be most suitable for node deletion and expression tree evaluation?",
+    "options": [
+     "Pre-order",
+     "In-order",
+     "'Level-order'",
+     "Post-order"
+    ],
+    "correct_index": 2,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0024"
+    ]
+   },
+   {
+    "question": "Which traversal method, among the following, would be most suited for node deletions in a tree structure within the context of 'Fundamentals ofData Structures, Algorithm Analysis, and Complexity Theory'?",
+    "options": [
+     "In-order Traversal",
+     "Pre-order Traveral",
+     "Post-order Traverseal",
+     "Breadth-first Search"
+    ],
+    "correct_index": 0,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0000"
+    ]
+   }
+  ]
+ },
+ "blueprint@10": {
+  "items": [
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0001",
+    "chapter": "ch1",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0005",
+    "chapter": "ch2",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0009",
+    "chapter": "ch3",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0013",
+    "chapter": "ch4",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0015",
+    "chapter": "ch5",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0018",
+    "chapter": "ch6",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0022",
+    "chapter": "ch7",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0026",
+    "chapter": "ch8",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0030",
+    "chapter": "ch9",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0033",
+    "chapter": "ch10",
+    "focus": "recall a stated fact or definition"
+   }
+  ],
+  "questions": [
+   {
+    "question": "What is the primary focus when evaluating algorithms?",
+    "options": [
+     "Hardware efficiency",
+     "Input size n efficiency",
+     "Compiler optimizations",
+     "Processor load"
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0001"
+    ]
+   },
+   {
+    "question": "What is a key characteristic of a Linked List, as described in the passage?",
+    "options": [
+     "It allows random access to elements.",
+     "Elements are stored contiguously in memory.",
+     "Insertions and deletions can only be done at known pointer locations with O(k) time complexity.",
+     "It is an unordered data structure."
+    ],
+    "correct_index": 2,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0009"
+    ]
+   },
+   {
+    "question": "Which of the following is a primary use case for stacks, as described within the passage?",
+    "options": [
+     "Infix to Postfix Conversion (Shunting-Yard Algorithm)",
+     "Monotonic Decreasing Stack for Next Greater Element (C++)",
+     "Process scheduling",
+     "BFS traversals"
+    ],
+    "correct_index": 0,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0013"
+    ]
+   },
+   {
+    "question": "Which of the following best describes the Divide-and-Conquer paradigm, as presented in the passage?,",
+    "options": [
+     "A) A programming technique where a function solves a problem by calling reduced instances of itself.",
+     "B) A data structure that stores elements in a linear sequence.",
+     "C) A key characteristic of recursive functions that defines one or more base cases (stopping conditions) and a recursive step that moves toward the base case.",
+     "D) A method to solve problems without using any memory."
+    ],
+    "correct_index": 0,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0015"
+    ]
+   },
+   {
+    "question": "Which sorting algorithms have a time complexity of O(n log n), as stated in the passage and are more efficient for large inputs?",
+    "options": [
+     "Bubble Sort",
+     "Selection Sort",
+     "Insertion Sort",
+     "Merge Sort or Quick Sort"
+    ],
+    "correct_index": 3,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0018"
+    ]
+   },
+   {
+    "question": "What is a key property of a Binary Search Tree (BST), as described in this passage?",
+    "options": [
+     "All keys in the left subtree are equal to X.key.",
+     "<A> All keys in the right subtree are strictly smaller than X.key. <B>",
+     "All keys in both subtrees are strictly greater than X. key.",
+     "The number of children each node can have is unlimited. <D>"
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0022"
+    ]
+   },
+   {
+    "question": "What is a key requirement for the balance factor of an AVL Tree?",
+    "options": [
+     "A) BF \u2208 {0, 2}",
+     "B) BF = Height(Left) + Height(Right)",
+     "C) BF > 1",
+     "D) BF < -1"
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0026"
+    ]
+   },
+   {
+    "question": "What is the primary implementation technique for collision resolution in a Hash Table, as described by the passage?",
+    "options": [
+     "Open Addressing",
+     "Separate Chaining",
+     "Divide-and Conquer",
+     "Bubble Sort"
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0030"
+    ]
+   },
+   {
+    "question": "What is the space complexity of Adjacency Lists, as described compared to Adjacenciy Matrices in the passage for sparse graphs?",
+    "options": [
+     "O(V^2)",
+     "O(V + E)",
+     "O((E)^2)",
+     "None of the above"
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0033"
+    ]
+   }
+  ]
+ },
+ "map_section@10": {
+  "items": [
+   {
+    "fact": "Accessing any element in an array occurs in constant time O(1)",
+    "chunk_id": "chk_6126b5a066882bd7_0005",
+    "chapter": "ch2",
+    "focus": "Accessing any element in an array occurs in constant time O(1)"
+   },
+   {
+    "fact": "Stacks follow a Last-In, First-Out (LIFO) discipline.",
+    "chunk_id": "chk_6126b5a066882bd7_0013",
+    "chapter": "ch4",
+    "focus": "Stacks follow a Last-In, First-Out (LIFO) discipline."
+   },
+   {
+    "fact": "In an AVL Tree, the balance factor for every node is at most \u00b11.",
+    "chunk_id": "chk_6126b5a066882bd7_0026",
+    "chapter": "ch8",
+    "focus": "In an AVL Tree, the balance factor for every node is at most \u00b11."
+   },
+   {
+    "fact": "Insertions and deletions at arbitrary positions in an array incur an O(n) time complexity",
+    "chunk_id": "chk_6126b5a066882bd7_0005",
+    "chapter": "ch2",
+    "focus": "Insertions and deletions at arbitrary positions in an array incur an O(n) time complexity"
+   },
+   {
+    "fact": "Queues operate on a First-In, First-Out (FIFO) basis.",
+    "chunk_id": "chk_6126b5a066882bd7_0013",
+    "chapter": "ch4",
+    "focus": "Queues operate on a First-In, First-Out (FIFO) basis."
+   },
+   {
+    "fact": "A violation of the AVL Tree balance factor triggers rotations (LL, RR, LR, RL).",
+    "chunk_id": "chk_6126b5a066882bd7_0026",
+    "chapter": "ch8",
+    "focus": "A violation of the AVL Tree balance factor triggers rotations (LL, RR, LR, RL)."
+   },
+   {
+    "fact": "Dynamic Arrays (such as C++ `std::vector` or Python `list`) automatically resize when full",
+    "chunk_id": "chk_6126b5a066882bd7_0005",
+    "chapter": "ch2",
+    "focus": "Dynamic Arrays (such as C++ `std::vector` or Python `list`) automatically resize when full"
+   },
+   {
+    "fact": "Stacks support `push`, `pop`, and `peek` operations in O(1) time.",
+    "chunk_id": "chk_6126b5a066882bd7_0013",
+    "chapter": "ch4",
+    "focus": "Stacks support `push`, `pop`, and `peek` operations in O(1) time."
+   },
+   {
+    "fact": "A Single Left Rotation (RR Insertion) is applied when a right child's right subtree causes imbalance.",
+    "chunk_id": "chk_6126b5a066882bd7_0028",
+    "chapter": "ch8",
+    "focus": "A Single Left Rotation (RR Insertion) is applied when a right child's right subtree causes imbalance."
+   },
+   {
+    "fact": "Averaged across all n insertions, each `push_back` in a dynamic array costs O(1) amortized time",
+    "chunk_id": "chk_6126b5a066882bd7_0007",
+    "chapter": "ch2",
+    "focus": "Averaged across all n insertions, each `push_back` in a dynamic array costs O(1) amortized time"
+   }
+  ],
+  "questions": [
+   {
+    "question": "What is the maximum balance factor allowed for a node in an AVL Tree?",
+    "options": [
+     "2",
+     "-2",
+     "1",
+     "0"
+    ],
+    "correct_index": 3,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0026"
+    ]
+   },
+   {
+    "question": "Which of the following is NOT a characteristic of Queues?",
+    "options": [
+     "They support `push`, `pop`, and `peek` operations in O(1) time.",
+     "They operate on a Last-In, First-Out (LIFO) basis.",
+     "They are used for process scheduling and BFS traversals.",
+     "They eliminate parenthesis ambiguity during stack-based evaluation."
+    ],
+    "correct_index": 2,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0013"
+    ]
+   },
+   {
+    "question": "Which of the following statements best describes Dynamic Arrays?",
+    "options": [
+     "They have a fixed size and cannot resize when full.",
+     "Accessing any element by its index i takes O(n) time complexity.",
+     "They are characterized by a contiguous block of memory allocated to store homogeneous elements.",
+     "They overcome fixed-size constraints by automatically resizing when full."
+    ],
+    "correct_index": 3,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0005"
+    ]
+   },
+   {
+    "question": "Which of the following operations can be performed on a Stack in O(1) time?",
+    "options": [
+     "Enqueue",
+     "Dequeue",
+     "Push",
+     "Pop"
+    ],
+    "correct_index": 2,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0013"
+    ]
+   },
+   {
+    "question": "Which rotation is applied when a left child's right subtree causes imbalance in an AVl Tree?",
+    "options": [
+     "Single Left Rotation (RR Insertion)",
+     "<A>",
+     "Double Rotation (LR Insertion)",
+     "Single Right Rotation (LL Insertion)"
+    ],
+    "correct_index": 3,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0028"
+    ]
+   }
+  ]
+ },
+ "map_window@10": {
+  "items": [
+   {
+    "fact": "Accessing any element in an Array by its index occurs in constant time O(1)",
+    "chunk_id": "chk_6126b5a066882bd7_0003",
+    "chapter": "ch1",
+    "focus": "Accessing any element in an Array by its index occurs in constant time O(1)"
+   },
+   {
+    "fact": "Insertions and deletions at arbitrary positions in an Array require shifting elements, incurring an O(n) time complexity",
+    "chunk_id": "chk_6126b5a066882bd7_0005",
+    "chapter": "ch2",
+    "focus": "Insertions and deletions at arbitrary positions in an Array require shifting elements, incurring an O(n) time complexity"
+   },
+   {
+    "fact": "In an AVL Tree, the height difference between a node's left and right subtrees (Balance Factor) is at most \u00b11.",
+    "chunk_id": "chk_6126b5a066882bd7_0026",
+    "chapter": "ch8",
+    "focus": "In an AVL Tree, the height difference between a node's left and right subtrees (Balance Factor) is at most \u00b11."
+   },
+   {
+    "fact": "A Hash Table with Separate Chaining uses linked lists per bucket as a collision resolution technique.",
+    "chunk_id": "chk_6126b5a066882bd7_0030",
+    "chapter": "ch9",
+    "focus": "A Hash Table with Separate Chaining uses linked lists per bucket as a collision resolution technique."
+   },
+   {
+    "fact": "Graphs can be represented using Adjacency Matrices or Adjacency Lists.",
+    "chunk_id": "chk_6126b5a066882bd7_0033",
+    "chapter": "ch10",
+    "focus": "Graphs can be represented using Adjacency Matrices or Adjacency Lists."
+   },
+   {
+    "fact": "Binary Search, Balanced BST search, and Merge Sort, Quick Sort (average case) have a scale behavior of ~20 operations",
+    "chunk_id": "chk_6126b5a066882bd7_0003",
+    "chapter": "ch1",
+    "focus": "Binary Search, Balanced BST search, and Merge Sort, Quick Sort (average case) have a scale behavior of ~20 operations"
+   },
+   {
+    "fact": "Each `push_back` operation in a Dynamic Array (such as C++ `std::vector` or Python `list`) costs O(1) amortized time",
+    "chunk_id": "chk_6126b5a066882bd7_0007",
+    "chapter": "ch2",
+    "focus": "Each `push_back` operation in a Dynamic Array (such as C++ `std::vector` or Python `list`) costs O(1) amortized time"
+   },
+   {
+    "fact": "A Max-Heap in a Binary Heap ensures that the parent node is greater than or equal to its child nodes.",
+    "chunk_id": "chk_6126b5a066882bd7_0026",
+    "chapter": "ch8",
+    "focus": "A Max-Heap in a Binary Heap ensures that the parent node is greater than or equal to its child nodes."
+   },
+   {
+    "fact": "A Hash Table maps keys to values using a Hash Function and distributes keys uniformly across slots to compute array indices in average O(1) time.",
+    "chunk_id": "chk_6126b5a066882bd7_0030",
+    "chapter": "ch9",
+    "focus": "A Hash Table maps keys to values using a Hash Function and distributes keys uniformly across slots to compute array indices in average O(1) time."
+   },
+   {
+    "fact": "Single Left Rotation is applied when a left child's left subtree causes imbalance in a tree.",
+    "chunk_id": "chk_6126b5a066882bd7_0028",
+    "chapter": "ch8",
+    "focus": "Single Left Rotation is applied when a left child's left subtree causes imbalance in a tree."
+   }
+  ],
+  "questions": [
+   {
+    "question": "Which operation can be performed in constant time O(1) according to the provided table?",
+    "options": [
+     "Linear Search",
+     "Binary Search",
+     "Array indexing",
+     "Nested loop iteration"
+    ],
+    "correct_index": 2,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0003"
+    ]
+   },
+   {
+    "question": "Which operation in an Array has a time complexity of O(n) according to this passage?",
+    "options": [
+     "Accessing an element by its index",
+     "Inserting an element at an arbitrary position",
+     "Deleting an element from an array",
+     "Resizing an array dynamically"
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0005"
+    ]
+   },
+   {
+    "question": "In an AVL Tree, which of the following is NOT a valid Balance Factor?",
+    "options": [
+     "0",
+     "-2",
+     "1",
+     "3"
+    ],
+    "correct_index": 2,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0026"
+    ]
+   },
+   {
+    "question": "Which data structure does the provided Python code implement for handling collisions in a Hash Table?",
+    "options": [
+     "Array",
+     "Linked List",
+     "Stack",
+     "Queue"
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0030"
+    ]
+   },
+   {
+    "question": "Which algorithm, according to the table provided, has a scale behavior of ~20,000,0oo operations when n = 10^6?",
+    "options": [
+     "Linear Search",
+     "Balanced BST search",
+     "Merge Sort",
+     "Quick Sort (average case)"
+    ],
+    "correct_index": 3,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0003"
+    ]
+   },
+   {
+    "question": "Which data structure, according to this text, does NOT have a parent node greater than or equal to its child nodes?",
+    "options": [
+     "Max-Heap",
+     "Min-Heap",
+     "'BST' (Binary Search Tree)",
+     "Linked List"
+    ],
+    "correct_index": 2,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0026"
+    ]
+   },
+   {
+    "question": "Which data structure does this Python code implement to handle collisions in Hash Table?",
+    "options": [
+     "Linked List",
+     "AVL Tree",
+     "Hash Function",
+     "Open Addressing"
+    ],
+    "correct_index": 3,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0030"
+    ]
+   }
+  ]
+ },
+ "direct@20": {
+  "items": [
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0024",
+    "chapter": "ch7",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0000",
+    "chapter": "front",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0012",
+    "chapter": "ch3",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0011",
+    "chapter": "ch3",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0032",
+    "chapter": "ch9",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0022",
+    "chapter": "ch7",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0024",
+    "chapter": "ch7",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0000",
+    "chapter": "front",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0012",
+    "chapter": "ch3",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0011",
+    "chapter": "ch3",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0032",
+    "chapter": "ch9",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0022",
+    "chapter": "ch7",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0024",
+    "chapter": "ch7",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0000",
+    "chapter": "front",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0012",
+    "chapter": "ch3",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0011",
+    "chapter": "ch3",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0032",
+    "chapter": "ch9",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0022",
+    "chapter": "ch7",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0024",
+    "chapter": "ch7",
+    "focus": "the passage"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0000",
+    "chapter": "front",
+    "focus": "the passage"
+   }
+  ],
+  "questions": [
+   {
+    "question": "Which traversal method is used for tree cloning and serialization?",
+    "options": [
+     "Pre-order",
+     "In-order",
+     "Post-order",
+     "Level-order"
+    ],
+    "correct_index": 0,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0024"
+    ]
+   },
+   {
+    "question": "Which of the following traversal methods is most suitable for cloning and serialize a tree structure in the context of Fundamentals of Data Structures?",
+    "options": [
+     "Breadth-First Search (BFS)",
+     "Depth-First Search - Inorder (DFS-I)",
+     "Depth First Search - Preorder (DFs-P)",
+     "Depth first Search - Postorder (DF-Po)"
+    ],
+    "correct_index": 2,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0000"
+    ]
+   },
+   {
+    "question": "After 2 iterations of the iterative singly linked list reversal, what are the values of `prev`, `current`, and `next_node` for the given list `1 -> 2 -> 3 -> 4`?",
+    "options": [
+     "(1, 2, 3)",
+     "(2, 1, 4)",
+     "(2 ,3, 1)",
+     "(3, 2 ,4)"
+    ],
+    "correct_index": 2,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0012"
+    ]
+   },
+   {
+    "question": "Given a hash table of size 10 using h(k) = k mod 10 and Linear Probing, which array indices will be occupied by the keys `12`, `22`, `32`, and `42` in that order?",
+    "options": [
+     "1, 6, 7, 4",
+     "6, 1, 7 ,4",
+     "7, 6 ,1, 4",
+     "4, 7  ,6, 4"
+    ],
+    "correct_index": 0,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0032"
+    ]
+   },
+   {
+    "question": "What is the structural property enforced by a Binary Search Tree (BST)?",
+    "options": [
+     "All keys in the left subtree are equal to X.key.",
+     "All keys in any subtree can be greater than or less than X.key, but not both.",
+     "All nodes have exactly three children: left, right, and center.",
+     "For any node X, all keys in the right subtree are strictly smaller than X. key, and all keys in both subtrees can be equal."
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0022"
+    ]
+   },
+   {
+    "question": "Which traversal method would be most suitable for node deletion and expression tree evaluation?",
+    "options": [
+     "Pre-order",
+     "In-order",
+     "'Level-order'",
+     "Post-order"
+    ],
+    "correct_index": 2,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0024"
+    ]
+   },
+   {
+    "question": "Which traversal method, among the following, would be most suited for node deletions in a tree structure within the context of 'Fundamentals ofData Structures, Algorithm Analysis, and Complexity Theory'?",
+    "options": [
+     "In-order Traversal",
+     "Pre-order Traveral",
+     "Post-order Traverseal",
+     "Breadth-first Search"
+    ],
+    "correct_index": 0,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0000"
+    ]
+   },
+   {
+    "question": "Given a hash table with size 1o using h(K) = k % 10, and Linear probing, which array index will be occupied first by the key `12`?",
+    "options": [
+     "0",
+     "1",
+     "2",
+     "7"
+    ],
+    "correct_index": 0,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0032"
+    ]
+   },
+   {
+    "question": "Which traversal method yields elements in sorted ascending order?",
+    "options": [
+     "Preorder Traversal",
+     "Inorder Traversals",
+     "Postorder Traversa",
+     "Level Order Traversal"
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0022"
+    ]
+   },
+   {
+    "question": "Which traversal method visits BST nodes in ascending sorted sequence?",
+    "options": [
+     "Pre-order",
+     "In-order",
+     "Post-order",
+     "Level-order"
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0024"
+    ]
+   },
+   {
+    "question": "Which traversal method among the following would be most suitably used for node deleting in a tree within the context 'Fundaments of Data Structues, Algorithm Analyis and Complexity theory'?",
+    "options": [
+     "Depth-First Search (DFS)",
+     "Breadth-First Search(BFS)",
+     "Inorder Traversal",
+     "Preorder Traversa"
+    ],
+    "correct_index": 2,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0000"
+    ]
+   },
+   {
+    "question": "Which traversal method of a Binary Tree yields elements in ascending order, making it suitable for sorting the elements?",
+    "options": [
+     "Pre-order",
+     "In-order",
+     "<pre>",
+     "Post-order"
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0022"
+    ]
+   },
+   {
+    "question": "Which traversal method visited BST nodes and yields elements in a sorted ascending sequence?",
+    "options": [
+     "Pre-order",
+     "In-order",
+     "<D>",
+     "Post-order"
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0024"
+    ]
+   },
+   {
+    "question": "Which traversal method in the context 'Course Code: CS-201 | Subject: Fundamentals Data Structures, Analysis, and Theory' would be most appropriate for node deletings in a tree?",
+    "options": [
+     "Pre-order",
+     "In-order",
+     "Post-order",
+     "Level-order"
+    ],
+    "correct_index": 3,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0000"
+    ]
+   }
+  ]
+ },
+ "blueprint@20": {
+  "items": [
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0001",
+    "chapter": "ch1",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0005",
+    "chapter": "ch2",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0009",
+    "chapter": "ch3",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0013",
+    "chapter": "ch4",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0015",
+    "chapter": "ch5",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0018",
+    "chapter": "ch6",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0022",
+    "chapter": "ch7",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0026",
+    "chapter": "ch8",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0030",
+    "chapter": "ch9",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0033",
+    "chapter": "ch10",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0002",
+    "chapter": "ch1",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0007",
+    "chapter": "ch2",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0011",
+    "chapter": "ch3",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0013",
+    "chapter": "ch4",
+    "focus": "apply or interpret it (e.g. a complexity, formula or example)"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0016",
+    "chapter": "ch5",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0020",
+    "chapter": "ch6",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0024",
+    "chapter": "ch7",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0028",
+    "chapter": "ch8",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0031",
+    "chapter": "ch9",
+    "focus": "recall a stated fact or definition"
+   },
+   {
+    "chunk_id": "chk_6126b5a066882bd7_0035",
+    "chapter": "ch10",
+    "focus": "recall a stated fact or definition"
+   }
+  ],
+  "questions": [
+   {
+    "question": "What is the primary focus when evaluating algorithms?",
+    "options": [
+     "Hardware efficiency",
+     "Input size n efficiency",
+     "Compiler optimizations",
+     "Processor load"
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0001"
+    ]
+   },
+   {
+    "question": "What is a key characteristic of a Linked List, as described in the passage?",
+    "options": [
+     "It allows random access to elements.",
+     "Elements are stored contiguously in memory.",
+     "Insertions and deletions can only be done at known pointer locations with O(k) time complexity.",
+     "It is an unordered data structure."
+    ],
+    "correct_index": 2,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0009"
+    ]
+   },
+   {
+    "question": "Which of the following is a primary use case for stacks, as described within the passage?",
+    "options": [
+     "Infix to Postfix Conversion (Shunting-Yard Algorithm)",
+     "Monotonic Decreasing Stack for Next Greater Element (C++)",
+     "Process scheduling",
+     "BFS traversals"
+    ],
+    "correct_index": 0,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0013"
+    ]
+   },
+   {
+    "question": "Which of the following best describes the Divide-and-Conquer paradigm, as presented in the passage?,",
+    "options": [
+     "A) A programming technique where a function solves a problem by calling reduced instances of itself.",
+     "B) A data structure that stores elements in a linear sequence.",
+     "C) A key characteristic of recursive functions that defines one or more base cases (stopping conditions) and a recursive step that moves toward the base case.",
+     "D) A method to solve problems without using any memory."
+    ],
+    "correct_index": 0,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0015"
+    ]
+   },
+   {
+    "question": "Which sorting algorithms have a time complexity of O(n log n), as stated in the passage and are more efficient for large inputs?",
+    "options": [
+     "Bubble Sort",
+     "Selection Sort",
+     "Insertion Sort",
+     "Merge Sort or Quick Sort"
+    ],
+    "correct_index": 3,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0018"
+    ]
+   },
+   {
+    "question": "What is a key property of a Binary Search Tree (BST), as described in this passage?",
+    "options": [
+     "All keys in the left subtree are equal to X.key.",
+     "<A> All keys in the right subtree are strictly smaller than X.key. <B>",
+     "All keys in both subtrees are strictly greater than X. key.",
+     "The number of children each node can have is unlimited. <D>"
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0022"
+    ]
+   },
+   {
+    "question": "What is a key requirement for the balance factor of an AVL Tree?",
+    "options": [
+     "A) BF \u2208 {0, 2}",
+     "B) BF = Height(Left) + Height(Right)",
+     "C) BF > 1",
+     "D) BF < -1"
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0026"
+    ]
+   },
+   {
+    "question": "What is the primary implementation technique for collision resolution in a Hash Table, as described by the passage?",
+    "options": [
+     "Open Addressing",
+     "Separate Chaining",
+     "Divide-and Conquer",
+     "Bubble Sort"
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0030"
+    ]
+   },
+   {
+    "question": "What is the space complexity of Adjacency Lists, as described compared to Adjacenciy Matrices in the passage for sparse graphs?",
+    "options": [
+     "O(V^2)",
+     "O(V + E)",
+     "O((E)^2)",
+     "None of the above"
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0033"
+    ]
+   },
+   {
+    "question": "Which of the following represents the worst-case running time for an algorithm?",
+    "options": [
+     "Big-O (Upper Bound)",
+     "Big-Omega (Lower Bound)",
+     "'f(n) = \u0398(g(n))'",
+     "None of the above"
+    ],
+    "correct_index": 0,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0002"
+    ]
+   },
+   {
+    "question": "Which traversal algorithm visits BST nodes in ascending sorted sequence?",
+    "options": [
+     "Pre-order",
+     "In-order",
+     "Post-order",
+     "Level-order"
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0024"
+    ]
+   },
+   {
+    "question": "Which of the following describes Double Rotation in a Binary Tree?",
+    "options": [
+     "A) Single Left Rotation (RR Insertion)",
+     "B) Single Right Rotation (LL Insertion)",
+     "C) A combination of sub-tree single rotation followed by root rotation",
+     "D) None of the above"
+    ],
+    "correct_index": 2,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0028"
+    ]
+   },
+   {
+    "question": "Which hash table collision resolution method eliminates secondary clustering?",
+    "options": [
+     "Linear Probing",
+     "Quadratic Probing",
+     "Double Hashing",
+     "None of the above"
+    ],
+    "correct_index": 2,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0031"
+    ]
+   },
+   {
+    "question": "Which algorithm is primarily used for finding the unweighted shortest path?",
+    "options": [
+     "Breadth-First Search (BFS)",
+     "Depth-First Search(DFS)",
+     "Dijkstra's Algorithm",
+     "Bellman-Ford Algorithm"
+    ],
+    "correct_index": 0,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0035"
+    ]
+   }
+  ]
+ },
+ "map_section@20": {
+  "items": [
+   {
+    "fact": "Accessing any element in an array occurs in constant time O(1)",
+    "chunk_id": "chk_6126b5a066882bd7_0005",
+    "chapter": "ch2",
+    "focus": "Accessing any element in an array occurs in constant time O(1)"
+   },
+   {
+    "fact": "Stacks follow a Last-In, First-Out (LIFO) discipline.",
+    "chunk_id": "chk_6126b5a066882bd7_0013",
+    "chapter": "ch4",
+    "focus": "Stacks follow a Last-In, First-Out (LIFO) discipline."
+   },
+   {
+    "fact": "In an AVL Tree, the balance factor for every node is at most \u00b11.",
+    "chunk_id": "chk_6126b5a066882bd7_0026",
+    "chapter": "ch8",
+    "focus": "In an AVL Tree, the balance factor for every node is at most \u00b11."
+   },
+   {
+    "fact": "Insertions and deletions at arbitrary positions in an array incur an O(n) time complexity",
+    "chunk_id": "chk_6126b5a066882bd7_0005",
+    "chapter": "ch2",
+    "focus": "Insertions and deletions at arbitrary positions in an array incur an O(n) time complexity"
+   },
+   {
+    "fact": "Queues operate on a First-In, First-Out (FIFO) basis.",
+    "chunk_id": "chk_6126b5a066882bd7_0013",
+    "chapter": "ch4",
+    "focus": "Queues operate on a First-In, First-Out (FIFO) basis."
+   },
+   {
+    "fact": "A violation of the AVL Tree balance factor triggers rotations (LL, RR, LR, RL).",
+    "chunk_id": "chk_6126b5a066882bd7_0026",
+    "chapter": "ch8",
+    "focus": "A violation of the AVL Tree balance factor triggers rotations (LL, RR, LR, RL)."
+   },
+   {
+    "fact": "Dynamic Arrays (such as C++ `std::vector` or Python `list`) automatically resize when full",
+    "chunk_id": "chk_6126b5a066882bd7_0005",
+    "chapter": "ch2",
+    "focus": "Dynamic Arrays (such as C++ `std::vector` or Python `list`) automatically resize when full"
+   },
+   {
+    "fact": "Stacks support `push`, `pop`, and `peek` operations in O(1) time.",
+    "chunk_id": "chk_6126b5a066882bd7_0013",
+    "chapter": "ch4",
+    "focus": "Stacks support `push`, `pop`, and `peek` operations in O(1) time."
+   },
+   {
+    "fact": "A Single Left Rotation (RR Insertion) is applied when a right child's right subtree causes imbalance.",
+    "chunk_id": "chk_6126b5a066882bd7_0028",
+    "chapter": "ch8",
+    "focus": "A Single Left Rotation (RR Insertion) is applied when a right child's right subtree causes imbalance."
+   },
+   {
+    "fact": "Averaged across all n insertions, each `push_back` in a dynamic array costs O(1) amortized time",
+    "chunk_id": "chk_6126b5a066882bd7_0007",
+    "chapter": "ch2",
+    "focus": "Averaged across all n insertions, each `push_back` in a dynamic array costs O(1) amortized time"
+   }
+  ],
+  "questions": [
+   {
+    "question": "What is the maximum balance factor allowed for a node in an AVL Tree?",
+    "options": [
+     "2",
+     "-2",
+     "1",
+     "0"
+    ],
+    "correct_index": 3,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0026"
+    ]
+   },
+   {
+    "question": "Which of the following is NOT a characteristic of Queues?",
+    "options": [
+     "They support `push`, `pop`, and `peek` operations in O(1) time.",
+     "They operate on a Last-In, First-Out (LIFO) basis.",
+     "They are used for process scheduling and BFS traversals.",
+     "They eliminate parenthesis ambiguity during stack-based evaluation."
+    ],
+    "correct_index": 2,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0013"
+    ]
+   },
+   {
+    "question": "Which of the following statements best describes Dynamic Arrays?",
+    "options": [
+     "They have a fixed size and cannot resize when full.",
+     "Accessing any element by its index i takes O(n) time complexity.",
+     "They are characterized by a contiguous block of memory allocated to store homogeneous elements.",
+     "They overcome fixed-size constraints by automatically resizing when full."
+    ],
+    "correct_index": 3,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0005"
+    ]
+   },
+   {
+    "question": "Which of the following operations can be performed on a Stack in O(1) time?",
+    "options": [
+     "Enqueue",
+     "Dequeue",
+     "Push",
+     "Pop"
+    ],
+    "correct_index": 2,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0013"
+    ]
+   },
+   {
+    "question": "Which rotation is applied when a left child's right subtree causes imbalance in an AVl Tree?",
+    "options": [
+     "Single Left Rotation (RR Insertion)",
+     "<A>",
+     "Double Rotation (LR Insertion)",
+     "Single Right Rotation (LL Insertion)"
+    ],
+    "correct_index": 3,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0028"
+    ]
+   }
+  ]
+ },
+ "map_window@20": {
+  "items": [
+   {
+    "fact": "Accessing any element in an Array by its index occurs in constant time O(1)",
+    "chunk_id": "chk_6126b5a066882bd7_0003",
+    "chapter": "ch1",
+    "focus": "Accessing any element in an Array by its index occurs in constant time O(1)"
+   },
+   {
+    "fact": "Insertions and deletions at arbitrary positions in an Array require shifting elements, incurring an O(n) time complexity",
+    "chunk_id": "chk_6126b5a066882bd7_0005",
+    "chapter": "ch2",
+    "focus": "Insertions and deletions at arbitrary positions in an Array require shifting elements, incurring an O(n) time complexity"
+   },
+   {
+    "fact": "In an AVL Tree, the height difference between a node's left and right subtrees (Balance Factor) is at most \u00b11.",
+    "chunk_id": "chk_6126b5a066882bd7_0026",
+    "chapter": "ch8",
+    "focus": "In an AVL Tree, the height difference between a node's left and right subtrees (Balance Factor) is at most \u00b11."
+   },
+   {
+    "fact": "A Hash Table with Separate Chaining uses linked lists per bucket as a collision resolution technique.",
+    "chunk_id": "chk_6126b5a066882bd7_0030",
+    "chapter": "ch9",
+    "focus": "A Hash Table with Separate Chaining uses linked lists per bucket as a collision resolution technique."
+   },
+   {
+    "fact": "Graphs can be represented using Adjacency Matrices or Adjacency Lists.",
+    "chunk_id": "chk_6126b5a066882bd7_0033",
+    "chapter": "ch10",
+    "focus": "Graphs can be represented using Adjacency Matrices or Adjacency Lists."
+   },
+   {
+    "fact": "Binary Search, Balanced BST search, and Merge Sort, Quick Sort (average case) have a scale behavior of ~20 operations",
+    "chunk_id": "chk_6126b5a066882bd7_0003",
+    "chapter": "ch1",
+    "focus": "Binary Search, Balanced BST search, and Merge Sort, Quick Sort (average case) have a scale behavior of ~20 operations"
+   },
+   {
+    "fact": "Each `push_back` operation in a Dynamic Array (such as C++ `std::vector` or Python `list`) costs O(1) amortized time",
+    "chunk_id": "chk_6126b5a066882bd7_0007",
+    "chapter": "ch2",
+    "focus": "Each `push_back` operation in a Dynamic Array (such as C++ `std::vector` or Python `list`) costs O(1) amortized time"
+   },
+   {
+    "fact": "A Max-Heap in a Binary Heap ensures that the parent node is greater than or equal to its child nodes.",
+    "chunk_id": "chk_6126b5a066882bd7_0026",
+    "chapter": "ch8",
+    "focus": "A Max-Heap in a Binary Heap ensures that the parent node is greater than or equal to its child nodes."
+   },
+   {
+    "fact": "A Hash Table maps keys to values using a Hash Function and distributes keys uniformly across slots to compute array indices in average O(1) time.",
+    "chunk_id": "chk_6126b5a066882bd7_0030",
+    "chapter": "ch9",
+    "focus": "A Hash Table maps keys to values using a Hash Function and distributes keys uniformly across slots to compute array indices in average O(1) time."
+   },
+   {
+    "fact": "Single Left Rotation is applied when a left child's left subtree causes imbalance in a tree.",
+    "chunk_id": "chk_6126b5a066882bd7_0028",
+    "chapter": "ch8",
+    "focus": "Single Left Rotation is applied when a left child's left subtree causes imbalance in a tree."
+   },
+   {
+    "fact": "Two primary collision resolution techniques for Hash Tables are Separate Chaining and Open Addressing.",
+    "chunk_id": "chk_6126b5a066882bd7_0030",
+    "chapter": "ch9",
+    "focus": "Two primary collision resolution techniques for Hash Tables are Separate Chaining and Open Addressing."
+   },
+   {
+    "fact": "Linear Probing in Hash Tables can suffer from Primary Clustering.",
+    "chunk_id": "chk_6126b5a066882bd7_0031",
+    "chapter": "ch9",
+    "focus": "Linear Probing in Hash Tables can suffer from Primary Clustering."
+   }
+  ],
+  "questions": [
+   {
+    "question": "Which operation can be performed in constant time O(1) according to the provided table?",
+    "options": [
+     "Linear Search",
+     "Binary Search",
+     "Array indexing",
+     "Nested loop iteration"
+    ],
+    "correct_index": 2,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0003"
+    ]
+   },
+   {
+    "question": "Which operation in an Array has a time complexity of O(n) according to this passage?",
+    "options": [
+     "Accessing an element by its index",
+     "Inserting an element at an arbitrary position",
+     "Deleting an element from an array",
+     "Resizing an array dynamically"
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0005"
+    ]
+   },
+   {
+    "question": "In an AVL Tree, which of the following is NOT a valid Balance Factor?",
+    "options": [
+     "0",
+     "-2",
+     "1",
+     "3"
+    ],
+    "correct_index": 2,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0026"
+    ]
+   },
+   {
+    "question": "Which data structure does the provided Python code implement for handling collisions in a Hash Table?",
+    "options": [
+     "Array",
+     "Linked List",
+     "Stack",
+     "Queue"
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0030"
+    ]
+   },
+   {
+    "question": "Which algorithm, according to the table provided, has a scale behavior of ~20,000,0oo operations when n = 10^6?",
+    "options": [
+     "Linear Search",
+     "Balanced BST search",
+     "Merge Sort",
+     "Quick Sort (average case)"
+    ],
+    "correct_index": 3,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0003"
+    ]
+   },
+   {
+    "question": "Which data structure, according to this text, does NOT have a parent node greater than or equal to its child nodes?",
+    "options": [
+     "Max-Heap",
+     "Min-Heap",
+     "'BST' (Binary Search Tree)",
+     "Linked List"
+    ],
+    "correct_index": 2,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0026"
+    ]
+   },
+   {
+    "question": "Which data structure does this Python code implement to handle collisions in Hash Table?",
+    "options": [
+     "Linked List",
+     "AVL Tree",
+     "Hash Function",
+     "Open Addressing"
+    ],
+    "correct_index": 3,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0030"
+    ]
+   },
+   {
+    "question": "Which data structure does THIS Python code implement specifically to handle collisons in a HashTable?",
+    "options": [
+     "Linked List",
+     "Array",
+     "AVL Tree",
+     "Hash Table"
+    ],
+    "correct_index": 0,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0030"
+    ]
+   },
+   {
+    "question": "Which hash table collision resolution method, according to provided passage, is most effective in reducing primary clustering?",
+    "options": [
+     "Linear Probing",
+     "Quadratic Probing",
+     "Double Hashing",
+     "None of the above"
+    ],
+    "correct_index": 1,
+    "evidence_ids": [
+     "chk_6126b5a066882bd7_0031"
+    ]
+   }
+  ]
+ }
+}
