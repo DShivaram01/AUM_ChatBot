@@ -1,0 +1,523 @@
+{
+ "_about": "PROVISIONAL gold data for the CS-201 'Data Structures & Algorithms' course notes (10 pages). Machine-drafted 2026-10-12 by Claude Code from the extracted text; NOT human-reviewed. Kept outside git. anchors = exact phrases (normalised: lowercase, ** and _ removed, whitespace collapsed) that a supporting chunk must contain. The document itself contains 'Quiz Benchmark Questions' boxes; several ask about things the notes never explain -- those are used as unanswerable probes.",
+ "document_sha256": "d5b33bba444871b28197e2b3aa73eed1cc8711114ff7b7f7ebf415c48a694fdd",
+ "review_status": "provisional",
+ "concepts": [
+  {
+   "id": "C01",
+   "section": "Ch1 Asymptotic Notation",
+   "page": 1,
+   "topic": "asymptotics",
+   "concept": "Big-O is the upper bound (the notes equate it with worst-case running time)",
+   "query": "What does Big-O notation represent?",
+   "answer": "An upper bound; represents worst-case running time",
+   "anchors": [
+    "represents worst-case running time"
+   ]
+  },
+  {
+   "id": "C02",
+   "section": "Ch1 Asymptotic Notation",
+   "page": 1,
+   "topic": "asymptotics",
+   "concept": "Big-Omega is the lower bound (best-case per the notes)",
+   "query": "What does Big-Omega notation represent?",
+   "answer": "A lower bound; represents best-case running time",
+   "anchors": [
+    "represents best-case running time"
+   ]
+  },
+  {
+   "id": "C03",
+   "section": "Ch1 Asymptotic Notation",
+   "page": 1,
+   "topic": "asymptotics",
+   "concept": "Big-Theta is a tight bound: c1 g(n) <= f(n) <= c2 g(n)",
+   "query": "What does Big-Theta notation represent?",
+   "answer": "A tight bound; exact growth rate",
+   "anchors": [
+    "represents exact growth rate"
+   ]
+  },
+  {
+   "id": "C04",
+   "section": "Ch1 Growth classes table",
+   "page": 1,
+   "topic": "asymptotics",
+   "concept": "O(log n) at n = 10^6 is about 20 operations (binary search, balanced BST search)",
+   "query": "Roughly how many operations does a logarithmic algorithm take for n = one million?",
+   "answer": "About 20 operations",
+   "anchors": [
+    "binary search, balanced bst search|~20 operations"
+   ]
+  },
+  {
+   "id": "C05",
+   "section": "Ch1 Asymptotic Notation",
+   "page": 1,
+   "topic": "asymptotics",
+   "concept": "Asymptotic growth is used instead of measured seconds, which depend on hardware/compiler/load",
+   "query": "Why analyze asymptotic growth rather than execution time in seconds?",
+   "answer": "Seconds depend on hardware, compiler optimizations and processor load",
+   "anchors": [
+    "rather than measuring execution time in seconds"
+   ]
+  },
+  {
+   "id": "C06",
+   "section": "Ch2 Arrays",
+   "page": 2,
+   "topic": "arrays",
+   "concept": "Array element address formula",
+   "query": "How is the memory address of an array element computed?",
+   "answer": "Address(A[i]) = BaseAddress + i x ElementSize",
+   "anchors": [
+    "address(a[i]) = baseaddress + i \u00d7 elementsize"
+   ]
+  },
+  {
+   "id": "C07",
+   "section": "Ch2 Arrays",
+   "page": 2,
+   "topic": "arrays",
+   "concept": "Insertions/deletions at arbitrary positions in an array cost O(n) due to shifting",
+   "query": "Why are insertions in the middle of an array O(n)?",
+   "answer": "Elements must be shifted",
+   "anchors": [
+    "require shifting elements"
+   ]
+  },
+  {
+   "id": "C08",
+   "section": "Ch2 Amortized doubling",
+   "page": 2,
+   "topic": "arrays",
+   "concept": "Capacity doubling gives O(1) amortized push_back (total copies < 2n)",
+   "query": "What is the amortized cost of push_back with capacity doubling?",
+   "answer": "O(1) amortized (O(2n/n))",
+   "anchors": [
+    "costs o(2n / n) = o(1) amortized time"
+   ]
+  },
+  {
+   "id": "C09",
+   "section": "Ch3 Linked Lists",
+   "page": 3,
+   "topic": "linked lists",
+   "concept": "Linked lists have no random access; reaching the k-th element is O(k)",
+   "query": "Why is random access impossible in a linked list?",
+   "answer": "Nodes must be traversed sequentially, O(k) to reach the k-th element",
+   "anchors": [
+    "random access is impossible"
+   ]
+  },
+  {
+   "id": "C10",
+   "section": "Ch3 Arrays vs Linked Lists table",
+   "page": 3,
+   "topic": "linked lists",
+   "concept": "Doubly linked list tail insertion/deletion is O(1) with a tail pointer",
+   "query": "What is the cost of tail insertion in a doubly linked list?",
+   "answer": "O(1) with a tail pointer",
+   "anchors": [
+    "o(1)(with tail ptr)"
+   ]
+  },
+  {
+   "id": "C11",
+   "section": "Ch3 Arrays vs Linked Lists table",
+   "page": 3,
+   "topic": "linked lists",
+   "concept": "Memory overhead: singly 1 pointer per node, doubly 2 pointers per node",
+   "query": "What extra memory does a doubly linked list use per node?",
+   "answer": "2 pointers per node",
+   "anchors": [
+    "2 pointers per node"
+   ]
+  },
+  {
+   "id": "C12",
+   "section": "Ch4 Stacks & Queues",
+   "page": 4,
+   "topic": "stacks queues",
+   "concept": "Stacks are LIFO, queues are FIFO",
+   "query": "What access discipline does a stack follow?",
+   "answer": "Last-In, First-Out (LIFO)",
+   "anchors": [
+    "last-in, first-out (lifo)"
+   ]
+  },
+  {
+   "id": "C13",
+   "section": "Ch4 Stacks & Queues",
+   "page": 4,
+   "topic": "stacks queues",
+   "concept": "Queues act as buffers for BFS traversals and process scheduling",
+   "query": "What are queues commonly used for?",
+   "answer": "Buffers for BFS traversals and process scheduling",
+   "anchors": [
+    "operating as buffers for bfs traversals"
+   ]
+  },
+  {
+   "id": "C14",
+   "section": "Ch4 Shunting-Yard",
+   "page": 4,
+   "topic": "stacks queues",
+   "concept": "Shunting-yard converts infix to postfix, eliminating parenthesis ambiguity",
+   "query": "What does converting infix to postfix achieve?",
+   "answer": "Eliminates parenthesis ambiguity during stack-based evaluation",
+   "anchors": [
+    "eliminates parenthesis ambiguity"
+   ]
+  },
+  {
+   "id": "C15",
+   "section": "Ch5 Recursion",
+   "page": 5,
+   "topic": "recursion",
+   "concept": "Unbounded recursion causes stack overflow (call stack memory exhaustion)",
+   "query": "What happens with unbounded recursion?",
+   "answer": "Stack overflow errors from call stack memory exhaustion",
+   "anchors": [
+    "stack overflow errors due to call stack memory exhaustion"
+   ]
+  },
+  {
+   "id": "C16",
+   "section": "Ch5 Divide and Conquer",
+   "page": 5,
+   "topic": "recursion",
+   "concept": "Divide-and-conquer splits into disjoint subproblems, solves recursively, combines",
+   "query": "How does the divide-and-conquer paradigm work?",
+   "answer": "Break into disjoint subproblems, solve recursively, combine",
+   "anchors": [
+    "breaks a problem into disjoint subproblems"
+   ]
+  },
+  {
+   "id": "C17",
+   "section": "Ch5 Master Theorem",
+   "page": 5,
+   "topic": "recursion",
+   "concept": "Master Theorem applies to T(n) = a T(n/b) + f(n) with a >= 1, b > 1",
+   "query": "What form of recurrence does the Master Theorem solve?",
+   "answer": "T(n) = a T(n/b) + f(n), a >= 1, b > 1",
+   "anchors": [
+    "for recurrences of the form t(n) = a t(n/b) + f(n)"
+   ]
+  },
+  {
+   "id": "C18",
+   "section": "Ch6 Sorting",
+   "page": 6,
+   "topic": "sorting",
+   "concept": "Comparison sorting has an Omega(n log n) lower bound",
+   "query": "What is the lower bound for comparison-based sorting?",
+   "answer": "Omega(n log n)",
+   "anchors": [
+    "comparison-based algorithms have a lower bound proof of"
+   ]
+  },
+  {
+   "id": "C19",
+   "section": "Ch6 Sorting",
+   "page": 6,
+   "topic": "sorting",
+   "concept": "Counting/Radix sort beat the bound by exploiting key distribution",
+   "query": "How do non-comparison sorts beat the n log n bound?",
+   "answer": "By exploiting key distribution properties",
+   "anchors": [
+    "by exploiting key distribution properties"
+   ]
+  },
+  {
+   "id": "C20",
+   "section": "Ch6 Complexity matrix",
+   "page": 6,
+   "topic": "sorting",
+   "concept": "Quick Sort: worst O(n^2), space O(log n), not stable",
+   "query": "Is Quick Sort stable, and what is its space complexity?",
+   "answer": "Not stable; O(log n) space",
+   "anchors": [
+    "|quick sort|o(n log n)|o(n log n)|"
+   ]
+  },
+  {
+   "id": "C21",
+   "section": "Ch6 Complexity matrix",
+   "page": 6,
+   "topic": "sorting",
+   "concept": "Merge Sort is stable with O(n) space and O(n log n) in all cases",
+   "query": "What is Merge Sort's space complexity?",
+   "answer": "O(n)",
+   "anchors": [
+    "|merge sort|o(n log n)|o(n log n)|o(n log n)|o(n)|yes|"
+   ]
+  },
+  {
+   "id": "C22",
+   "section": "Ch7 BST",
+   "page": 7,
+   "topic": "trees",
+   "concept": "BST property: left subtree keys strictly smaller, right strictly greater",
+   "query": "What property does a binary search tree enforce?",
+   "answer": "Left subtree keys < X.key < right subtree keys",
+   "anchors": [
+    "all keys in the left subtree are strictly smaller"
+   ]
+  },
+  {
+   "id": "C23",
+   "section": "Ch7 BST",
+   "page": 7,
+   "topic": "trees",
+   "concept": "In-order traversal of a BST yields sorted ascending order",
+   "query": "What does in-order traversal of a BST produce?",
+   "answer": "Elements in sorted ascending order",
+   "anchors": [
+    "inorder traversal of a bst yields elements in sorted ascending order"
+   ]
+  },
+  {
+   "id": "C24",
+   "section": "Ch7 Traversals",
+   "page": 7,
+   "topic": "trees",
+   "concept": "Pre-order traversal is used for tree cloning and serialization",
+   "query": "What is pre-order traversal used for?",
+   "answer": "Tree cloning and serialization",
+   "anchors": [
+    "used for tree cloning and serialization"
+   ]
+  },
+  {
+   "id": "C25",
+   "section": "Ch7 Traversals",
+   "page": 7,
+   "topic": "trees",
+   "concept": "Post-order traversal is used for node deletion and expression tree evaluation",
+   "query": "What is post-order traversal used for?",
+   "answer": "Node deletion and expression tree evaluation",
+   "anchors": [
+    "used for node deletion and expression tree evaluation"
+   ]
+  },
+  {
+   "id": "C26",
+   "section": "Ch8 AVL",
+   "page": 8,
+   "topic": "avl heaps",
+   "concept": "AVL balance factor (height(left) - height(right)) must be in {-1, 0, 1}",
+   "query": "What balance condition must every AVL node satisfy?",
+   "answer": "Balance factor in {-1, 0, 1}",
+   "anchors": [
+    "balance factor) is at most"
+   ]
+  },
+  {
+   "id": "C27",
+   "section": "Ch8 Heaps",
+   "page": 8,
+   "topic": "avl heaps",
+   "concept": "A binary heap is a complete binary tree with the heap property (max or min)",
+   "query": "What is a binary heap?",
+   "answer": "A complete binary tree satisfying the heap property",
+   "anchors": [
+    "complete binary tree satisfying the heap property"
+   ]
+  },
+  {
+   "id": "C28",
+   "section": "Ch8 AVL rotations",
+   "page": 8,
+   "topic": "avl heaps",
+   "concept": "LL insertion is fixed by a single right rotation; RR by a single left rotation",
+   "query": "Which rotation fixes an LL insertion imbalance in an AVL tree?",
+   "answer": "A single right rotation",
+   "anchors": [
+    "single right rotation (ll insertion)"
+   ]
+  },
+  {
+   "id": "C29",
+   "section": "Ch9 Hash Tables",
+   "page": 9,
+   "topic": "hashing",
+   "concept": "Collision resolution: separate chaining vs open addressing",
+   "query": "What are the two primary collision resolution techniques?",
+   "answer": "Separate chaining and open addressing",
+   "anchors": [
+    "separate chaining (linked lists per bucket)"
+   ]
+  },
+  {
+   "id": "C30",
+   "section": "Ch9 Probing",
+   "page": 9,
+   "topic": "hashing",
+   "concept": "Linear probing suffers from primary clustering",
+   "query": "What problem does linear probing suffer from?",
+   "answer": "Primary clustering",
+   "anchors": [
+    "simple, but suffers from primary clustering"
+   ]
+  },
+  {
+   "id": "C31",
+   "section": "Ch9 Probing",
+   "page": 9,
+   "topic": "hashing",
+   "concept": "Double hashing eliminates secondary clustering",
+   "query": "Which probing technique eliminates secondary clustering?",
+   "answer": "Double hashing",
+   "anchors": [
+    "eliminates secondary clustering"
+   ]
+  },
+  {
+   "id": "C32",
+   "section": "Ch10 Graphs",
+   "page": 10,
+   "topic": "graphs",
+   "concept": "Adjacency matrix O(V^2) space vs adjacency list O(V+E), preferred for sparse graphs",
+   "query": "Which graph representation is preferred for sparse graphs?",
+   "answer": "Adjacency lists, O(V + E) space",
+   "anchors": [
+    "preferred for sparse graphs"
+   ]
+  },
+  {
+   "id": "C33",
+   "section": "Ch10 Complexity matrix",
+   "page": 10,
+   "topic": "graphs",
+   "concept": "Dijkstra: weighted shortest path with non-negative edges, O((V+E) log V)",
+   "query": "What is Dijkstra's algorithm used for and what is its time complexity?",
+   "answer": "Weighted shortest path with non-negative edges; O((V + E) log V)",
+   "anchors": [
+    "weighted shortest path (non-negative)"
+   ]
+  },
+  {
+   "id": "C34",
+   "section": "Ch10 Complexity matrix",
+   "page": 10,
+   "topic": "graphs",
+   "concept": "Bellman-Ford handles negative edges in O(V * E)",
+   "query": "Which algorithm finds shortest paths with negative edges, and how fast is it?",
+   "answer": "Bellman-Ford, O(V * E)",
+   "anchors": [
+    "shortest path with negative edges"
+   ]
+  },
+  {
+   "id": "C35",
+   "section": "Ch10 Complexity matrix",
+   "page": 10,
+   "topic": "graphs",
+   "concept": "BFS gives unweighted shortest paths; DFS is used for cycle detection / topological sort",
+   "query": "What is DFS used for?",
+   "answer": "Cycle detection and topological sort",
+   "anchors": [
+    "cycle detection / topological sort"
+   ]
+  }
+ ],
+ "unanswerable": [
+  {
+   "id": "U01",
+   "query": "How does Floyd's cycle-finding algorithm detect a loop in a linked list?",
+   "why": "asked in the notes' quiz box but never explained"
+  },
+  {
+   "id": "U02",
+   "query": "At what load factor threshold should a hash table be resized?",
+   "why": "asked in the notes' quiz box; no threshold given"
+  },
+  {
+   "id": "U03",
+   "query": "Why does buildHeap run in O(n) time?",
+   "why": "asked in the notes' quiz box; not explained"
+  },
+  {
+   "id": "U04",
+   "query": "What are the steps of Kahn's algorithm for topological sorting?",
+   "why": "asked in the notes' quiz box; not explained"
+  },
+  {
+   "id": "U05",
+   "query": "What are the recoloring rules for red-black tree insertion?",
+   "why": "red-black trees are not covered"
+  },
+  {
+   "id": "U06",
+   "query": "How does Kruskal's algorithm build a minimum spanning tree?",
+   "why": "MSTs are not covered"
+  }
+ ],
+ "quiz_requests": {
+  "A": {
+   "prompt": "Generate 5 MCQs about this document",
+   "scope": "whole"
+  },
+  "B": {
+   "prompt": "Generate 10 MCQs about this document",
+   "scope": "whole"
+  },
+  "C": {
+   "prompt": "Generate 20 MCQs about this document",
+   "scope": "whole"
+  },
+  "D": {
+   "prompt": "Generate 10 MCQs about hash tables and collision resolution",
+   "scope": "topic",
+   "concepts": [
+    "C29",
+    "C30",
+    "C31"
+   ]
+  },
+  "E": {
+   "prompt": "Generate 10 MCQs about AVL tree rotations",
+   "scope": "narrow",
+   "concepts": [
+    "C26",
+    "C28"
+   ]
+  },
+  "F": {
+   "prompt": "Generate 10 MCQs about red-black tree recoloring",
+   "scope": "unsupported",
+   "concepts": []
+  }
+ },
+ "confusable_pairs": [
+  [
+   "Big-O",
+   "Big-Omega",
+   "upper vs lower bound; the notes map them to worst vs best case"
+  ],
+  [
+   "Single Left Rotation (RR)",
+   "Single Right Rotation (LL)",
+   "the rotation direction is opposite to the insertion case letters"
+  ],
+  [
+   "linear probing / primary clustering",
+   "double hashing / secondary clustering",
+   "which probing fixes which clustering"
+  ],
+  [
+   "Merge Sort O(n) space, stable",
+   "Quick Sort O(log n) space, not stable",
+   "same average time, different space and stability"
+  ],
+  [
+   "BFS unweighted shortest path",
+   "DFS cycle detection / topological sort",
+   "both O(V + E)"
+  ]
+ ],
+ "embedded_quiz_questions_note": "Each page ends with two 'Quiz Benchmark Questions'. Generated quizzes that copy them verbatim are tracked separately."
+}
