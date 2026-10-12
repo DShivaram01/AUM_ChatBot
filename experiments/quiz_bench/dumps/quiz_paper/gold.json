@@ -1,0 +1,465 @@
+{
+ "_about": "PROVISIONAL gold data for the quiz-retrieval benchmark. Machine-drafted from the extracted text on 2026-10-11 by Claude Code; NOT human-reviewed. Kept outside git (unpublished manuscript). anchors = exact phrases (after normalisation: lowercase, markdown ** and _ removed, whitespace collapsed) that a supporting chunk must contain.",
+ "document_sha256": "6bc726b11ef1f0b30d661200a7d7cd5ece94da18b096c7c98eafba1a77e17f0f",
+ "review_status": "provisional",
+ "concepts": [
+  {
+   "id": "C01",
+   "section": "Abstract",
+   "page": 1,
+   "topic": "background",
+   "concept": "Definition of the protein-sequence twilight zone",
+   "query": "What sequence identity range defines the protein-sequence twilight zone?",
+   "answer": "20-35% sequence identity",
+   "anchors": [
+    "twilight zone (20"
+   ]
+  },
+  {
+   "id": "C02",
+   "section": "Abstract",
+   "page": 1,
+   "topic": "overview",
+   "concept": "The four PLMs evaluated",
+   "query": "Which protein language models are evaluated in the study?",
+   "answer": "ESM-1b, ESM-2, ProtT5 and ProstT5",
+   "anchors": [
+    "esm-1b, esm-2, prott5, and prostt5 can"
+   ]
+  },
+  {
+   "id": "C03",
+   "section": "2.1 Overview of the Pipeline",
+   "page": 4,
+   "topic": "methods",
+   "concept": "Mean pooling produces one D-dimensional vector per protein",
+   "query": "How are residue-level embeddings turned into a sequence-level representation?",
+   "answer": "Mean pooling across the sequence length",
+   "anchors": [
+    "mean pooling produces one"
+   ]
+  },
+  {
+   "id": "C04",
+   "section": "2.2.1 ESM-1b",
+   "page": 5,
+   "topic": "models",
+   "concept": "ESM-1b architecture: 33 layers, ~650M parameters, 1,280-dim",
+   "query": "How many layers and parameters does ESM-1b have?",
+   "answer": "33 layers, about 650 million parameters",
+   "anchors": [
+    "33-layer bidirectional transformer encoder"
+   ]
+  },
+  {
+   "id": "C05",
+   "section": "2.2.1 ESM-1b",
+   "page": 5,
+   "topic": "models",
+   "concept": "Sequences longer than 1,022 residues are split into overlapping windows for ESM models",
+   "query": "How are sequences longer than 1,022 residues handled by ESM-1b?",
+   "answer": "Divided into overlapping windows, embedded separately and recombined",
+   "anchors": [
+    "divided into overlapping windows"
+   ]
+  },
+  {
+   "id": "C06",
+   "section": "2.2.2 ESM-2",
+   "page": 5,
+   "topic": "models",
+   "concept": "ESM-2 variant esm2_t36_3B_UR50D, 36 layers, 2,560-dim, layer 33",
+   "query": "Which transformer layer are ESM-2 representations taken from?",
+   "answer": "Layer 33",
+   "anchors": [
+    "obtained from transformer layer 33"
+   ]
+  },
+  {
+   "id": "C07",
+   "section": "2.2.3 ProtT5",
+   "page": 5,
+   "topic": "models",
+   "concept": "ProtT5 uses only the encoder, full 32-bit precision, no sliding window",
+   "query": "Does ProtT5 need a sliding-window procedure for long sequences?",
+   "answer": "No, it processes long sequences without any sliding window",
+   "anchors": [
+    "without any sliding-window procedure"
+   ]
+  },
+  {
+   "id": "C08",
+   "section": "2.2.4 ProstT5",
+   "page": 6,
+   "topic": "models",
+   "concept": "ProstT5 structure-aware pretraining with Foldseek 3Di tokens; <AA2fold> control token",
+   "query": "What structural representation is used in ProstT5 pretraining?",
+   "answer": "Foldseek-derived 3Di tokens",
+   "anchors": [
+    "3di tokens, and the model learns bidirectional"
+   ]
+  },
+  {
+   "id": "C09",
+   "section": "2.2.4 ProstT5",
+   "page": 6,
+   "topic": "models",
+   "concept": "No 3Di tokens or coordinates are supplied at inference",
+   "query": "Are structural tokens supplied to ProstT5 at inference time in this study?",
+   "answer": "No; it is sequence-based at inference",
+   "anchors": [
+    "no 3di tokens or structural coordinates are supplied"
+   ]
+  },
+  {
+   "id": "C10",
+   "section": "2.3.3 Radial Basis Function Similarity",
+   "page": 6,
+   "topic": "metrics",
+   "concept": "RBF bandwidth is the median pairwise Euclidean distance per model",
+   "query": "How is the RBF kernel bandwidth chosen?",
+   "answer": "Median pairwise Euclidean distance over all benchmark pairs for that model",
+   "anchors": [
+    "set to the median pairwise euclidean distance"
+   ]
+  },
+  {
+   "id": "C11",
+   "section": "2.3.5 Dot Product",
+   "page": 7,
+   "topic": "metrics",
+   "concept": "Cosine is the only metric computed on normalised vectors",
+   "query": "Which similarity metric is computed on normalised vectors?",
+   "answer": "Only cosine similarity",
+   "anchors": [
+    "cosine similarity is the only metric computed on normalised vectors"
+   ]
+  },
+  {
+   "id": "C12",
+   "section": "2.4 Benchmark Datasets",
+   "page": 7,
+   "topic": "dataset",
+   "concept": "PISCES: 20,466 pairs from 3,500 X-ray structures, filtered to 20,445",
+   "query": "How many protein pairs remain in the final benchmark after filtering?",
+   "answer": "20,445",
+   "anchors": [
+    "20,466 unique protein pairs from 3,500"
+   ]
+  },
+  {
+   "id": "C13",
+   "section": "2.4 Benchmark Datasets",
+   "page": 7,
+   "topic": "baseline",
+   "concept": "BLASTP log-transformed E-value is the baseline score",
+   "query": "What score is used for the BLASTP baseline?",
+   "answer": "Its log-transformed E-value",
+   "anchors": [
+    "logtransformed e-value is used as the primary baseline"
+   ]
+  },
+  {
+   "id": "C14",
+   "section": "2.4 Benchmark Datasets",
+   "page": 7,
+   "topic": "ground truth",
+   "concept": "TMmin = smaller of the two directional TM-scores",
+   "query": "What is TMmin?",
+   "answer": "The smaller of the two directional TM-scores from TM-align",
+   "anchors": [
+    "as the smaller of the two scores"
+   ]
+  },
+  {
+   "id": "C15",
+   "section": "2.4 Benchmark Datasets",
+   "page": 8,
+   "topic": "evaluation",
+   "concept": "TMmin >= 0.5 defines the structurally similar (positive) class for ROC",
+   "query": "What TMmin cutoff defines structurally similar pairs?",
+   "answer": "TMmin >= 0.5",
+   "anchors": [
+    "are therefore treated as the positive, structurally similar class"
+   ]
+  },
+  {
+   "id": "C16",
+   "section": "2.4 Benchmark Datasets",
+   "page": 8,
+   "topic": "evaluation",
+   "concept": "Symmetric length ratio and the 0.5 split for length imbalance",
+   "query": "How is sequence-length imbalance measured?",
+   "answer": "Shorter length divided by longer length; split at 0.5",
+   "anchors": [
+    "dividing the length of the shorter sequence by that of the longer sequence"
+   ]
+  },
+  {
+   "id": "C17",
+   "section": "2.4 Benchmark Datasets",
+   "page": 8,
+   "topic": "efficiency",
+   "concept": "Embedding-generation time measured on H100 GPU nodes",
+   "query": "On what hardware was embedding-generation time measured?",
+   "answer": "H100 GPU nodes",
+   "anchors": [
+    "measured on the h100 gpu nodes"
+   ]
+  },
+  {
+   "id": "C18",
+   "section": "3.1 Effect of PLMs and Similarity Metrics",
+   "page": 9,
+   "topic": "results",
+   "concept": "ProstT5 with cosine achieves the highest Spearman rho = 0.676",
+   "query": "Which model and metric achieve the highest Spearman correlation with TMmin?",
+   "answer": "ProstT5 with cosine similarity, rho = 0.676",
+   "anchors": [
+    "cosine similarity reaches 0.676"
+   ]
+  },
+  {
+   "id": "C19",
+   "section": "3.1 Effect of PLMs and Similarity Metrics",
+   "page": 9,
+   "topic": "results",
+   "concept": "ProstT5 improves on ProtT5 by 0.119, attributed to structure-aware pretraining",
+   "query": "By how much does ProstT5 improve over ProtT5 with cosine similarity?",
+   "answer": "0.119",
+   "anchors": [
+    "with cosine similarity), from which prostt5 inherits"
+   ]
+  },
+  {
+   "id": "C20",
+   "section": "3.1 Effect of PLMs and Similarity Metrics",
+   "page": 9,
+   "topic": "results",
+   "concept": "ESM-2 Euclidean-derived similarity drops to 0.166 and dot product to 0.044",
+   "query": "How do Euclidean and dot-product similarity perform for ESM-2?",
+   "answer": "Euclidean 0.166, dot product 0.044",
+   "anchors": [
+    "sharply drops to 0.166"
+   ]
+  },
+  {
+   "id": "C21",
+   "section": "3.1 Effect of PLMs and Similarity Metrics",
+   "page": 9,
+   "topic": "results",
+   "concept": "Cosine-similarity range: ESM models compressed to ~0.85-1.00; ProtT5 0-1; ProstT5 0.25-1.00",
+   "query": "Why do ESM-1b and ESM-2 have limited dynamic range in cosine similarity?",
+   "answer": "Most pairs fall within approximately 0.85-1.00",
+   "anchors": [
+    "narrow cosine-similarity range of approximately 0.85"
+   ]
+  },
+  {
+   "id": "C22",
+   "section": "3.2.1 Overall Performance on the PISCES Dataset",
+   "page": 10,
+   "topic": "baseline",
+   "concept": "BLASTP reaches rho = 0.393 and fails for 1,410 pairs",
+   "query": "For how many protein pairs does BLASTP fail?",
+   "answer": "1,410 of the 20,445 pairs",
+   "anchors": [
+    "blastp fails for 1,410"
+   ]
+  },
+  {
+   "id": "C23",
+   "section": "3.2.2 Effect of Sequence Identity",
+   "page": 10,
+   "topic": "results",
+   "concept": "In the 0-10% bin ProstT5 reaches 0.561 while BLASTP is nearly uninformative (0.019)",
+   "query": "How does BLASTP perform in the 0-10% sequence identity interval?",
+   "answer": "Nearly uninformative, rho = 0.019",
+   "anchors": [
+    "reaching a correlation of only 0.019"
+   ]
+  },
+  {
+   "id": "C24",
+   "section": "3.2.2 Effect of Sequence Identity",
+   "page": 10,
+   "topic": "results",
+   "concept": "At 20-30% identity BLASTP (0.726) outperforms ESM-1b (0.591) and ProtT5 (0.689)",
+   "query": "Which PLMs does BLASTP outperform at 20-30% sequence identity?",
+   "answer": "ESM-1b (0.591) and ProtT5 (0.689)",
+   "anchors": [
+    "reaches a correlation of 0.726"
+   ]
+  },
+  {
+   "id": "C25",
+   "section": "3.2.3 Effect of Structural Similarity Threshold",
+   "page": 11,
+   "topic": "results",
+   "concept": "ROC AUC: ProstT5 0.831, ESM-2 0.806, ProtT5 0.766, ESM-1b 0.744, BLASTP 0.681",
+   "query": "What AUC does ProstT5 achieve for separating similar from dissimilar folds?",
+   "answer": "0.831",
+   "anchors": [
+    "(auc) of 0.831"
+   ]
+  },
+  {
+   "id": "C26",
+   "section": "3.2.3 Effect of Structural Similarity Threshold",
+   "page": 11,
+   "topic": "dataset",
+   "concept": "8,998 positive and 11,447 negative pairs at TMmin = 0.5",
+   "query": "How many positive and negative pairs are there at the 0.5 threshold?",
+   "answer": "8,998 positive and 11,447 negative",
+   "anchors": [
+    "yielding 8,998 positive"
+   ]
+  },
+  {
+   "id": "C27",
+   "section": "3.3 Effect of Pairwise Sequence Length Ratio",
+   "page": 11,
+   "topic": "results",
+   "concept": "ESM-1b improves most for length-balanced pairs (+0.152, 0.294 to 0.446)",
+   "query": "Which model is most affected by sequence-length imbalance?",
+   "answer": "ESM-1b, improving by 0.152 from 0.294 to 0.446",
+   "anchors": [
+    "increasing by 0.152"
+   ]
+  },
+  {
+   "id": "C28",
+   "section": "3.4 Computational Efficiency",
+   "page": 12,
+   "topic": "efficiency",
+   "concept": "Storage: ProtT5 3.08 GB, ProstT5 3.20 GB, ESM-1b 3.85 GB, ESM-2 7.71 GB",
+   "query": "How much storage do ESM-2 residue-level embeddings require?",
+   "answer": "7.71 GB",
+   "anchors": [
+    "esm-2 requires 7.71 gb"
+   ]
+  },
+  {
+   "id": "C29",
+   "section": "3.4 Computational Efficiency",
+   "page": 12,
+   "topic": "efficiency",
+   "concept": "ESM-1b is fastest; ESM-2 most expensive and scales steeply with length",
+   "query": "Which model is fastest at generating residue-level embeddings?",
+   "answer": "ESM-1b",
+   "anchors": [
+    "esm-1b is the fastest model overall"
+   ]
+  },
+  {
+   "id": "C30",
+   "section": "4 Conclusions",
+   "page": 13,
+   "topic": "limitations",
+   "concept": "Limitation: global mean pooling and a single representation layer",
+   "query": "What limitation of the study do the authors acknowledge?",
+   "answer": "Use of global mean pooling and a single representation layer",
+   "anchors": [
+    "a limitation of this study is the use of global mean pooling"
+   ]
+  }
+ ],
+ "unanswerable": [
+  {
+   "id": "U01",
+   "query": "How much GPU memory did ProstT5 require during embedding generation?",
+   "why": "only time and disk storage are reported"
+  },
+  {
+   "id": "U02",
+   "query": "What learning rate was used to fine-tune ESM-2?",
+   "why": "no fine-tuning; models are used zero-shot"
+  },
+  {
+   "id": "U03",
+   "query": "How does attention pooling compare with mean pooling?",
+   "why": "alternative pooling is only named as future work"
+  },
+  {
+   "id": "U04",
+   "query": "What Spearman correlation does Ankh achieve on PISCES?",
+   "why": "Ankh is only cited, not evaluated"
+  },
+  {
+   "id": "U05",
+   "query": "How does AlphaFold3 compare with ProstT5 on this benchmark?",
+   "why": "not compared"
+  },
+  {
+   "id": "U06",
+   "query": "What AUC does dot-product similarity achieve?",
+   "why": "AUC is reported for cosine and BLASTP only"
+  }
+ ],
+ "quiz_requests": {
+  "A": {
+   "prompt": "Generate 5 MCQs about this document",
+   "scope": "whole"
+  },
+  "B": {
+   "prompt": "Generate 10 MCQs about this document",
+   "scope": "whole"
+  },
+  "C": {
+   "prompt": "Generate 20 MCQs about this document",
+   "scope": "whole"
+  },
+  "D": {
+   "prompt": "Generate 10 MCQs about the performance comparison against BLASTP",
+   "scope": "topic",
+   "concepts": [
+    "C13",
+    "C22",
+    "C23",
+    "C24",
+    "C25"
+   ]
+  },
+  "E": {
+   "prompt": "Generate 10 MCQs about the computational efficiency and storage of the models",
+   "scope": "narrow",
+   "concepts": [
+    "C17",
+    "C28",
+    "C29"
+   ]
+  },
+  "F": {
+   "prompt": "Generate 10 MCQs about AlphaFold3 training procedures",
+   "scope": "unsupported",
+   "concepts": []
+  }
+ },
+ "confusable_pairs": [
+  [
+   "ProtT5",
+   "ProstT5",
+   "names differ by one letter; ProstT5 adds 3Di structure-aware pretraining"
+  ],
+  [
+   "20,466 pairs",
+   "20,445 pairs",
+   "raw PISCES pairs vs final benchmark after excluding pairs without TM-scores"
+  ],
+  [
+   "twilight zone 20-35%",
+   "benchmark <=30%",
+   "definition vs benchmark filter"
+  ],
+  [
+   "Euclidean 0.653",
+   "RBF 0.653",
+   "identical values for ProstT5 and ProtT5 but different metrics"
+  ],
+  [
+   "ESM windowing",
+   "T5 no windowing",
+   "only ESM models use overlapping windows beyond 1,022 residues"
+  ]
+ ]
+}
