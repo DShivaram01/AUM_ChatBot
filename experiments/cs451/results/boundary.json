@@ -1,0 +1,4065 @@
+{
+ "units": {
+  "S1-P01": {
+   "token_start": 603,
+   "token_end": 744
+  },
+  "S1-P02": {
+   "token_start": 744,
+   "token_end": 908
+  },
+  "S1-P03": {
+   "token_start": 908,
+   "token_end": 1065
+  },
+  "S1-P04": {
+   "token_start": 1065,
+   "token_end": 1217
+  },
+  "S1-T01": {
+   "token_start": 1217,
+   "token_end": 1319
+  },
+  "S1-E01": {
+   "token_start": 1319,
+   "token_end": 1525
+  },
+  "S1-P05": {
+   "token_start": 1525,
+   "token_end": 1653
+  },
+  "S1-P06": {
+   "token_start": 1653,
+   "token_end": 1793
+  },
+  "S1-P07": {
+   "token_start": 1793,
+   "token_end": 1930
+  },
+  "S1-P08": {
+   "token_start": 1930,
+   "token_end": 2070
+  },
+  "S1-E02": {
+   "token_start": 2070,
+   "token_end": 2099
+  },
+  "S1-P09": {
+   "token_start": 2277,
+   "token_end": 2427
+  },
+  "S1-P10": {
+   "token_start": 2427,
+   "token_end": 2573
+  },
+  "S1-P11": {
+   "token_start": 2573,
+   "token_end": 2697
+  },
+  "S1-P12": {
+   "token_start": 2697,
+   "token_end": 2839
+  },
+  "S1-T02": {
+   "token_start": 2839,
+   "token_end": 2935
+  },
+  "S1-E03": {
+   "token_start": 2935,
+   "token_end": 3127
+  },
+  "S2-P01": {
+   "token_start": 3127,
+   "token_end": 3281
+  },
+  "S2-P02": {
+   "token_start": 3281,
+   "token_end": 3428
+  },
+  "S2-P03": {
+   "token_start": 3428,
+   "token_end": 3568
+  },
+  "S2-P04": {
+   "token_start": 3568,
+   "token_end": 3707
+  },
+  "S2-E01": {
+   "token_start": 3707,
+   "token_end": 3742
+  },
+  "S2-E02": {
+   "token_start": 3742,
+   "token_end": 3927
+  },
+  "S2-P05": {
+   "token_start": 3927,
+   "token_end": 4061
+  },
+  "S2-P06": {
+   "token_start": 4061,
+   "token_end": 4225
+  },
+  "S2-P07": {
+   "token_start": 4225,
+   "token_end": 4364
+  },
+  "S2-P08": {
+   "token_start": 4364,
+   "token_end": 4487
+  },
+  "S2-T01": {
+   "token_start": 4487,
+   "token_end": 4590
+  },
+  "S2-E03": {
+   "token_start": 4590,
+   "token_end": 4776
+  },
+  "S2-P09": {
+   "token_start": 4776,
+   "token_end": 4912
+  },
+  "S2-P10": {
+   "token_start": 4912,
+   "token_end": 5045
+  },
+  "S2-P11": {
+   "token_start": 5045,
+   "token_end": 5191
+  },
+  "S2-P12": {
+   "token_start": 5191,
+   "token_end": 5323
+  },
+  "S2-T02": {
+   "token_start": 5323,
+   "token_end": 5416
+  },
+  "S2-E04": {
+   "token_start": 5416,
+   "token_end": 5600
+  },
+  "S2-P13": {
+   "token_start": 5600,
+   "token_end": 5725
+  },
+  "S2-P14": {
+   "token_start": 5725,
+   "token_end": 5865
+  },
+  "S2-P15": {
+   "token_start": 5865,
+   "token_end": 6002
+  },
+  "S2-P16": {
+   "token_start": 6002,
+   "token_end": 6137
+  },
+  "S2-E05": {
+   "token_start": 6137,
+   "token_end": 6170
+  },
+  "S3-P01": {
+   "token_start": 6350,
+   "token_end": 6480
+  },
+  "S3-P02": {
+   "token_start": 6480,
+   "token_end": 6636
+  },
+  "S3-P03": {
+   "token_start": 6636,
+   "token_end": 6801
+  },
+  "S3-P04": {
+   "token_start": 6801,
+   "token_end": 6945
+  },
+  "S3-T01": {
+   "token_start": 6945,
+   "token_end": 7020
+  },
+  "S3-E01": {
+   "token_start": 7020,
+   "token_end": 7064
+  },
+  "S3-E02": {
+   "token_start": 7064,
+   "token_end": 7265
+  },
+  "S3-P05": {
+   "token_start": 7265,
+   "token_end": 7441
+  },
+  "S3-P06": {
+   "token_start": 7441,
+   "token_end": 7570
+  },
+  "S3-P07": {
+   "token_start": 7570,
+   "token_end": 7706
+  },
+  "S3-P08": {
+   "token_start": 7706,
+   "token_end": 7833
+  },
+  "S3-T02": {
+   "token_start": 7833,
+   "token_end": 7937
+  },
+  "S3-E03": {
+   "token_start": 7937,
+   "token_end": 8113
+  },
+  "S3-P09": {
+   "token_start": 8113,
+   "token_end": 8242
+  },
+  "S3-P10": {
+   "token_start": 8242,
+   "token_end": 8384
+  },
+  "S3-P11": {
+   "token_start": 8384,
+   "token_end": 8513
+  },
+  "S3-P12": {
+   "token_start": 8513,
+   "token_end": 8652
+  },
+  "S3-E04": {
+   "token_start": 8652,
+   "token_end": 8683
+  },
+  "S3-P13": {
+   "token_start": 8861,
+   "token_end": 8996
+  },
+  "S3-P14": {
+   "token_start": 8996,
+   "token_end": 9140
+  },
+  "S3-P15": {
+   "token_start": 9140,
+   "token_end": 9267
+  },
+  "S3-P16": {
+   "token_start": 9267,
+   "token_end": 9385
+  },
+  "S3-E05": {
+   "token_start": 9385,
+   "token_end": 9563
+  },
+  "S4-P01": {
+   "token_start": 9563,
+   "token_end": 9693
+  },
+  "S4-P02": {
+   "token_start": 9693,
+   "token_end": 9826
+  },
+  "S4-P03": {
+   "token_start": 9826,
+   "token_end": 9955
+  },
+  "S4-P04": {
+   "token_start": 9955,
+   "token_end": 10083
+  },
+  "S4-E01": {
+   "token_start": 10083,
+   "token_end": 10106
+  },
+  "S4-P05": {
+   "token_start": 10277,
+   "token_end": 10434
+  },
+  "S4-P06": {
+   "token_start": 10434,
+   "token_end": 10576
+  },
+  "S4-P07": {
+   "token_start": 10576,
+   "token_end": 10711
+  },
+  "S4-P08": {
+   "token_start": 10711,
+   "token_end": 10846
+  },
+  "S4-T01": {
+   "token_start": 10846,
+   "token_end": 10921
+  },
+  "S4-E02": {
+   "token_start": 10921,
+   "token_end": 11082
+  },
+  "S4-P09": {
+   "token_start": 11082,
+   "token_end": 11216
+  },
+  "S4-P10": {
+   "token_start": 11216,
+   "token_end": 11349
+  },
+  "S4-P11": {
+   "token_start": 11349,
+   "token_end": 11487
+  },
+  "S4-P12": {
+   "token_start": 11487,
+   "token_end": 11610
+  },
+  "S4-E03": {
+   "token_start": 11610,
+   "token_end": 11789
+  },
+  "S5-P01": {
+   "token_start": 11789,
+   "token_end": 11924
+  },
+  "S5-P02": {
+   "token_start": 11924,
+   "token_end": 12063
+  },
+  "S5-P03": {
+   "token_start": 12063,
+   "token_end": 12200
+  },
+  "S5-P04": {
+   "token_start": 12200,
+   "token_end": 12341
+  },
+  "S5-E01": {
+   "token_start": 12341,
+   "token_end": 12360
+  },
+  "S5-P05": {
+   "token_start": 12545,
+   "token_end": 12689
+  },
+  "S5-P06": {
+   "token_start": 12689,
+   "token_end": 12824
+  },
+  "S5-P07": {
+   "token_start": 12824,
+   "token_end": 12973
+  },
+  "S5-P08": {
+   "token_start": 12973,
+   "token_end": 13107
+  },
+  "S5-T01": {
+   "token_start": 13107,
+   "token_end": 13200
+  },
+  "S5-E02": {
+   "token_start": 13200,
+   "token_end": 13389
+  },
+  "S5-P09": {
+   "token_start": 13389,
+   "token_end": 13515
+  },
+  "S5-P10": {
+   "token_start": 13515,
+   "token_end": 13647
+  },
+  "S5-P11": {
+   "token_start": 13647,
+   "token_end": 13781
+  },
+  "S5-P12": {
+   "token_start": 13781,
+   "token_end": 13904
+  },
+  "S5-E03": {
+   "token_start": 13904,
+   "token_end": 13928
+  },
+  "S5-P13": {
+   "token_start": 14112,
+   "token_end": 14285
+  },
+  "S5-P14": {
+   "token_start": 14285,
+   "token_end": 14413
+  },
+  "S5-P15": {
+   "token_start": 14413,
+   "token_end": 14558
+  },
+  "S5-P16": {
+   "token_start": 14558,
+   "token_end": 14680
+  },
+  "S5-T02": {
+   "token_start": 14680,
+   "token_end": 14968
+  },
+  "S6-P01": {
+   "token_start": 14968,
+   "token_end": 15129
+  },
+  "S6-P02": {
+   "token_start": 15129,
+   "token_end": 15303
+  },
+  "S6-P03": {
+   "token_start": 15303,
+   "token_end": 15436
+  },
+  "S6-P04": {
+   "token_start": 15436,
+   "token_end": 15562
+  },
+  "S6-T01": {
+   "token_start": 15562,
+   "token_end": 15657
+  },
+  "S6-E01": {
+   "token_start": 15657,
+   "token_end": 15701
+  },
+  "S6-P05": {
+   "token_start": 15892,
+   "token_end": 16048
+  },
+  "S6-P06": {
+   "token_start": 16048,
+   "token_end": 16212
+  },
+  "S6-P07": {
+   "token_start": 16212,
+   "token_end": 16378
+  },
+  "S6-P08": {
+   "token_start": 16378,
+   "token_end": 16511
+  },
+  "S6-T02": {
+   "token_start": 16511,
+   "token_end": 16610
+  },
+  "S6-E02": {
+   "token_start": 16610,
+   "token_end": 16649
+  },
+  "S6-E03": {
+   "token_start": 16649,
+   "token_end": 16837
+  },
+  "S6-P09": {
+   "token_start": 16837,
+   "token_end": 16985
+  },
+  "S6-P10": {
+   "token_start": 16985,
+   "token_end": 17142
+  },
+  "S6-P11": {
+   "token_start": 17142,
+   "token_end": 17273
+  },
+  "S6-P12": {
+   "token_start": 17273,
+   "token_end": 17409
+  },
+  "S6-T03": {
+   "token_start": 17409,
+   "token_end": 17524
+  },
+  "S6-E04": {
+   "token_start": 17524,
+   "token_end": 17703
+  },
+  "S6-P13": {
+   "token_start": 17703,
+   "token_end": 17872
+  },
+  "S6-P14": {
+   "token_start": 17872,
+   "token_end": 18024
+  },
+  "S6-P15": {
+   "token_start": 18024,
+   "token_end": 18174
+  },
+  "S6-P16": {
+   "token_start": 18174,
+   "token_end": 18335
+  },
+  "S6-T04": {
+   "token_start": 18335,
+   "token_end": 18464
+  },
+  "S6-E05": {
+   "token_start": 18464,
+   "token_end": 18616
+  }
+ },
+ "by_size": {
+  "256": {
+   "units_crossing_a_boundary": 65,
+   "units_with_vulnerable_edge": 45,
+   "split_zero_overlap": [
+    "S2-P11",
+    "S2-T02",
+    "S3-P11",
+    "S5-P08",
+    "S6-E02",
+    "S6-P06",
+    "S6-T01"
+   ],
+   "split_15pct_overlap": [],
+   "n_units": 125,
+   "detail": {
+    "S1-P01": {
+     "edge_distance": 24,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P02": {
+     "edge_distance": 24,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P03": {
+     "edge_distance": 41,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P04": {
+     "edge_distance": 41,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-T01": {
+     "edge_distance": 39,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-E01": {
+     "edge_distance": 11,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P05": {
+     "edge_distance": 11,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P06": {
+     "edge_distance": 1,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P07": {
+     "edge_distance": 1,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P08": {
+     "edge_distance": 22,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-E02": {
+     "edge_distance": 22,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P09": {
+     "edge_distance": 27,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P10": {
+     "edge_distance": 13,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P11": {
+     "edge_distance": 13,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P12": {
+     "edge_distance": 23,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-T02": {
+     "edge_distance": 23,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-E03": {
+     "edge_distance": 55,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P01": {
+     "edge_distance": 47,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P02": {
+     "edge_distance": 47,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P03": {
+     "edge_distance": 16,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P04": {
+     "edge_distance": 16,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-E01": {
+     "edge_distance": 98,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-E02": {
+     "edge_distance": 87,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P05": {
+     "edge_distance": 35,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P06": {
+     "edge_distance": 35,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P07": {
+     "edge_distance": 12,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P08": {
+     "edge_distance": 12,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-T01": {
+     "edge_distance": 18,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-E03": {
+     "edge_distance": 18,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P09": {
+     "edge_distance": 48,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P10": {
+     "edge_distance": 48,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P11": {
+     "edge_distance": 71,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": true,
+     "split_ov15": false
+    },
+    "S2-P12": {
+     "edge_distance": 53,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-T02": {
+     "edge_distance": 40,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": true,
+     "split_ov15": false
+    },
+    "S2-E04": {
+     "edge_distance": 32,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P13": {
+     "edge_distance": 32,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P14": {
+     "edge_distance": 23,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P15": {
+     "edge_distance": 23,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P16": {
+     "edge_distance": 7,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-E05": {
+     "edge_distance": 7,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P01": {
+     "edge_distance": 50,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P02": {
+     "edge_distance": 20,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P03": {
+     "edge_distance": 20,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P04": {
+     "edge_distance": 33,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-T01": {
+     "edge_distance": 33,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-E01": {
+     "edge_distance": 104,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-E02": {
+     "edge_distance": 97,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P05": {
+     "edge_distance": 17,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P06": {
+     "edge_distance": 17,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P07": {
+     "edge_distance": 26,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P08": {
+     "edge_distance": 26,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-T02": {
+     "edge_distance": 1,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-E03": {
+     "edge_distance": 1,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P09": {
+     "edge_distance": 50,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P10": {
+     "edge_distance": 50,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P11": {
+     "edge_distance": 64,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": true,
+     "split_ov15": false
+    },
+    "S3-P12": {
+     "edge_distance": 52,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-E04": {
+     "edge_distance": 21,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P13": {
+     "edge_distance": 36,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P14": {
+     "edge_distance": 36,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P15": {
+     "edge_distance": 51,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P16": {
+     "edge_distance": 51,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-E05": {
+     "edge_distance": 87,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P01": {
+     "edge_distance": 35,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P02": {
+     "edge_distance": 35,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P03": {
+     "edge_distance": 29,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P04": {
+     "edge_distance": 29,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-E01": {
+     "edge_distance": 99,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P05": {
+     "edge_distance": 37,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P06": {
+     "edge_distance": 62,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P07": {
+     "edge_distance": 41,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P08": {
+     "edge_distance": 41,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-T01": {
+     "edge_distance": 87,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-E02": {
+     "edge_distance": 74,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P09": {
+     "edge_distance": 48,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P10": {
+     "edge_distance": 48,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P11": {
+     "edge_distance": 33,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P12": {
+     "edge_distance": 33,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-E03": {
+     "edge_distance": 13,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P01": {
+     "edge_distance": 13,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P02": {
+     "edge_distance": 31,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P03": {
+     "edge_distance": 31,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P04": {
+     "edge_distance": 53,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-E01": {
+     "edge_distance": 53,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P05": {
+     "edge_distance": 1,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P06": {
+     "edge_distance": 24,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P07": {
+     "edge_distance": 24,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P08": {
+     "edge_distance": 51,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": true,
+     "split_ov15": false
+    },
+    "S5-T01": {
+     "edge_distance": 51,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-E02": {
+     "edge_distance": 77,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P09": {
+     "edge_distance": 53,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P10": {
+     "edge_distance": 53,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P11": {
+     "edge_distance": 43,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P12": {
+     "edge_distance": 43,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-E03": {
+     "edge_distance": 80,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P13": {
+     "edge_distance": 32,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P14": {
+     "edge_distance": 51,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P15": {
+     "edge_distance": 34,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P16": {
+     "edge_distance": 34,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-T02": {
+     "edge_distance": 88,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P01": {
+     "edge_distance": 25,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P02": {
+     "edge_distance": 25,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P03": {
+     "edge_distance": 57,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P04": {
+     "edge_distance": 54,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-T01": {
+     "edge_distance": 41,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": true,
+     "split_ov15": false
+    },
+    "S6-E01": {
+     "edge_distance": 41,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P05": {
+     "edge_distance": 20,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P06": {
+     "edge_distance": 80,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": true,
+     "split_ov15": false
+    },
+    "S6-P07": {
+     "edge_distance": 6,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P08": {
+     "edge_distance": 6,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-T02": {
+     "edge_distance": 30,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-E02": {
+     "edge_distance": 9,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": true,
+     "split_ov15": false
+    },
+    "S6-E03": {
+     "edge_distance": 9,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P09": {
+     "edge_distance": 59,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P10": {
+     "edge_distance": 10,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P11": {
+     "edge_distance": 10,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P12": {
+     "edge_distance": 1,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-T03": {
+     "edge_distance": 1,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-E04": {
+     "edge_distance": 39,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P13": {
+     "edge_distance": 39,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P14": {
+     "edge_distance": 48,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P15": {
+     "edge_distance": 2,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P16": {
+     "edge_distance": 2,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-T04": {
+     "edge_distance": 32,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-E05": {
+     "edge_distance": 32,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    }
+   }
+  },
+  "400": {
+   "units_crossing_a_boundary": 40,
+   "units_with_vulnerable_edge": 28,
+   "split_zero_overlap": [
+    "S1-P08",
+    "S2-P01",
+    "S3-E03",
+    "S3-P15",
+    "S5-P02",
+    "S5-T02",
+    "S6-T04"
+   ],
+   "split_15pct_overlap": [],
+   "n_units": 125,
+   "detail": {
+    "S1-P01": {
+     "edge_distance": 56,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P02": {
+     "edge_distance": 56,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P03": {
+     "edge_distance": 108,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P04": {
+     "edge_distance": 17,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-T01": {
+     "edge_distance": 17,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-E01": {
+     "edge_distance": 75,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P05": {
+     "edge_distance": 53,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P06": {
+     "edge_distance": 53,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P07": {
+     "edge_distance": 70,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P08": {
+     "edge_distance": 70,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": true,
+     "split_ov15": false
+    },
+    "S1-E02": {
+     "edge_distance": 70,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P09": {
+     "edge_distance": 27,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P10": {
+     "edge_distance": 27,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P11": {
+     "edge_distance": 103,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P12": {
+     "edge_distance": 39,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-T02": {
+     "edge_distance": 39,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-E03": {
+     "edge_distance": 73,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P01": {
+     "edge_distance": 73,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": true,
+     "split_ov15": false
+    },
+    "S2-P02": {
+     "edge_distance": 81,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P03": {
+     "edge_distance": 32,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P04": {
+     "edge_distance": 32,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-E01": {
+     "edge_distance": 107,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-E02": {
+     "edge_distance": 73,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P05": {
+     "edge_distance": 61,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P06": {
+     "edge_distance": 61,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P07": {
+     "edge_distance": 36,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P08": {
+     "edge_distance": 36,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-T01": {
+     "edge_distance": 87,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-E03": {
+     "edge_distance": 24,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P09": {
+     "edge_distance": 24,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P10": {
+     "edge_distance": 112,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P11": {
+     "edge_distance": 9,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P12": {
+     "edge_distance": 9,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-T02": {
+     "edge_distance": 123,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-E04": {
+     "edge_distance": 0,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P13": {
+     "edge_distance": 0,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P14": {
+     "edge_distance": 125,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P15": {
+     "edge_distance": 2,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P16": {
+     "edge_distance": 2,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-E05": {
+     "edge_distance": 137,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P01": {
+     "edge_distance": 50,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P02": {
+     "edge_distance": 80,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P03": {
+     "edge_distance": 1,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P04": {
+     "edge_distance": 1,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-T01": {
+     "edge_distance": 145,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-E01": {
+     "edge_distance": 136,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-E02": {
+     "edge_distance": 65,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P05": {
+     "edge_distance": 65,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P06": {
+     "edge_distance": 30,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P07": {
+     "edge_distance": 30,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P08": {
+     "edge_distance": 106,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-T02": {
+     "edge_distance": 63,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-E03": {
+     "edge_distance": 63,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": true,
+     "split_ov15": false
+    },
+    "S3-P09": {
+     "edge_distance": 113,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P10": {
+     "edge_distance": 16,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P11": {
+     "edge_distance": 16,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P12": {
+     "edge_distance": 113,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-E04": {
+     "edge_distance": 117,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P13": {
+     "edge_distance": 61,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P14": {
+     "edge_distance": 60,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P15": {
+     "edge_distance": 60,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": true,
+     "split_ov15": false
+    },
+    "S3-P16": {
+     "edge_distance": 67,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-E05": {
+     "edge_distance": 37,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P01": {
+     "edge_distance": 37,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P02": {
+     "edge_distance": 93,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P03": {
+     "edge_distance": 45,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P04": {
+     "edge_distance": 45,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-E01": {
+     "edge_distance": 83,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P05": {
+     "edge_distance": 34,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P06": {
+     "edge_distance": 34,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P07": {
+     "edge_distance": 89,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P08": {
+     "edge_distance": 46,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-T01": {
+     "edge_distance": 46,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-E02": {
+     "edge_distance": 118,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P09": {
+     "edge_distance": 16,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P10": {
+     "edge_distance": 16,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P11": {
+     "edge_distance": 113,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P12": {
+     "edge_distance": 10,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-E03": {
+     "edge_distance": 10,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P01": {
+     "edge_distance": 76,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P02": {
+     "edge_distance": 63,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": true,
+     "split_ov15": false
+    },
+    "S5-P03": {
+     "edge_distance": 63,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P04": {
+     "edge_distance": 59,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-E01": {
+     "edge_distance": 40,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P05": {
+     "edge_distance": 111,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P06": {
+     "edge_distance": 24,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P07": {
+     "edge_distance": 24,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P08": {
+     "edge_distance": 93,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-T01": {
+     "edge_distance": 0,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-E02": {
+     "edge_distance": 0,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P09": {
+     "edge_distance": 85,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P10": {
+     "edge_distance": 47,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P11": {
+     "edge_distance": 47,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P12": {
+     "edge_distance": 96,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-E03": {
+     "edge_distance": 72,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P13": {
+     "edge_distance": 112,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P14": {
+     "edge_distance": 13,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P15": {
+     "edge_distance": 13,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P16": {
+     "edge_distance": 120,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-T02": {
+     "edge_distance": 120,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": true,
+     "split_ov15": false
+    },
+    "S6-P01": {
+     "edge_distance": 71,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P02": {
+     "edge_distance": 71,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P03": {
+     "edge_distance": 103,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P04": {
+     "edge_distance": 38,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-T01": {
+     "edge_distance": 38,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-E01": {
+     "edge_distance": 57,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P05": {
+     "edge_distance": 48,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P06": {
+     "edge_distance": 48,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P07": {
+     "edge_distance": 22,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P08": {
+     "edge_distance": 22,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-T02": {
+     "edge_distance": 111,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-E02": {
+     "edge_distance": 151,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-E03": {
+     "edge_distance": 37,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P09": {
+     "edge_distance": 37,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P10": {
+     "edge_distance": 58,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P11": {
+     "edge_distance": 58,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P12": {
+     "edge_distance": 73,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-T03": {
+     "edge_distance": 76,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-E04": {
+     "edge_distance": 76,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P13": {
+     "edge_distance": 103,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P14": {
+     "edge_distance": 24,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P15": {
+     "edge_distance": 24,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P16": {
+     "edge_distance": 65,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-T04": {
+     "edge_distance": 64,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": true,
+     "split_ov15": false
+    },
+    "S6-E05": {
+     "edge_distance": 64,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    }
+   }
+  },
+  "512": {
+   "units_crossing_a_boundary": 32,
+   "units_with_vulnerable_edge": 24,
+   "split_zero_overlap": [
+    "S2-P11"
+   ],
+   "split_15pct_overlap": [],
+   "n_units": 125,
+   "detail": {
+    "S1-P01": {
+     "edge_distance": 91,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P02": {
+     "edge_distance": 116,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P03": {
+     "edge_distance": 41,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P04": {
+     "edge_distance": 41,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-T01": {
+     "edge_distance": 193,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-E01": {
+     "edge_distance": 11,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P05": {
+     "edge_distance": 11,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P06": {
+     "edge_distance": 117,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P07": {
+     "edge_distance": 118,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P08": {
+     "edge_distance": 22,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-E02": {
+     "edge_distance": 22,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P09": {
+     "edge_distance": 133,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P10": {
+     "edge_distance": 13,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P11": {
+     "edge_distance": 13,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P12": {
+     "edge_distance": 137,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-T02": {
+     "edge_distance": 137,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-E03": {
+     "edge_distance": 55,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P01": {
+     "edge_distance": 55,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P02": {
+     "edge_distance": 156,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P03": {
+     "edge_distance": 16,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P04": {
+     "edge_distance": 16,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-E01": {
+     "edge_distance": 123,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-E02": {
+     "edge_distance": 158,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P05": {
+     "edge_distance": 35,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P06": {
+     "edge_distance": 35,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P07": {
+     "edge_distance": 129,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P08": {
+     "edge_distance": 121,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-T01": {
+     "edge_distance": 18,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-E03": {
+     "edge_distance": 18,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P09": {
+     "edge_distance": 168,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P10": {
+     "edge_distance": 75,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P11": {
+     "edge_distance": 71,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": true,
+     "split_ov15": false
+    },
+    "S2-P12": {
+     "edge_distance": 71,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-T02": {
+     "edge_distance": 203,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-E04": {
+     "edge_distance": 32,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P13": {
+     "edge_distance": 32,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P14": {
+     "edge_distance": 93,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P15": {
+     "edge_distance": 142,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P16": {
+     "edge_distance": 7,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-E05": {
+     "edge_distance": 7,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P01": {
+     "edge_distance": 176,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P02": {
+     "edge_distance": 20,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P03": {
+     "edge_distance": 20,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P04": {
+     "edge_distance": 145,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-T01": {
+     "edge_distance": 148,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-E01": {
+     "edge_distance": 104,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-E02": {
+     "edge_distance": 97,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P05": {
+     "edge_distance": 97,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P06": {
+     "edge_distance": 110,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P07": {
+     "edge_distance": 26,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P08": {
+     "edge_distance": 26,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-T02": {
+     "edge_distance": 153,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-E03": {
+     "edge_distance": 79,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P09": {
+     "edge_distance": 50,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P10": {
+     "edge_distance": 50,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P11": {
+     "edge_distance": 191,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P12": {
+     "edge_distance": 52,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-E04": {
+     "edge_distance": 21,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P13": {
+     "edge_distance": 157,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P14": {
+     "edge_distance": 76,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P15": {
+     "edge_distance": 51,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P16": {
+     "edge_distance": 51,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-E05": {
+     "edge_distance": 165,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P01": {
+     "edge_distance": 35,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P02": {
+     "edge_distance": 35,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P03": {
+     "edge_distance": 98,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P04": {
+     "edge_distance": 157,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-E01": {
+     "edge_distance": 134,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P05": {
+     "edge_distance": 37,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P06": {
+     "edge_distance": 176,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P07": {
+     "edge_distance": 41,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P08": {
+     "edge_distance": 41,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-T01": {
+     "edge_distance": 94,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-E02": {
+     "edge_distance": 169,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P09": {
+     "edge_distance": 48,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P10": {
+     "edge_distance": 48,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P11": {
+     "edge_distance": 85,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P12": {
+     "edge_distance": 166,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-E03": {
+     "edge_distance": 13,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P01": {
+     "edge_distance": 13,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P02": {
+     "edge_distance": 148,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P03": {
+     "edge_distance": 88,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P04": {
+     "edge_distance": 53,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-E01": {
+     "edge_distance": 53,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P05": {
+     "edge_distance": 111,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P06": {
+     "edge_distance": 24,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P07": {
+     "edge_distance": 24,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P08": {
+     "edge_distance": 173,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-T01": {
+     "edge_distance": 112,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-E02": {
+     "edge_distance": 77,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P09": {
+     "edge_distance": 77,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P10": {
+     "edge_distance": 177,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P11": {
+     "edge_distance": 43,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P12": {
+     "edge_distance": 43,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-E03": {
+     "edge_distance": 80,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P13": {
+     "edge_distance": 51,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P14": {
+     "edge_distance": 51,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P15": {
+     "edge_distance": 77,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P16": {
+     "edge_distance": 168,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-T02": {
+     "edge_distance": 120,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P01": {
+     "edge_distance": 120,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P02": {
+     "edge_distance": 57,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P03": {
+     "edge_distance": 57,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P04": {
+     "edge_distance": 76,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-T01": {
+     "edge_distance": 202,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-E01": {
+     "edge_distance": 171,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P05": {
+     "edge_distance": 20,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P06": {
+     "edge_distance": 172,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P07": {
+     "edge_distance": 6,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P08": {
+     "edge_distance": 6,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-T02": {
+     "edge_distance": 127,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-E02": {
+     "edge_distance": 226,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-E03": {
+     "edge_distance": 59,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P09": {
+     "edge_distance": 59,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P10": {
+     "edge_distance": 89,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P11": {
+     "edge_distance": 135,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P12": {
+     "edge_distance": 1,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-T03": {
+     "edge_distance": 1,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-E04": {
+     "edge_distance": 116,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P13": {
+     "edge_distance": 48,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P14": {
+     "edge_distance": 48,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P15": {
+     "edge_distance": 104,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P16": {
+     "edge_distance": 97,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-T04": {
+     "edge_distance": 32,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-E05": {
+     "edge_distance": 32,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    }
+   }
+  },
+  "768": {
+   "units_crossing_a_boundary": 24,
+   "units_with_vulnerable_edge": 8,
+   "split_zero_overlap": [
+    "S2-T02",
+    "S3-P11",
+    "S5-P08",
+    "S6-P06"
+   ],
+   "split_15pct_overlap": [],
+   "n_units": 125,
+   "detail": {
+    "S1-P01": {
+     "edge_distance": 24,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P02": {
+     "edge_distance": 24,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P03": {
+     "edge_distance": 140,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P04": {
+     "edge_distance": 297,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-T01": {
+     "edge_distance": 217,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-E01": {
+     "edge_distance": 11,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P05": {
+     "edge_distance": 11,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P06": {
+     "edge_distance": 117,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P07": {
+     "edge_distance": 257,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P08": {
+     "edge_distance": 234,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-E02": {
+     "edge_distance": 205,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P09": {
+     "edge_distance": 27,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P10": {
+     "edge_distance": 123,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P11": {
+     "edge_distance": 269,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-P12": {
+     "edge_distance": 233,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-T02": {
+     "edge_distance": 137,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S1-E03": {
+     "edge_distance": 55,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P01": {
+     "edge_distance": 55,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P02": {
+     "edge_distance": 209,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P03": {
+     "edge_distance": 272,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P04": {
+     "edge_distance": 133,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-E01": {
+     "edge_distance": 98,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-E02": {
+     "edge_distance": 87,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P05": {
+     "edge_distance": 87,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P06": {
+     "edge_distance": 221,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P07": {
+     "edge_distance": 244,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P08": {
+     "edge_distance": 121,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-T01": {
+     "edge_distance": 18,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-E03": {
+     "edge_distance": 18,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P09": {
+     "edge_distance": 168,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P10": {
+     "edge_distance": 304,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P11": {
+     "edge_distance": 185,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P12": {
+     "edge_distance": 53,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-T02": {
+     "edge_distance": 40,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": true,
+     "split_ov15": false
+    },
+    "S2-E04": {
+     "edge_distance": 40,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P13": {
+     "edge_distance": 224,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P14": {
+     "edge_distance": 279,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P15": {
+     "edge_distance": 142,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-P16": {
+     "edge_distance": 7,
+     "vulnerable_edge": true,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S2-E05": {
+     "edge_distance": 7,
+     "vulnerable_edge": true,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P01": {
+     "edge_distance": 206,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P02": {
+     "edge_distance": 276,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P03": {
+     "edge_distance": 111,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P04": {
+     "edge_distance": 33,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-T01": {
+     "edge_distance": 33,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-E01": {
+     "edge_distance": 108,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-E02": {
+     "edge_distance": 152,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P05": {
+     "edge_distance": 239,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P06": {
+     "edge_distance": 110,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P07": {
+     "edge_distance": 26,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P08": {
+     "edge_distance": 26,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-T02": {
+     "edge_distance": 153,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-E03": {
+     "edge_distance": 257,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P09": {
+     "edge_distance": 206,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P10": {
+     "edge_distance": 64,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P11": {
+     "edge_distance": 64,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": true,
+     "split_ov15": false
+    },
+    "S3-P12": {
+     "edge_distance": 65,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-E04": {
+     "edge_distance": 204,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P13": {
+     "edge_distance": 220,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P14": {
+     "edge_distance": 76,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P15": {
+     "edge_distance": 51,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-P16": {
+     "edge_distance": 51,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S3-E05": {
+     "edge_distance": 169,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P01": {
+     "edge_distance": 291,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P02": {
+     "edge_distance": 158,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P03": {
+     "edge_distance": 29,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P04": {
+     "edge_distance": 29,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-E01": {
+     "edge_distance": 99,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P05": {
+     "edge_distance": 293,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P06": {
+     "edge_distance": 176,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P07": {
+     "edge_distance": 41,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P08": {
+     "edge_distance": 41,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-T01": {
+     "edge_distance": 94,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-E02": {
+     "edge_distance": 169,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P09": {
+     "edge_distance": 304,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P10": {
+     "edge_distance": 171,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P11": {
+     "edge_distance": 33,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-P12": {
+     "edge_distance": 33,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S4-E03": {
+     "edge_distance": 90,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P01": {
+     "edge_distance": 269,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P02": {
+     "edge_distance": 225,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P03": {
+     "edge_distance": 88,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P04": {
+     "edge_distance": 53,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-E01": {
+     "edge_distance": 53,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P05": {
+     "edge_distance": 257,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P06": {
+     "edge_distance": 232,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P07": {
+     "edge_distance": 83,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P08": {
+     "edge_distance": 51,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": true,
+     "split_ov15": false
+    },
+    "S5-T01": {
+     "edge_distance": 51,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-E02": {
+     "edge_distance": 144,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P09": {
+     "edge_distance": 309,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P10": {
+     "edge_distance": 177,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P11": {
+     "edge_distance": 43,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P12": {
+     "edge_distance": 43,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-E03": {
+     "edge_distance": 80,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P13": {
+     "edge_distance": 288,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P14": {
+     "edge_distance": 179,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P15": {
+     "edge_distance": 34,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-P16": {
+     "edge_distance": 34,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S5-T02": {
+     "edge_distance": 88,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P01": {
+     "edge_distance": 231,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P02": {
+     "edge_distance": 57,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P03": {
+     "edge_distance": 57,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P04": {
+     "edge_distance": 76,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-T01": {
+     "edge_distance": 202,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-E01": {
+     "edge_distance": 297,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P05": {
+     "edge_distance": 80,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P06": {
+     "edge_distance": 80,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": true,
+     "split_ov15": false
+    },
+    "S6-P07": {
+     "edge_distance": 84,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P08": {
+     "edge_distance": 250,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-T02": {
+     "edge_distance": 286,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-E02": {
+     "edge_distance": 247,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-E03": {
+     "edge_distance": 59,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P09": {
+     "edge_distance": 59,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P10": {
+     "edge_distance": 89,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P11": {
+     "edge_distance": 246,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P12": {
+     "edge_distance": 255,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-T03": {
+     "edge_distance": 140,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-E04": {
+     "edge_distance": 39,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P13": {
+     "edge_distance": 39,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P14": {
+     "edge_distance": 208,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P15": {
+     "edge_distance": 258,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-P16": {
+     "edge_distance": 97,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-T04": {
+     "edge_distance": 32,
+     "vulnerable_edge": false,
+     "crosses_boundary": true,
+     "split_ov0": false,
+     "split_ov15": false
+    },
+    "S6-E05": {
+     "edge_distance": 32,
+     "vulnerable_edge": false,
+     "crosses_boundary": false,
+     "split_ov0": false,
+     "split_ov15": false
+    }
+   }
+  }
+ }
+}
