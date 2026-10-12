@@ -1,0 +1,5552 @@
+{
+ "load_seconds": 3.4539525100262836,
+ "answers_summary": {
+  "A0": {
+   "auto_correct_answerable": 0.575,
+   "auto_correct_by_category": {
+    "boundary_multihop": 0.267,
+    "direct_factual": 0.72,
+    "lexical_ambiguity": 0.5,
+    "paraphrased_semantic": 0.65,
+    "table_equation": 0.6
+   },
+   "false_abstention_rate": 0.037,
+   "unanswerable_abstention_rate": 0.8,
+   "unsupported_answer_rate": 0.2,
+   "answers_with_citation": 0.662,
+   "citation_precision_mean": 0.252,
+   "latency_s_median": 10.625,
+   "latency_s_p95": 19.332999999999995,
+   "input_tokens_total": 77475,
+   "output_tokens_total": 20845
+  },
+  "P1": {
+   "auto_correct_answerable": 0.45,
+   "auto_correct_by_category": {
+    "boundary_multihop": 0.2,
+    "direct_factual": 0.64,
+    "lexical_ambiguity": 0.3,
+    "paraphrased_semantic": 0.55,
+    "table_equation": 0.3
+   },
+   "false_abstention_rate": 0.087,
+   "unanswerable_abstention_rate": 1.0,
+   "unsupported_answer_rate": 0.0,
+   "answers_with_citation": 0.3,
+   "citation_precision_mean": 0.104,
+   "latency_s_median": 3.0,
+   "latency_s_p95": 9.7685,
+   "input_tokens_total": 76528,
+   "output_tokens_total": 6691
+  },
+  "P2": {
+   "auto_correct_answerable": 0.412,
+   "auto_correct_by_category": {
+    "boundary_multihop": 0.267,
+    "direct_factual": 0.52,
+    "lexical_ambiguity": 0.1,
+    "paraphrased_semantic": 0.5,
+    "table_equation": 0.5
+   },
+   "false_abstention_rate": 0.163,
+   "unanswerable_abstention_rate": 1.0,
+   "unsupported_answer_rate": 0.0,
+   "answers_with_citation": 0.925,
+   "citation_precision_mean": 0.682,
+   "latency_s_median": 4.29,
+   "latency_s_p95": 11.5795,
+   "input_tokens_total": 235539,
+   "output_tokens_total": 7215
+  }
+ },
+ "answers_per_query": {
+  "A0": {
+   "Q001": {
+    "seconds": 10.53,
+    "calls": 1,
+    "input_tokens": 828,
+    "output_tokens": 210,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "64"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q002": {
+    "seconds": 9.33,
+    "calls": 1,
+    "input_tokens": 939,
+    "output_tokens": 187,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "64"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P01"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q003": {
+    "seconds": 16.21,
+    "calls": 1,
+    "input_tokens": 941,
+    "output_tokens": 326,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "0.2",
+     "20"
+    ],
+    "numbers_missing": [
+     "0.2"
+    ],
+    "cited_ids": [
+     "S1-P01"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q004": {
+    "seconds": 9.07,
+    "calls": 1,
+    "input_tokens": 823,
+    "output_tokens": 183,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P06"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q005": {
+    "seconds": 18.64,
+    "calls": 1,
+    "input_tokens": 1050,
+    "output_tokens": 372,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.67,
+    "numbers_expected": [
+     "5"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P01"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q006": {
+    "seconds": 6.35,
+    "calls": 1,
+    "input_tokens": 886,
+    "output_tokens": 127,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "4096"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S2-P05"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q007": {
+    "seconds": 10.9,
+    "calls": 1,
+    "input_tokens": 858,
+    "output_tokens": 220,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P13"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q008": {
+    "seconds": 7.67,
+    "calls": 1,
+    "input_tokens": 879,
+    "output_tokens": 154,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.4,
+    "numbers_expected": [
+     "15"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q009": {
+    "seconds": 9.53,
+    "calls": 1,
+    "input_tokens": 873,
+    "output_tokens": 192,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S2-P09",
+     "S2-P10"
+    ],
+    "citation_precision": 0.5,
+    "citation_recall": 1.0
+   },
+   "Q010": {
+    "seconds": 16.19,
+    "calls": 1,
+    "input_tokens": 1004,
+    "output_tokens": 324,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "4"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S2-P09",
+     "S2-P11",
+     "S2-T02"
+    ],
+    "citation_precision": 0.333,
+    "citation_recall": 1.0
+   },
+   "Q011": {
+    "seconds": 12.32,
+    "calls": 1,
+    "input_tokens": 958,
+    "output_tokens": 247,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "24"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S3-P01"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q012": {
+    "seconds": 14.4,
+    "calls": 1,
+    "input_tokens": 1049,
+    "output_tokens": 287,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [
+     "15"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S3-P01",
+     "S3-P13"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q013": {
+    "seconds": 16.23,
+    "calls": 1,
+    "input_tokens": 946,
+    "output_tokens": 326,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P01"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q014": {
+    "seconds": 10.42,
+    "calls": 1,
+    "input_tokens": 931,
+    "output_tokens": 209,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [
+     "10"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S3-P13"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q015": {
+    "seconds": 6.48,
+    "calls": 1,
+    "input_tokens": 708,
+    "output_tokens": 132,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q016": {
+    "seconds": 8.61,
+    "calls": 1,
+    "input_tokens": 515,
+    "output_tokens": 178,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "4"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S4-P09"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q017": {
+    "seconds": 18.12,
+    "calls": 1,
+    "input_tokens": 952,
+    "output_tokens": 364,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [
+     "12"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S4-P06",
+     "S6-P09"
+    ],
+    "citation_precision": 0.5,
+    "citation_recall": 1.0
+   },
+   "Q018": {
+    "seconds": 8.38,
+    "calls": 1,
+    "input_tokens": 797,
+    "output_tokens": 169,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "8"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q019": {
+    "seconds": 12.0,
+    "calls": 1,
+    "input_tokens": 805,
+    "output_tokens": 243,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S5-P01"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q020": {
+    "seconds": 8.49,
+    "calls": 1,
+    "input_tokens": 730,
+    "output_tokens": 173,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q021": {
+    "seconds": 7.74,
+    "calls": 1,
+    "input_tokens": 795,
+    "output_tokens": 156,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "168"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q022": {
+    "seconds": 8.79,
+    "calls": 1,
+    "input_tokens": 1003,
+    "output_tokens": 175,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P01",
+     "S6-T01"
+    ],
+    "citation_precision": 0.5,
+    "citation_recall": 1.0
+   },
+   "Q023": {
+    "seconds": 12.44,
+    "calls": 1,
+    "input_tokens": 1031,
+    "output_tokens": 248,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "64"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P13",
+     "S6-T01"
+    ],
+    "citation_precision": 0.5,
+    "citation_recall": 0.5
+   },
+   "Q024": {
+    "seconds": 13.92,
+    "calls": 1,
+    "input_tokens": 979,
+    "output_tokens": 279,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "96"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P07"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q025": {
+    "seconds": 8.14,
+    "calls": 1,
+    "input_tokens": 805,
+    "output_tokens": 164,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [
+     "185"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q026": {
+    "seconds": 8.1,
+    "calls": 1,
+    "input_tokens": 730,
+    "output_tokens": 165,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.67,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q027": {
+    "seconds": 8.98,
+    "calls": 1,
+    "input_tokens": 734,
+    "output_tokens": 183,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.57,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q028": {
+    "seconds": 13.94,
+    "calls": 1,
+    "input_tokens": 1042,
+    "output_tokens": 278,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.8,
+    "numbers_expected": [
+     "1",
+     "10",
+     "1000"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P01"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q029": {
+    "seconds": 11.96,
+    "calls": 1,
+    "input_tokens": 751,
+    "output_tokens": 244,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q030": {
+    "seconds": 14.71,
+    "calls": 1,
+    "input_tokens": 825,
+    "output_tokens": 298,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.62,
+    "numbers_expected": [
+     "1"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S2-P05"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q031": {
+    "seconds": 9.55,
+    "calls": 1,
+    "input_tokens": 794,
+    "output_tokens": 193,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.8,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q032": {
+    "seconds": 10.37,
+    "calls": 1,
+    "input_tokens": 877,
+    "output_tokens": 209,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.83,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S2-P09",
+     "S2-T02"
+    ],
+    "citation_precision": 0.5,
+    "citation_recall": 1.0
+   },
+   "Q033": {
+    "seconds": 14.08,
+    "calls": 1,
+    "input_tokens": 937,
+    "output_tokens": 283,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.4,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S2-P13"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q034": {
+    "seconds": 5.42,
+    "calls": 1,
+    "input_tokens": 717,
+    "output_tokens": 110,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.4,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q035": {
+    "seconds": 13.85,
+    "calls": 1,
+    "input_tokens": 903,
+    "output_tokens": 279,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.86,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S3-P01"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q036": {
+    "seconds": 14.35,
+    "calls": 1,
+    "input_tokens": 907,
+    "output_tokens": 289,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S3-P05"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q037": {
+    "seconds": 9.54,
+    "calls": 1,
+    "input_tokens": 713,
+    "output_tokens": 195,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q038": {
+    "seconds": 9.0,
+    "calls": 1,
+    "input_tokens": 703,
+    "output_tokens": 184,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q039": {
+    "seconds": 7.13,
+    "calls": 1,
+    "input_tokens": 739,
+    "output_tokens": 145,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q040": {
+    "seconds": 7.02,
+    "calls": 1,
+    "input_tokens": 720,
+    "output_tokens": 143,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q041": {
+    "seconds": 17.78,
+    "calls": 1,
+    "input_tokens": 912,
+    "output_tokens": 358,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.29,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S5-P09"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q042": {
+    "seconds": 10.73,
+    "calls": 1,
+    "input_tokens": 817,
+    "output_tokens": 217,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S5-P05"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q043": {
+    "seconds": 10.01,
+    "calls": 1,
+    "input_tokens": 835,
+    "output_tokens": 202,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.4,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S5-P09"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q044": {
+    "seconds": 11.14,
+    "calls": 1,
+    "input_tokens": 836,
+    "output_tokens": 225,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [
+     "128"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S3-P09"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q045": {
+    "seconds": 15.37,
+    "calls": 1,
+    "input_tokens": 556,
+    "output_tokens": 318,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.83,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P09"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q046": {
+    "seconds": 10.72,
+    "calls": 1,
+    "input_tokens": 1002,
+    "output_tokens": 214,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.45,
+    "numbers_expected": [
+     "128",
+     "64"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P01"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q047": {
+    "seconds": 20.03,
+    "calls": 1,
+    "input_tokens": 1029,
+    "output_tokens": 400,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.78,
+    "numbers_expected": [
+     "1",
+     "1.9"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P01"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q048": {
+    "seconds": 12.87,
+    "calls": 1,
+    "input_tokens": 867,
+    "output_tokens": 260,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.57,
+    "numbers_expected": [
+     "10",
+     "4.5",
+     "62"
+    ],
+    "numbers_missing": [
+     "10",
+     "62"
+    ],
+    "cited_ids": [
+     "S1-P09",
+     "S1-T02"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.667
+   },
+   "Q049": {
+    "seconds": 6.9,
+    "calls": 1,
+    "input_tokens": 764,
+    "output_tokens": 140,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.55,
+    "numbers_expected": [
+     "15"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q050": {
+    "seconds": 12.5,
+    "calls": 1,
+    "input_tokens": 934,
+    "output_tokens": 251,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.6,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S2-P09"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.333
+   },
+   "Q051": {
+    "seconds": 17.34,
+    "calls": 1,
+    "input_tokens": 1042,
+    "output_tokens": 346,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.4,
+    "numbers_expected": [
+     "0.024",
+     "15",
+     "625"
+    ],
+    "numbers_missing": [
+     "0.024",
+     "625"
+    ],
+    "cited_ids": [
+     "S3-P01"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q052": {
+    "seconds": 11.74,
+    "calls": 1,
+    "input_tokens": 975,
+    "output_tokens": 235,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.69,
+    "numbers_expected": [
+     "10",
+     "15",
+     "3000",
+     "400"
+    ],
+    "numbers_missing": [
+     "15",
+     "3000",
+     "400"
+    ],
+    "cited_ids": [
+     "S3-P05",
+     "S3-T02"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.667
+   },
+   "Q053": {
+    "seconds": 10.47,
+    "calls": 1,
+    "input_tokens": 929,
+    "output_tokens": 210,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [
+     "10",
+     "240",
+     "25",
+     "30"
+    ],
+    "numbers_missing": [
+     "10",
+     "240",
+     "25",
+     "30"
+    ],
+    "cited_ids": [
+     "S6-P13"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q054": {
+    "seconds": 8.61,
+    "calls": 1,
+    "input_tokens": 688,
+    "output_tokens": 176,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q055": {
+    "seconds": 8.91,
+    "calls": 1,
+    "input_tokens": 787,
+    "output_tokens": 180,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.78,
+    "numbers_expected": [
+     "12",
+     "20",
+     "30",
+     "50",
+     "8"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q056": {
+    "seconds": 9.93,
+    "calls": 1,
+    "input_tokens": 786,
+    "output_tokens": 201,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.22,
+    "numbers_expected": [
+     "04",
+     "09",
+     "1205",
+     "2",
+     "22"
+    ],
+    "numbers_missing": [
+     "04",
+     "09",
+     "1205",
+     "2",
+     "22"
+    ],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q057": {
+    "seconds": 9.14,
+    "calls": 1,
+    "input_tokens": 772,
+    "output_tokens": 185,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.62,
+    "numbers_expected": [
+     "00",
+     "09",
+     "1204",
+     "21"
+    ],
+    "numbers_missing": [
+     "00",
+     "09",
+     "21"
+    ],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q058": {
+    "seconds": 10.41,
+    "calls": 1,
+    "input_tokens": 852,
+    "output_tokens": 210,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P09",
+     "S6-P10"
+    ],
+    "citation_precision": 0.5,
+    "citation_recall": 0.5
+   },
+   "Q059": {
+    "seconds": 17.22,
+    "calls": 1,
+    "input_tokens": 763,
+    "output_tokens": 351,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.55,
+    "numbers_expected": [
+     "100",
+     "120",
+     "142",
+     "168",
+     "185",
+     "210"
+    ],
+    "numbers_missing": [
+     "100",
+     "120",
+     "142",
+     "168",
+     "185",
+     "210"
+    ],
+    "cited_ids": [
+     "S5-P15",
+     "S6-P13"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.667
+   },
+   "Q060": {
+    "seconds": 12.4,
+    "calls": 1,
+    "input_tokens": 819,
+    "output_tokens": 251,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.22,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q061": {
+    "seconds": 15.44,
+    "calls": 1,
+    "input_tokens": 1041,
+    "output_tokens": 308,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "32",
+     "64",
+     "8"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P01"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q062": {
+    "seconds": 20.05,
+    "calls": 1,
+    "input_tokens": 1044,
+    "output_tokens": 400,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "1.9"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P01",
+     "S3-P13"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q063": {
+    "seconds": 10.18,
+    "calls": 1,
+    "input_tokens": 886,
+    "output_tokens": 205,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.75,
+    "numbers_expected": [
+     "10",
+     "4.5"
+    ],
+    "numbers_missing": [
+     "10"
+    ],
+    "cited_ids": [
+     "S1-P09",
+     "S1-T02"
+    ],
+    "citation_precision": 0.5,
+    "citation_recall": 0.5
+   },
+   "Q064": {
+    "seconds": 14.23,
+    "calls": 1,
+    "input_tokens": 1031,
+    "output_tokens": 284,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "0.59985",
+     "60"
+    ],
+    "numbers_missing": [
+     "0.59985",
+     "60"
+    ],
+    "cited_ids": [
+     "S2-P01"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.5
+   },
+   "Q065": {
+    "seconds": 9.43,
+    "calls": 1,
+    "input_tokens": 834,
+    "output_tokens": 190,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S2-P09"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q066": {
+    "seconds": 15.55,
+    "calls": 1,
+    "input_tokens": 1095,
+    "output_tokens": 309,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "24"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S3-E01",
+     "S3-P01"
+    ],
+    "citation_precision": 0.5,
+    "citation_recall": 0.5
+   },
+   "Q067": {
+    "seconds": 13.78,
+    "calls": 1,
+    "input_tokens": 890,
+    "output_tokens": 278,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "0.015",
+     "15"
+    ],
+    "numbers_missing": [
+     "0.015",
+     "15"
+    ],
+    "cited_ids": [
+     "S3-P01",
+     "S3-P12"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q068": {
+    "seconds": 19.9,
+    "calls": 1,
+    "input_tokens": 935,
+    "output_tokens": 400,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "64"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S4-P09"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.5
+   },
+   "Q069": {
+    "seconds": 13.04,
+    "calls": 1,
+    "input_tokens": 815,
+    "output_tokens": 264,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.67,
+    "numbers_expected": [
+     "2",
+     "3",
+     "4"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q070": {
+    "seconds": 12.99,
+    "calls": 1,
+    "input_tokens": 995,
+    "output_tokens": 260,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [
+     "185",
+     "23.24",
+     "43"
+    ],
+    "numbers_missing": [
+     "43"
+    ],
+    "cited_ids": [
+     "S1-P11"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q071": {
+    "seconds": 9.21,
+    "calls": 1,
+    "input_tokens": 800,
+    "output_tokens": 186,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.78,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q072": {
+    "seconds": 19.94,
+    "calls": 1,
+    "input_tokens": 968,
+    "output_tokens": 400,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.57,
+    "numbers_expected": [
+     "1",
+     "1000",
+     "20"
+    ],
+    "numbers_missing": [
+     "1",
+     "1000"
+    ],
+    "cited_ids": [
+     "S1-P01"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q073": {
+    "seconds": 10.97,
+    "calls": 1,
+    "input_tokens": 801,
+    "output_tokens": 222,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.62,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P05"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q074": {
+    "seconds": 11.61,
+    "calls": 1,
+    "input_tokens": 814,
+    "output_tokens": 235,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.73,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S3-P05"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q075": {
+    "seconds": 8.53,
+    "calls": 1,
+    "input_tokens": 715,
+    "output_tokens": 174,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q076": {
+    "seconds": 7.77,
+    "calls": 1,
+    "input_tokens": 746,
+    "output_tokens": 158,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.22,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q077": {
+    "seconds": 13.7,
+    "calls": 1,
+    "input_tokens": 869,
+    "output_tokens": 277,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.57,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P09"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q078": {
+    "seconds": 6.69,
+    "calls": 1,
+    "input_tokens": 723,
+    "output_tokens": 136,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.36,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q079": {
+    "seconds": 14.15,
+    "calls": 1,
+    "input_tokens": 901,
+    "output_tokens": 285,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.6,
+    "numbers_expected": [
+     "8"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S3-P01"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q080": {
+    "seconds": 12.42,
+    "calls": 1,
+    "input_tokens": 777,
+    "output_tokens": 252,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.88,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S5-P05"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q081": {
+    "seconds": 8.11,
+    "calls": 1,
+    "input_tokens": 880,
+    "output_tokens": 163,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.33,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P13",
+     "S6-P24"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": null
+   },
+   "Q082": {
+    "seconds": 7.58,
+    "calls": 1,
+    "input_tokens": 858,
+    "output_tokens": 152,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P13"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": null
+   },
+   "Q083": {
+    "seconds": 6.54,
+    "calls": 1,
+    "input_tokens": 935,
+    "output_tokens": 130,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P01"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": null
+   },
+   "Q084": {
+    "seconds": 6.0,
+    "calls": 1,
+    "input_tokens": 811,
+    "output_tokens": 120,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": null
+   },
+   "Q085": {
+    "seconds": 8.34,
+    "calls": 1,
+    "input_tokens": 815,
+    "output_tokens": 168,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": null
+   },
+   "Q086": {
+    "seconds": 7.78,
+    "calls": 1,
+    "input_tokens": 761,
+    "output_tokens": 158,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": null
+   },
+   "Q087": {
+    "seconds": 11.27,
+    "calls": 1,
+    "input_tokens": 806,
+    "output_tokens": 228,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S5-P09"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": null
+   },
+   "Q088": {
+    "seconds": 7.64,
+    "calls": 1,
+    "input_tokens": 711,
+    "output_tokens": 155,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": null
+   },
+   "Q089": {
+    "seconds": 8.78,
+    "calls": 1,
+    "input_tokens": 896,
+    "output_tokens": 175,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P05"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": null
+   },
+   "Q090": {
+    "seconds": 20.27,
+    "calls": 1,
+    "input_tokens": 1180,
+    "output_tokens": 400,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.44,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S3-P13",
+     "S3-T01",
+     "S6-E07",
+     "S6-P12"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": null
+   }
+  },
+  "P1": {
+   "Q001": {
+    "seconds": 1.92,
+    "calls": 1,
+    "input_tokens": 907,
+    "output_tokens": 36,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "64"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q002": {
+    "seconds": 1.25,
+    "calls": 1,
+    "input_tokens": 944,
+    "output_tokens": 22,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "64"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q003": {
+    "seconds": 14.93,
+    "calls": 1,
+    "input_tokens": 952,
+    "output_tokens": 300,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "0.2",
+     "20"
+    ],
+    "numbers_missing": [
+     "0.2",
+     "20"
+    ],
+    "cited_ids": [
+     "S1-P02"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q004": {
+    "seconds": 1.18,
+    "calls": 1,
+    "input_tokens": 776,
+    "output_tokens": 21,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q005": {
+    "seconds": 1.19,
+    "calls": 1,
+    "input_tokens": 852,
+    "output_tokens": 21,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.33,
+    "numbers_expected": [
+     "5"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q006": {
+    "seconds": 1.37,
+    "calls": 1,
+    "input_tokens": 866,
+    "output_tokens": 25,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "4096"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q007": {
+    "seconds": 1.14,
+    "calls": 1,
+    "input_tokens": 844,
+    "output_tokens": 20,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q008": {
+    "seconds": 5.57,
+    "calls": 1,
+    "input_tokens": 853,
+    "output_tokens": 111,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.2,
+    "numbers_expected": [
+     "15"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q009": {
+    "seconds": 1.09,
+    "calls": 1,
+    "input_tokens": 801,
+    "output_tokens": 19,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q010": {
+    "seconds": 4.05,
+    "calls": 1,
+    "input_tokens": 803,
+    "output_tokens": 80,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "4"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P02"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q011": {
+    "seconds": 2.03,
+    "calls": 1,
+    "input_tokens": 902,
+    "output_tokens": 38,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "24"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P01"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q012": {
+    "seconds": 1.86,
+    "calls": 1,
+    "input_tokens": 887,
+    "output_tokens": 35,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [
+     "15"
+    ],
+    "numbers_missing": [
+     "15"
+    ],
+    "cited_ids": [
+     "S3-E02"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.5
+   },
+   "Q013": {
+    "seconds": 4.2,
+    "calls": 1,
+    "input_tokens": 867,
+    "output_tokens": 83,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q014": {
+    "seconds": 3.61,
+    "calls": 1,
+    "input_tokens": 864,
+    "output_tokens": 71,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [
+     "10"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S3-T01"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q015": {
+    "seconds": 1.43,
+    "calls": 1,
+    "input_tokens": 803,
+    "output_tokens": 26,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P02"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q016": {
+    "seconds": 1.3,
+    "calls": 1,
+    "input_tokens": 923,
+    "output_tokens": 23,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "4"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q017": {
+    "seconds": 1.33,
+    "calls": 1,
+    "input_tokens": 814,
+    "output_tokens": 24,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [
+     "12"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q018": {
+    "seconds": 1.09,
+    "calls": 1,
+    "input_tokens": 872,
+    "output_tokens": 19,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [
+     "8"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q019": {
+    "seconds": 2.01,
+    "calls": 1,
+    "input_tokens": 795,
+    "output_tokens": 38,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.67,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P02"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q020": {
+    "seconds": 1.87,
+    "calls": 1,
+    "input_tokens": 816,
+    "output_tokens": 35,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S5-P03"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q021": {
+    "seconds": 1.73,
+    "calls": 1,
+    "input_tokens": 857,
+    "output_tokens": 32,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "168"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q022": {
+    "seconds": 2.16,
+    "calls": 1,
+    "input_tokens": 857,
+    "output_tokens": 41,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q023": {
+    "seconds": 3.08,
+    "calls": 1,
+    "input_tokens": 876,
+    "output_tokens": 60,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "64"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q024": {
+    "seconds": 1.59,
+    "calls": 1,
+    "input_tokens": 920,
+    "output_tokens": 29,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "96"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q025": {
+    "seconds": 1.72,
+    "calls": 1,
+    "input_tokens": 882,
+    "output_tokens": 32,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [
+     "185"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q026": {
+    "seconds": 3.38,
+    "calls": 1,
+    "input_tokens": 853,
+    "output_tokens": 66,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q027": {
+    "seconds": 7.62,
+    "calls": 1,
+    "input_tokens": 850,
+    "output_tokens": 153,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.57,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q028": {
+    "seconds": 7.14,
+    "calls": 1,
+    "input_tokens": 861,
+    "output_tokens": 143,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.6,
+    "numbers_expected": [
+     "1",
+     "10",
+     "1000"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q029": {
+    "seconds": 4.4,
+    "calls": 1,
+    "input_tokens": 844,
+    "output_tokens": 87,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q030": {
+    "seconds": 5.36,
+    "calls": 1,
+    "input_tokens": 808,
+    "output_tokens": 107,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.88,
+    "numbers_expected": [
+     "1"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P02"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q031": {
+    "seconds": 7.22,
+    "calls": 1,
+    "input_tokens": 933,
+    "output_tokens": 144,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.8,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q032": {
+    "seconds": 6.77,
+    "calls": 1,
+    "input_tokens": 802,
+    "output_tokens": 136,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.33,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q033": {
+    "seconds": 8.86,
+    "calls": 1,
+    "input_tokens": 797,
+    "output_tokens": 179,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.8,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q034": {
+    "seconds": 0.7,
+    "calls": 1,
+    "input_tokens": 836,
+    "output_tokens": 11,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.4,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q035": {
+    "seconds": 3.19,
+    "calls": 1,
+    "input_tokens": 859,
+    "output_tokens": 62,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.43,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q036": {
+    "seconds": 5.18,
+    "calls": 1,
+    "input_tokens": 849,
+    "output_tokens": 103,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.75,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P02"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q037": {
+    "seconds": 6.13,
+    "calls": 1,
+    "input_tokens": 801,
+    "output_tokens": 123,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q038": {
+    "seconds": 5.94,
+    "calls": 1,
+    "input_tokens": 790,
+    "output_tokens": 119,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.83,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q039": {
+    "seconds": 3.12,
+    "calls": 1,
+    "input_tokens": 790,
+    "output_tokens": 61,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q040": {
+    "seconds": 2.01,
+    "calls": 1,
+    "input_tokens": 832,
+    "output_tokens": 38,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P01"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q041": {
+    "seconds": 11.66,
+    "calls": 1,
+    "input_tokens": 810,
+    "output_tokens": 236,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.14,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q042": {
+    "seconds": 1.67,
+    "calls": 1,
+    "input_tokens": 780,
+    "output_tokens": 31,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.33,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q043": {
+    "seconds": 4.49,
+    "calls": 1,
+    "input_tokens": 690,
+    "output_tokens": 91,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.3,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q044": {
+    "seconds": 3.07,
+    "calls": 1,
+    "input_tokens": 796,
+    "output_tokens": 60,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [
+     "128"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q045": {
+    "seconds": 3.96,
+    "calls": 1,
+    "input_tokens": 831,
+    "output_tokens": 78,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q046": {
+    "seconds": 4.98,
+    "calls": 1,
+    "input_tokens": 872,
+    "output_tokens": 99,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 0.36,
+    "numbers_expected": [
+     "128",
+     "64"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q047": {
+    "seconds": 8.7,
+    "calls": 1,
+    "input_tokens": 942,
+    "output_tokens": 174,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.33,
+    "numbers_expected": [
+     "1",
+     "1.9"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P05"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q048": {
+    "seconds": 9.51,
+    "calls": 1,
+    "input_tokens": 825,
+    "output_tokens": 192,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.43,
+    "numbers_expected": [
+     "10",
+     "4.5",
+     "62"
+    ],
+    "numbers_missing": [
+     "10"
+    ],
+    "cited_ids": [
+     "S1-P02"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q049": {
+    "seconds": 5.72,
+    "calls": 1,
+    "input_tokens": 860,
+    "output_tokens": 114,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.65,
+    "numbers_expected": [
+     "15"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q050": {
+    "seconds": 5.21,
+    "calls": 1,
+    "input_tokens": 805,
+    "output_tokens": 104,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.6,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q051": {
+    "seconds": 14.86,
+    "calls": 1,
+    "input_tokens": 892,
+    "output_tokens": 300,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.8,
+    "numbers_expected": [
+     "0.024",
+     "15",
+     "625"
+    ],
+    "numbers_missing": [
+     "0.024",
+     "625"
+    ],
+    "cited_ids": [
+     "S1-P02",
+     "S3-E01"
+    ],
+    "citation_precision": 0.5,
+    "citation_recall": 0.25
+   },
+   "Q052": {
+    "seconds": 5.25,
+    "calls": 1,
+    "input_tokens": 915,
+    "output_tokens": 104,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.62,
+    "numbers_expected": [
+     "10",
+     "15",
+     "3000",
+     "400"
+    ],
+    "numbers_missing": [
+     "400"
+    ],
+    "cited_ids": [
+     "S3-E03"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q053": {
+    "seconds": 4.96,
+    "calls": 1,
+    "input_tokens": 905,
+    "output_tokens": 98,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.36,
+    "numbers_expected": [
+     "10",
+     "240",
+     "25",
+     "30"
+    ],
+    "numbers_missing": [
+     "10",
+     "25",
+     "30"
+    ],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q054": {
+    "seconds": 12.13,
+    "calls": 1,
+    "input_tokens": 790,
+    "output_tokens": 246,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.36,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P02"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q055": {
+    "seconds": 4.2,
+    "calls": 1,
+    "input_tokens": 874,
+    "output_tokens": 83,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.56,
+    "numbers_expected": [
+     "12",
+     "20",
+     "30",
+     "50",
+     "8"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q056": {
+    "seconds": 9.28,
+    "calls": 1,
+    "input_tokens": 865,
+    "output_tokens": 187,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.56,
+    "numbers_expected": [
+     "04",
+     "09",
+     "1205",
+     "2",
+     "22"
+    ],
+    "numbers_missing": [
+     "04",
+     "09",
+     "2"
+    ],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q057": {
+    "seconds": 4.29,
+    "calls": 1,
+    "input_tokens": 869,
+    "output_tokens": 85,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.46,
+    "numbers_expected": [
+     "00",
+     "09",
+     "1204",
+     "21"
+    ],
+    "numbers_missing": [
+     "00",
+     "09"
+    ],
+    "cited_ids": [
+     "S2-P02",
+     "S4-P04",
+     "S5-E03"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q058": {
+    "seconds": 6.57,
+    "calls": 1,
+    "input_tokens": 805,
+    "output_tokens": 132,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.43,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q059": {
+    "seconds": 6.1,
+    "calls": 1,
+    "input_tokens": 871,
+    "output_tokens": 122,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.45,
+    "numbers_expected": [
+     "100",
+     "120",
+     "142",
+     "168",
+     "185",
+     "210"
+    ],
+    "numbers_missing": [
+     "100",
+     "120",
+     "142",
+     "168",
+     "185",
+     "210"
+    ],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q060": {
+    "seconds": 9.98,
+    "calls": 1,
+    "input_tokens": 950,
+    "output_tokens": 200,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 0.44,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P02",
+     "S5-E01"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q061": {
+    "seconds": 5.42,
+    "calls": 1,
+    "input_tokens": 853,
+    "output_tokens": 108,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "32",
+     "64",
+     "8"
+    ],
+    "numbers_missing": [
+     "8"
+    ],
+    "cited_ids": [
+     "S1-P02"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q062": {
+    "seconds": 1.71,
+    "calls": 1,
+    "input_tokens": 758,
+    "output_tokens": 33,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "1.9"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q063": {
+    "seconds": 2.93,
+    "calls": 1,
+    "input_tokens": 877,
+    "output_tokens": 57,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 0.25,
+    "numbers_expected": [
+     "10",
+     "4.5"
+    ],
+    "numbers_missing": [
+     "10",
+     "4.5"
+    ],
+    "cited_ids": [
+     "S1-T02"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.5
+   },
+   "Q064": {
+    "seconds": 3.48,
+    "calls": 1,
+    "input_tokens": 895,
+    "output_tokens": 68,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [
+     "0.59985",
+     "60"
+    ],
+    "numbers_missing": [
+     "0.59985",
+     "60"
+    ],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q065": {
+    "seconds": 1.67,
+    "calls": 1,
+    "input_tokens": 796,
+    "output_tokens": 31,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q066": {
+    "seconds": 2.43,
+    "calls": 1,
+    "input_tokens": 953,
+    "output_tokens": 46,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "24"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q067": {
+    "seconds": 2.5,
+    "calls": 1,
+    "input_tokens": 840,
+    "output_tokens": 48,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "0.015",
+     "15"
+    ],
+    "numbers_missing": [
+     "0.015"
+    ],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q068": {
+    "seconds": 1.93,
+    "calls": 1,
+    "input_tokens": 899,
+    "output_tokens": 36,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "64"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q069": {
+    "seconds": 3.8,
+    "calls": 1,
+    "input_tokens": 765,
+    "output_tokens": 76,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.67,
+    "numbers_expected": [
+     "2",
+     "3",
+     "4"
+    ],
+    "numbers_missing": [
+     "2"
+    ],
+    "cited_ids": [
+     "S1-P02"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q070": {
+    "seconds": 1.96,
+    "calls": 1,
+    "input_tokens": 874,
+    "output_tokens": 37,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [
+     "185",
+     "23.24",
+     "43"
+    ],
+    "numbers_missing": [
+     "185",
+     "43"
+    ],
+    "cited_ids": [
+     "S1-E05"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q071": {
+    "seconds": 1.51,
+    "calls": 1,
+    "input_tokens": 971,
+    "output_tokens": 27,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.56,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q072": {
+    "seconds": 2.05,
+    "calls": 1,
+    "input_tokens": 739,
+    "output_tokens": 40,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 0.29,
+    "numbers_expected": [
+     "1",
+     "1000",
+     "20"
+    ],
+    "numbers_missing": [
+     "1",
+     "1000"
+    ],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q073": {
+    "seconds": 4.1,
+    "calls": 1,
+    "input_tokens": 873,
+    "output_tokens": 81,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P03"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q074": {
+    "seconds": 3.22,
+    "calls": 1,
+    "input_tokens": 780,
+    "output_tokens": 63,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.73,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q075": {
+    "seconds": 1.33,
+    "calls": 1,
+    "input_tokens": 790,
+    "output_tokens": 24,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.17,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q076": {
+    "seconds": 1.62,
+    "calls": 1,
+    "input_tokens": 821,
+    "output_tokens": 30,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 0.22,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q077": {
+    "seconds": 4.01,
+    "calls": 1,
+    "input_tokens": 889,
+    "output_tokens": 79,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.29,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q078": {
+    "seconds": 1.87,
+    "calls": 1,
+    "input_tokens": 849,
+    "output_tokens": 35,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 0.45,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q079": {
+    "seconds": 4.21,
+    "calls": 1,
+    "input_tokens": 855,
+    "output_tokens": 83,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [
+     "8"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P02"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q080": {
+    "seconds": 1.99,
+    "calls": 1,
+    "input_tokens": 695,
+    "output_tokens": 39,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.62,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q081": {
+    "seconds": 0.51,
+    "calls": 1,
+    "input_tokens": 858,
+    "output_tokens": 7,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.67,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": null
+   },
+   "Q082": {
+    "seconds": 0.52,
+    "calls": 1,
+    "input_tokens": 926,
+    "output_tokens": 7,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": null
+   },
+   "Q083": {
+    "seconds": 0.52,
+    "calls": 1,
+    "input_tokens": 916,
+    "output_tokens": 7,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": null
+   },
+   "Q084": {
+    "seconds": 1.54,
+    "calls": 1,
+    "input_tokens": 861,
+    "output_tokens": 28,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": null
+   },
+   "Q085": {
+    "seconds": 0.85,
+    "calls": 1,
+    "input_tokens": 891,
+    "output_tokens": 14,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": null
+   },
+   "Q086": {
+    "seconds": 0.51,
+    "calls": 1,
+    "input_tokens": 842,
+    "output_tokens": 7,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": null
+   },
+   "Q087": {
+    "seconds": 0.9,
+    "calls": 1,
+    "input_tokens": 796,
+    "output_tokens": 15,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P05"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": null
+   },
+   "Q088": {
+    "seconds": 0.85,
+    "calls": 1,
+    "input_tokens": 793,
+    "output_tokens": 14,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": null
+   },
+   "Q089": {
+    "seconds": 0.53,
+    "calls": 1,
+    "input_tokens": 948,
+    "output_tokens": 7,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": null
+   },
+   "Q090": {
+    "seconds": 1.89,
+    "calls": 1,
+    "input_tokens": 940,
+    "output_tokens": 35,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.33,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": null
+   }
+  },
+  "P2": {
+   "Q001": {
+    "seconds": 2.34,
+    "calls": 1,
+    "input_tokens": 2615,
+    "output_tokens": 32,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "64"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P02",
+     "S6-P03"
+    ],
+    "citation_precision": 0.5,
+    "citation_recall": 0.5
+   },
+   "Q002": {
+    "seconds": 1.97,
+    "calls": 1,
+    "input_tokens": 2668,
+    "output_tokens": 25,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "64"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P02"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.5
+   },
+   "Q003": {
+    "seconds": 6.2,
+    "calls": 1,
+    "input_tokens": 2613,
+    "output_tokens": 101,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "0.2",
+     "20"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P03"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q004": {
+    "seconds": 2.08,
+    "calls": 1,
+    "input_tokens": 2595,
+    "output_tokens": 27,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P06"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q005": {
+    "seconds": 1.77,
+    "calls": 1,
+    "input_tokens": 2466,
+    "output_tokens": 22,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.33,
+    "numbers_expected": [
+     "5"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-T02"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.5
+   },
+   "Q006": {
+    "seconds": 1.98,
+    "calls": 1,
+    "input_tokens": 2613,
+    "output_tokens": 25,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "4096"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P05"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q007": {
+    "seconds": 2.76,
+    "calls": 1,
+    "input_tokens": 2624,
+    "output_tokens": 39,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P05"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.5
+   },
+   "Q008": {
+    "seconds": 2.2,
+    "calls": 1,
+    "input_tokens": 2617,
+    "output_tokens": 29,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.2,
+    "numbers_expected": [
+     "15"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S2-P06"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q009": {
+    "seconds": 2.06,
+    "calls": 1,
+    "input_tokens": 2512,
+    "output_tokens": 27,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S2-P10"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q010": {
+    "seconds": 6.42,
+    "calls": 1,
+    "input_tokens": 2514,
+    "output_tokens": 106,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "4"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S2-P09"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q011": {
+    "seconds": 11.31,
+    "calls": 1,
+    "input_tokens": 2730,
+    "output_tokens": 189,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "24"
+    ],
+    "numbers_missing": [
+     "24"
+    ],
+    "cited_ids": [
+     "S3-P02",
+     "S3-P16"
+    ],
+    "citation_precision": 0.5,
+    "citation_recall": 0.5
+   },
+   "Q012": {
+    "seconds": 2.61,
+    "calls": 1,
+    "input_tokens": 2745,
+    "output_tokens": 35,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [
+     "15"
+    ],
+    "numbers_missing": [
+     "15"
+    ],
+    "cited_ids": [
+     "S3-P03"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.5
+   },
+   "Q013": {
+    "seconds": 4.12,
+    "calls": 1,
+    "input_tokens": 2721,
+    "output_tokens": 62,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S3-T02"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q014": {
+    "seconds": 8.4,
+    "calls": 1,
+    "input_tokens": 2718,
+    "output_tokens": 138,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.75,
+    "numbers_expected": [
+     "10"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S3-T02",
+     "S6-E02"
+    ],
+    "citation_precision": 0.5,
+    "citation_recall": 0.5
+   },
+   "Q015": {
+    "seconds": 2.27,
+    "calls": 1,
+    "input_tokens": 2739,
+    "output_tokens": 29,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S3-P08"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q016": {
+    "seconds": 2.11,
+    "calls": 1,
+    "input_tokens": 2667,
+    "output_tokens": 27,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "4"
+    ],
+    "numbers_missing": [
+     "4"
+    ],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q017": {
+    "seconds": 2.06,
+    "calls": 1,
+    "input_tokens": 2677,
+    "output_tokens": 26,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [
+     "12"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-T06"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q018": {
+    "seconds": 1.72,
+    "calls": 1,
+    "input_tokens": 2664,
+    "output_tokens": 20,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [
+     "8"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P09"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q019": {
+    "seconds": 2.29,
+    "calls": 1,
+    "input_tokens": 2521,
+    "output_tokens": 31,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.67,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S5-P06",
+     "S5-P10"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q020": {
+    "seconds": 2.49,
+    "calls": 1,
+    "input_tokens": 2457,
+    "output_tokens": 35,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S5-P05",
+     "S6-P10"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q021": {
+    "seconds": 3.4,
+    "calls": 1,
+    "input_tokens": 2347,
+    "output_tokens": 53,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "168"
+    ],
+    "numbers_missing": [
+     "168"
+    ],
+    "cited_ids": [
+     "S5-P15"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q022": {
+    "seconds": 1.99,
+    "calls": 1,
+    "input_tokens": 2635,
+    "output_tokens": 25,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-T01"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q023": {
+    "seconds": 1.94,
+    "calls": 1,
+    "input_tokens": 2652,
+    "output_tokens": 24,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "64"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-T01"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.5
+   },
+   "Q024": {
+    "seconds": 2.05,
+    "calls": 1,
+    "input_tokens": 2483,
+    "output_tokens": 27,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "96"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-T04"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q025": {
+    "seconds": 2.37,
+    "calls": 1,
+    "input_tokens": 2452,
+    "output_tokens": 33,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [
+     "185"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P13"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.5
+   },
+   "Q026": {
+    "seconds": 3.33,
+    "calls": 1,
+    "input_tokens": 2705,
+    "output_tokens": 48,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P01"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q027": {
+    "seconds": 5.93,
+    "calls": 1,
+    "input_tokens": 2612,
+    "output_tokens": 96,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.43,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P01"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q028": {
+    "seconds": 8.93,
+    "calls": 1,
+    "input_tokens": 2652,
+    "output_tokens": 149,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "1",
+     "10",
+     "1000"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P03"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q029": {
+    "seconds": 5.78,
+    "calls": 1,
+    "input_tokens": 2640,
+    "output_tokens": 93,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P07"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q030": {
+    "seconds": 5.97,
+    "calls": 1,
+    "input_tokens": 2676,
+    "output_tokens": 96,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.62,
+    "numbers_expected": [
+     "1"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S2-P05"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q031": {
+    "seconds": 6.85,
+    "calls": 1,
+    "input_tokens": 2650,
+    "output_tokens": 112,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.8,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S2-P02"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q032": {
+    "seconds": 1.85,
+    "calls": 1,
+    "input_tokens": 2537,
+    "output_tokens": 23,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.33,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S2-P09"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q033": {
+    "seconds": 5.59,
+    "calls": 1,
+    "input_tokens": 2512,
+    "output_tokens": 91,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.4,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S2-P14"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q034": {
+    "seconds": 1.95,
+    "calls": 1,
+    "input_tokens": 2492,
+    "output_tokens": 25,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.6,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S3-P01"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q035": {
+    "seconds": 9.72,
+    "calls": 1,
+    "input_tokens": 2730,
+    "output_tokens": 161,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 0.71,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-T01",
+     "S3-P03"
+    ],
+    "citation_precision": 0.5,
+    "citation_recall": 1.0
+   },
+   "Q036": {
+    "seconds": 5.3,
+    "calls": 1,
+    "input_tokens": 2723,
+    "output_tokens": 83,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P08"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q037": {
+    "seconds": 6.26,
+    "calls": 1,
+    "input_tokens": 2680,
+    "output_tokens": 101,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S3-P11"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q038": {
+    "seconds": 7.35,
+    "calls": 1,
+    "input_tokens": 2637,
+    "output_tokens": 121,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.92,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S4-P01",
+     "S4-P11"
+    ],
+    "citation_precision": 0.5,
+    "citation_recall": 1.0
+   },
+   "Q039": {
+    "seconds": 7.73,
+    "calls": 1,
+    "input_tokens": 2626,
+    "output_tokens": 128,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S4-P07"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q040": {
+    "seconds": 3.06,
+    "calls": 1,
+    "input_tokens": 2674,
+    "output_tokens": 44,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P02",
+     "S4-P09"
+    ],
+    "citation_precision": 0.5,
+    "citation_recall": 1.0
+   },
+   "Q041": {
+    "seconds": 10.04,
+    "calls": 1,
+    "input_tokens": 2580,
+    "output_tokens": 170,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.29,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S5-P08"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q042": {
+    "seconds": 2.36,
+    "calls": 1,
+    "input_tokens": 2571,
+    "output_tokens": 32,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.33,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S5-P08"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q043": {
+    "seconds": 10.01,
+    "calls": 1,
+    "input_tokens": 2660,
+    "output_tokens": 168,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.1,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P10"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q044": {
+    "seconds": 4.65,
+    "calls": 1,
+    "input_tokens": 2618,
+    "output_tokens": 73,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [
+     "128"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P12"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.5
+   },
+   "Q045": {
+    "seconds": 4.46,
+    "calls": 1,
+    "input_tokens": 2572,
+    "output_tokens": 70,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.83,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P10"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q046": {
+    "seconds": 15.5,
+    "calls": 1,
+    "input_tokens": 2650,
+    "output_tokens": 265,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.64,
+    "numbers_expected": [
+     "128",
+     "64"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S5-P02",
+     "S6-T01"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q047": {
+    "seconds": 13.15,
+    "calls": 1,
+    "input_tokens": 2679,
+    "output_tokens": 223,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.33,
+    "numbers_expected": [
+     "1",
+     "1.9"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-E01"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.333
+   },
+   "Q048": {
+    "seconds": 11.8,
+    "calls": 1,
+    "input_tokens": 2637,
+    "output_tokens": 200,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.36,
+    "numbers_expected": [
+     "10",
+     "4.5",
+     "62"
+    ],
+    "numbers_missing": [
+     "10"
+    ],
+    "cited_ids": [
+     "S1-P09",
+     "S1-T02",
+     "S2-P11"
+    ],
+    "citation_precision": 0.667,
+    "citation_recall": 0.667
+   },
+   "Q049": {
+    "seconds": 5.37,
+    "calls": 1,
+    "input_tokens": 2595,
+    "output_tokens": 86,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.6,
+    "numbers_expected": [
+     "15"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S2-P06",
+     "S6-P12"
+    ],
+    "citation_precision": 0.5,
+    "citation_recall": 0.5
+   },
+   "Q050": {
+    "seconds": 9.32,
+    "calls": 1,
+    "input_tokens": 2531,
+    "output_tokens": 158,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.7,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-P10",
+     "S2-P09",
+     "S6-P08"
+    ],
+    "citation_precision": 0.667,
+    "citation_recall": 0.667
+   },
+   "Q051": {
+    "seconds": 16.87,
+    "calls": 1,
+    "input_tokens": 2742,
+    "output_tokens": 286,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.8,
+    "numbers_expected": [
+     "0.024",
+     "15",
+     "625"
+    ],
+    "numbers_missing": [
+     "0.024",
+     "15",
+     "625"
+    ],
+    "cited_ids": [
+     "S3-E01",
+     "S3-P02"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.5
+   },
+   "Q052": {
+    "seconds": 5.36,
+    "calls": 1,
+    "input_tokens": 2731,
+    "output_tokens": 84,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.62,
+    "numbers_expected": [
+     "10",
+     "15",
+     "3000",
+     "400"
+    ],
+    "numbers_missing": [
+     "15",
+     "3000",
+     "400"
+    ],
+    "cited_ids": [
+     "S3-P03"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.333
+   },
+   "Q053": {
+    "seconds": 7.59,
+    "calls": 1,
+    "input_tokens": 2457,
+    "output_tokens": 128,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.64,
+    "numbers_expected": [
+     "10",
+     "240",
+     "25",
+     "30"
+    ],
+    "numbers_missing": [
+     "10"
+    ],
+    "cited_ids": [
+     "S6-T02"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q054": {
+    "seconds": 8.49,
+    "calls": 1,
+    "input_tokens": 2653,
+    "output_tokens": 141,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 0.14,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S3-P11",
+     "S5-E03",
+     "S6-P12"
+    ],
+    "citation_precision": 0.667,
+    "citation_recall": 0.667
+   },
+   "Q055": {
+    "seconds": 4.72,
+    "calls": 1,
+    "input_tokens": 2649,
+    "output_tokens": 74,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.56,
+    "numbers_expected": [
+     "12",
+     "20",
+     "30",
+     "50",
+     "8"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P09"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.333
+   },
+   "Q056": {
+    "seconds": 6.02,
+    "calls": 1,
+    "input_tokens": 2571,
+    "output_tokens": 98,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.56,
+    "numbers_expected": [
+     "04",
+     "09",
+     "1205",
+     "2",
+     "22"
+    ],
+    "numbers_missing": [
+     "2"
+    ],
+    "cited_ids": [
+     "S5-P07",
+     "S5-P13"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.667
+   },
+   "Q057": {
+    "seconds": 5.65,
+    "calls": 1,
+    "input_tokens": 2598,
+    "output_tokens": 91,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.62,
+    "numbers_expected": [
+     "00",
+     "09",
+     "1204",
+     "21"
+    ],
+    "numbers_missing": [
+     "00",
+     "09"
+    ],
+    "cited_ids": [
+     "S5-E03",
+     "S5-T02"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q058": {
+    "seconds": 9.26,
+    "calls": 1,
+    "input_tokens": 2582,
+    "output_tokens": 156,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.36,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P10",
+     "S6-T03"
+    ],
+    "citation_precision": 0.5,
+    "citation_recall": 0.5
+   },
+   "Q059": {
+    "seconds": 6.14,
+    "calls": 1,
+    "input_tokens": 2381,
+    "output_tokens": 103,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.36,
+    "numbers_expected": [
+     "100",
+     "120",
+     "142",
+     "168",
+     "185",
+     "210"
+    ],
+    "numbers_missing": [
+     "100",
+     "120"
+    ],
+    "cited_ids": [
+     "S6-P13"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.333
+   },
+   "Q060": {
+    "seconds": 17.46,
+    "calls": 1,
+    "input_tokens": 2631,
+    "output_tokens": 300,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 0.39,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S5-P16",
+     "S6-P15"
+    ],
+    "citation_precision": 0.5,
+    "citation_recall": 0.333
+   },
+   "Q061": {
+    "seconds": 5.84,
+    "calls": 1,
+    "input_tokens": 2693,
+    "output_tokens": 93,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "32",
+     "64",
+     "8"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-T01"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.5
+   },
+   "Q062": {
+    "seconds": 11.29,
+    "calls": 1,
+    "input_tokens": 2688,
+    "output_tokens": 190,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "1.9"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-E01"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.5
+   },
+   "Q063": {
+    "seconds": 5.89,
+    "calls": 1,
+    "input_tokens": 2635,
+    "output_tokens": 95,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "10",
+     "4.5"
+    ],
+    "numbers_missing": [
+     "10"
+    ],
+    "cited_ids": [
+     "S1-T02"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.5
+   },
+   "Q064": {
+    "seconds": 3.66,
+    "calls": 1,
+    "input_tokens": 2696,
+    "output_tokens": 54,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [
+     "0.59985",
+     "60"
+    ],
+    "numbers_missing": [
+     "60"
+    ],
+    "cited_ids": [
+     "S2-E01"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.5
+   },
+   "Q065": {
+    "seconds": 2.4,
+    "calls": 1,
+    "input_tokens": 2548,
+    "output_tokens": 33,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S2-P10",
+     "S2-T02"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q066": {
+    "seconds": 10.82,
+    "calls": 1,
+    "input_tokens": 2749,
+    "output_tokens": 180,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "24"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S3-E01",
+     "S3-T01"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q067": {
+    "seconds": 9.67,
+    "calls": 1,
+    "input_tokens": 2739,
+    "output_tokens": 160,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "0.015",
+     "15"
+    ],
+    "numbers_missing": [
+     "15"
+    ],
+    "cited_ids": [
+     "S3-E02",
+     "S3-P02",
+     "S3-T01"
+    ],
+    "citation_precision": 0.667,
+    "citation_recall": 1.0
+   },
+   "Q068": {
+    "seconds": 2.37,
+    "calls": 1,
+    "input_tokens": 2697,
+    "output_tokens": 31,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 1.0,
+    "numbers_expected": [
+     "64"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S1-E02"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q069": {
+    "seconds": 5.94,
+    "calls": 1,
+    "input_tokens": 2548,
+    "output_tokens": 97,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.33,
+    "numbers_expected": [
+     "2",
+     "3",
+     "4"
+    ],
+    "numbers_missing": [
+     "4"
+    ],
+    "cited_ids": [
+     "S5-P05"
+    ],
+    "citation_precision": 0.0,
+    "citation_recall": 0.0
+   },
+   "Q070": {
+    "seconds": 5.4,
+    "calls": 1,
+    "input_tokens": 2472,
+    "output_tokens": 88,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [
+     "185",
+     "23.24",
+     "43"
+    ],
+    "numbers_missing": [
+     "43"
+    ],
+    "cited_ids": [
+     "S6-E05"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.5
+   },
+   "Q071": {
+    "seconds": 2.16,
+    "calls": 1,
+    "input_tokens": 2661,
+    "output_tokens": 28,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.56,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P05"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 0.5
+   },
+   "Q072": {
+    "seconds": 6.27,
+    "calls": 1,
+    "input_tokens": 2618,
+    "output_tokens": 102,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 0.43,
+    "numbers_expected": [
+     "1",
+     "1000",
+     "20"
+    ],
+    "numbers_missing": [
+     "1",
+     "1000",
+     "20"
+    ],
+    "cited_ids": [
+     "S1-P03"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q073": {
+    "seconds": 3.16,
+    "calls": 1,
+    "input_tokens": 2636,
+    "output_tokens": 46,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q074": {
+    "seconds": 4.92,
+    "calls": 1,
+    "input_tokens": 2747,
+    "output_tokens": 76,
+    "abstained": false,
+    "auto_correct": true,
+    "keyword_overlap": 0.82,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S3-P08"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q075": {
+    "seconds": 2.05,
+    "calls": 1,
+    "input_tokens": 2750,
+    "output_tokens": 25,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.17,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S3-P07"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": 1.0
+   },
+   "Q076": {
+    "seconds": 2.27,
+    "calls": 1,
+    "input_tokens": 2664,
+    "output_tokens": 30,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 0.22,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q077": {
+    "seconds": 6.89,
+    "calls": 1,
+    "input_tokens": 2550,
+    "output_tokens": 114,
+    "abstained": false,
+    "auto_correct": false,
+    "keyword_overlap": 0.29,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P01",
+     "S6-P10",
+     "S6-T03"
+    ],
+    "citation_precision": 0.333,
+    "citation_recall": 1.0
+   },
+   "Q078": {
+    "seconds": 2.35,
+    "calls": 1,
+    "input_tokens": 2546,
+    "output_tokens": 32,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 0.36,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q079": {
+    "seconds": 3.18,
+    "calls": 1,
+    "input_tokens": 2765,
+    "output_tokens": 45,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 0.3,
+    "numbers_expected": [
+     "8"
+    ],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q080": {
+    "seconds": 0.97,
+    "calls": 1,
+    "input_tokens": 2550,
+    "output_tokens": 7,
+    "abstained": true,
+    "auto_correct": false,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": 0.0
+   },
+   "Q081": {
+    "seconds": 0.99,
+    "calls": 1,
+    "input_tokens": 2636,
+    "output_tokens": 7,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.67,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": null
+   },
+   "Q082": {
+    "seconds": 0.99,
+    "calls": 1,
+    "input_tokens": 2636,
+    "output_tokens": 7,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": null
+   },
+   "Q083": {
+    "seconds": 0.99,
+    "calls": 1,
+    "input_tokens": 2621,
+    "output_tokens": 7,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": null
+   },
+   "Q084": {
+    "seconds": 1.39,
+    "calls": 1,
+    "input_tokens": 2460,
+    "output_tokens": 15,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.0,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P14"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": null
+   },
+   "Q085": {
+    "seconds": 1.41,
+    "calls": 1,
+    "input_tokens": 2532,
+    "output_tokens": 15,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S6-P14"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": null
+   },
+   "Q086": {
+    "seconds": 1.41,
+    "calls": 1,
+    "input_tokens": 2522,
+    "output_tokens": 15,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S5-P16"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": null
+   },
+   "Q087": {
+    "seconds": 1.41,
+    "calls": 1,
+    "input_tokens": 2558,
+    "output_tokens": 15,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S5-P16"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": null
+   },
+   "Q088": {
+    "seconds": 0.99,
+    "calls": 1,
+    "input_tokens": 2571,
+    "output_tokens": 7,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": null
+   },
+   "Q089": {
+    "seconds": 1.0,
+    "calls": 1,
+    "input_tokens": 2649,
+    "output_tokens": 7,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.5,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [],
+    "citation_precision": null,
+    "citation_recall": null
+   },
+   "Q090": {
+    "seconds": 7.95,
+    "calls": 1,
+    "input_tokens": 2723,
+    "output_tokens": 130,
+    "abstained": true,
+    "auto_correct": true,
+    "keyword_overlap": 0.33,
+    "numbers_expected": [],
+    "numbers_missing": [],
+    "cited_ids": [
+     "S3-P03"
+    ],
+    "citation_precision": 1.0,
+    "citation_recall": null
+   }
+  }
+ },
+ "quizzes": {
+  "Q091": {
+   "live": {
+    "intent_recognised": false,
+    "production_returns": "document_chat prose (no quiz)"
+   },
+   "QP": {
+    "valid": true,
+    "errors": [],
+    "seconds": 39.9,
+    "calls": 5,
+    "input_tokens": 4050,
+    "output_tokens": 803,
+    "truncated_prompts": null,
+    "requested": 5,
+    "n_items": 5,
+    "count_compliant": true,
+    "extra_duplicates": 0,
+    "duplicates_within_allowance": true,
+    "distinct_passages_used": 3,
+    "min_distinct_concepts": 5,
+    "sections_covered": [
+     "S6"
+    ],
+    "section_coverage": 0.167,
+    "candidate_evidence_hit": "0/6",
+    "items_citing_valid_unit_ids": 0,
+    "lexically_supported": 1,
+    "multi_section_items": 0
+   },
+   "QI": {
+    "parsed": {
+     "count": 5,
+     "modes": [
+      "whole"
+     ],
+     "topic": "covering the entire course pdf."
+    },
+    "planned_slots": 5,
+    "note": "",
+    "declined": false,
+    "sufficiency_check_calls": 0,
+    "seconds": 37.5,
+    "calls": 1,
+    "input_tokens": 886,
+    "output_tokens": 597,
+    "batches": 1,
+    "invalid_items": 0,
+    "repairs": 0,
+    "parse_failures": 0,
+    "first_result_seconds": 37.5,
+    "requested": 5,
+    "n_items": 5,
+    "count_compliant": true,
+    "extra_duplicates": 0,
+    "duplicates_within_allowance": true,
+    "distinct_passages_used": 5,
+    "min_distinct_concepts": 5,
+    "sections_covered": [
+     "S1",
+     "S2",
+     "S3",
+     "S4",
+     "S5"
+    ],
+    "section_coverage": 0.833,
+    "candidate_evidence_hit": "0/6",
+    "items_citing_valid_unit_ids": 0,
+    "lexically_supported": 5,
+    "multi_section_items": 0
+   }
+  },
+  "Q092": {
+   "live": {
+    "intent_recognised": false,
+    "production_returns": "document_chat prose (no quiz)"
+   },
+   "QP": {
+    "valid": false,
+    "errors": [
+     "question 3: could not parse model output as JSON: model output did not contain a JSON object"
+    ],
+    "seconds": 62.4,
+    "calls": 6,
+    "input_tokens": 5620,
+    "output_tokens": 1250,
+    "truncated_prompts": null,
+    "requested": 10,
+    "n_items": 0,
+    "count_compliant": false
+   },
+   "QI": {
+    "parsed": {
+     "count": 10,
+     "modes": [
+      "whole"
+     ],
+     "topic": "the whole cs 451 document."
+    },
+    "planned_slots": 10,
+    "note": "",
+    "declined": false,
+    "sufficiency_check_calls": 0,
+    "seconds": 72.9,
+    "calls": 2,
+    "input_tokens": 1922,
+    "output_tokens": 1446,
+    "batches": 2,
+    "invalid_items": 0,
+    "repairs": 0,
+    "parse_failures": 0,
+    "first_result_seconds": 29.8,
+    "requested": 10,
+    "n_items": 10,
+    "count_compliant": true,
+    "extra_duplicates": 0,
+    "duplicates_within_allowance": true,
+    "distinct_passages_used": 8,
+    "min_distinct_concepts": 9,
+    "sections_covered": [
+     "S1",
+     "S2",
+     "S3",
+     "S4",
+     "S5",
+     "S6"
+    ],
+    "section_coverage": 1.0,
+    "candidate_evidence_hit": "0/11",
+    "items_citing_valid_unit_ids": 0,
+    "lexically_supported": 10,
+    "multi_section_items": 0
+   }
+  },
+  "Q093": {
+   "live": {
+    "intent_recognised": false,
+    "production_returns": "document_chat prose (no quiz)"
+   },
+   "QP": {
+    "valid": false,
+    "errors": [
+     "question 4: could not parse model output as JSON: Expecting value: line 3 column 224 (char 379)"
+    ],
+    "seconds": 40.8,
+    "calls": 5,
+    "input_tokens": 4200,
+    "output_tokens": 820,
+    "truncated_prompts": null,
+    "requested": 20,
+    "n_items": 0,
+    "count_compliant": false
+   },
+   "QI": {
+    "parsed": {
+     "count": 20,
+     "modes": [
+      "whole"
+     ],
+     "topic": "spanning the pdf."
+    },
+    "planned_slots": 20,
+    "note": "",
+    "declined": false,
+    "sufficiency_check_calls": 0,
+    "seconds": 145.6,
+    "calls": 5,
+    "input_tokens": 5021,
+    "output_tokens": 2847,
+    "batches": 5,
+    "invalid_items": 1,
+    "repairs": 1,
+    "parse_failures": 0,
+    "first_result_seconds": 29.8,
+    "requested": 20,
+    "n_items": 20,
+    "count_compliant": true,
+    "extra_duplicates": 0,
+    "duplicates_within_allowance": true,
+    "distinct_passages_used": 13,
+    "min_distinct_concepts": 16,
+    "sections_covered": [
+     "S1",
+     "S2",
+     "S3",
+     "S4",
+     "S5",
+     "S6"
+    ],
+    "section_coverage": 1.0,
+    "candidate_evidence_hit": "4/20",
+    "items_citing_valid_unit_ids": 0,
+    "lexically_supported": 19,
+    "multi_section_items": 0
+   }
+  },
+  "Q094": {
+   "live": {
+    "intent_recognised": false,
+    "production_returns": "document_chat prose (no quiz)"
+   },
+   "QP": {
+    "valid": true,
+    "errors": [],
+    "seconds": 58.4,
+    "calls": 10,
+    "input_tokens": 8390,
+    "output_tokens": 1166,
+    "truncated_prompts": null,
+    "requested": 10,
+    "n_items": 10,
+    "count_compliant": true,
+    "extra_duplicates": 6,
+    "duplicates_within_allowance": false,
+    "distinct_passages_used": 2,
+    "min_distinct_concepts": 8,
+    "sections_covered": [
+     "S2"
+    ],
+    "section_coverage": 0.5,
+    "candidate_evidence_hit": "2/9",
+    "items_citing_valid_unit_ids": 0,
+    "lexically_supported": 8,
+    "multi_section_items": 0
+   },
+   "QI": {
+    "parsed": {
+     "count": 10,
+     "modes": [
+      "topic"
+     ],
+     "topic": "hashing, probing, and amortized resizing."
+    },
+    "planned_slots": 10,
+    "note": "",
+    "declined": false,
+    "sufficiency_check_calls": 12,
+    "seconds": 164.1,
+    "calls": 21,
+    "input_tokens": 7857,
+    "output_tokens": 3284,
+    "batches": 9,
+    "invalid_items": 9,
+    "repairs": 7,
+    "parse_failures": 1,
+    "first_result_seconds": 39.4,
+    "requested": 10,
+    "n_items": 8,
+    "count_compliant": false,
+    "extra_duplicates": 0,
+    "duplicates_within_allowance": true,
+    "distinct_passages_used": 4,
+    "min_distinct_concepts": 8,
+    "sections_covered": [
+     "S2",
+     "S6"
+    ],
+    "section_coverage": 1.0,
+    "candidate_evidence_hit": "4/9",
+    "items_citing_valid_unit_ids": 0,
+    "lexically_supported": 6,
+    "multi_section_items": 0
+   },
+   "QI_nochk": {
+    "parsed": {
+     "count": 10,
+     "modes": [
+      "topic"
+     ],
+     "topic": "hashing, probing, and amortized resizing."
+    },
+    "planned_slots": 10,
+    "note": "",
+    "declined": false,
+    "sufficiency_check_calls": 0,
+    "seconds": 86.0,
+    "calls": 5,
+    "input_tokens": 3436,
+    "output_tokens": 1721,
+    "batches": 5,
+    "invalid_items": 4,
+    "repairs": 3,
+    "parse_failures": 0,
+    "first_result_seconds": 33.3,
+    "requested": 10,
+    "n_items": 9,
+    "count_compliant": false,
+    "extra_duplicates": 0,
+    "duplicates_within_allowance": true,
+    "distinct_passages_used": 8,
+    "min_distinct_concepts": 8,
+    "sections_covered": [
+     "S2"
+    ],
+    "section_coverage": 0.5,
+    "candidate_evidence_hit": "7/9",
+    "items_citing_valid_unit_ids": 0,
+    "lexically_supported": 8,
+    "multi_section_items": 0
+   }
+  },
+  "Q095": {
+   "live": {
+    "intent_recognised": false,
+    "production_returns": "document_chat prose (no quiz)"
+   },
+   "QP": {
+    "valid": false,
+    "errors": [
+     "question 10: missing evidence_refs for a grounded quiz"
+    ],
+    "seconds": 99.0,
+    "calls": 11,
+    "input_tokens": 8944,
+    "output_tokens": 1997,
+    "truncated_prompts": null,
+    "requested": 10,
+    "n_items": 0,
+    "count_compliant": false
+   },
+   "QI": {
+    "parsed": {
+     "count": 10,
+     "modes": [
+      "topic"
+     ],
+     "topic": "delay, transport, and congestion content."
+    },
+    "planned_slots": 10,
+    "note": "",
+    "declined": false,
+    "sufficiency_check_calls": 12,
+    "seconds": 73.9,
+    "calls": 15,
+    "input_tokens": 4538,
+    "output_tokens": 1470,
+    "batches": 3,
+    "invalid_items": 1,
+    "repairs": 1,
+    "parse_failures": 0,
+    "first_result_seconds": 28.8,
+    "requested": 10,
+    "n_items": 10,
+    "count_compliant": true,
+    "extra_duplicates": 2,
+    "duplicates_within_allowance": false,
+    "distinct_passages_used": 5,
+    "min_distinct_concepts": 8,
+    "sections_covered": [
+     "S3"
+    ],
+    "section_coverage": 1.0,
+    "candidate_evidence_hit": "5/10",
+    "items_citing_valid_unit_ids": 0,
+    "lexically_supported": 8,
+    "multi_section_items": 0
+   },
+   "QI_nochk": {
+    "parsed": {
+     "count": 10,
+     "modes": [
+      "topic"
+     ],
+     "topic": "delay, transport, and congestion content."
+    },
+    "planned_slots": 10,
+    "note": "",
+    "declined": false,
+    "sufficiency_check_calls": 0,
+    "seconds": 69.7,
+    "calls": 2,
+    "input_tokens": 1941,
+    "output_tokens": 1383,
+    "batches": 2,
+    "invalid_items": 0,
+    "repairs": 0,
+    "parse_failures": 0,
+    "first_result_seconds": 32.2,
+    "requested": 10,
+    "n_items": 10,
+    "count_compliant": true,
+    "extra_duplicates": 0,
+    "duplicates_within_allowance": true,
+    "distinct_passages_used": 9,
+    "min_distinct_concepts": 8,
+    "sections_covered": [
+     "S1",
+     "S3",
+     "S6"
+    ],
+    "section_coverage": 1.0,
+    "candidate_evidence_hit": "8/10",
+    "items_citing_valid_unit_ids": 0,
+    "lexically_supported": 10,
+    "multi_section_items": 0
+   }
+  },
+  "Q096": {
+   "live": {
+    "intent_recognised": false,
+    "production_returns": "document_chat prose (no quiz)"
+   },
+   "QP": {
+    "valid": false,
+    "errors": [
+     "question 6: correct_index must be an integer 0-3"
+    ],
+    "seconds": 75.9,
+    "calls": 7,
+    "input_tokens": 5775,
+    "output_tokens": 1533,
+    "truncated_prompts": null,
+    "requested": 10,
+    "n_items": 0,
+    "count_compliant": false
+   },
+   "QI": {
+    "parsed": {
+     "count": 10,
+     "modes": [
+      "topic"
+     ],
+     "topic": "replication and consistency, including failure cases."
+    },
+    "planned_slots": 10,
+    "note": "",
+    "declined": false,
+    "sufficiency_check_calls": 12,
+    "seconds": 77.5,
+    "calls": 14,
+    "input_tokens": 3802,
+    "output_tokens": 1540,
+    "batches": 2,
+    "invalid_items": 0,
+    "repairs": 0,
+    "parse_failures": 0,
+    "first_result_seconds": 35.6,
+    "requested": 10,
+    "n_items": 10,
+    "count_compliant": true,
+    "extra_duplicates": 0,
+    "duplicates_within_allowance": true,
+    "distinct_passages_used": 10,
+    "min_distinct_concepts": 8,
+    "sections_covered": [
+     "S3",
+     "S5",
+     "S6"
+    ],
+    "section_coverage": 1.0,
+    "candidate_evidence_hit": "6/10",
+    "items_citing_valid_unit_ids": 0,
+    "lexically_supported": 9,
+    "multi_section_items": 0
+   },
+   "QI_nochk": {
+    "parsed": {
+     "count": 10,
+     "modes": [
+      "topic"
+     ],
+     "topic": "replication and consistency, including failure cases."
+    },
+    "planned_slots": 10,
+    "note": "",
+    "declined": false,
+    "sufficiency_check_calls": 0,
+    "seconds": 65.5,
+    "calls": 2,
+    "input_tokens": 1800,
+    "output_tokens": 1308,
+    "batches": 2,
+    "invalid_items": 0,
+    "repairs": 0,
+    "parse_failures": 0,
+    "first_result_seconds": 35.6,
+    "requested": 10,
+    "n_items": 10,
+    "count_compliant": true,
+    "extra_duplicates": 0,
+    "duplicates_within_allowance": true,
+    "distinct_passages_used": 9,
+    "min_distinct_concepts": 8,
+    "sections_covered": [
+     "S3",
+     "S4",
+     "S5",
+     "S6"
+    ],
+    "section_coverage": 1.0,
+    "candidate_evidence_hit": "5/10",
+    "items_citing_valid_unit_ids": 0,
+    "lexically_supported": 9,
+    "multi_section_items": 0
+   }
+  },
+  "Q097": {
+   "live": {
+    "intent_recognised": false,
+    "production_returns": "document_chat prose (no quiz)"
+   },
+   "QP": {
+    "valid": true,
+    "errors": [],
+    "seconds": 82.9,
+    "calls": 10,
+    "input_tokens": 8190,
+    "output_tokens": 1671,
+    "truncated_prompts": null,
+    "requested": 10,
+    "n_items": 10,
+    "count_compliant": true,
+    "extra_duplicates": 2,
+    "duplicates_within_allowance": false,
+    "distinct_passages_used": 4,
+    "min_distinct_concepts": 9,
+    "sections_covered": [
+     "S6"
+    ],
+    "section_coverage": 0.167,
+    "candidate_evidence_hit": "0/12",
+    "items_citing_valid_unit_ids": 0,
+    "lexically_supported": 7,
+    "multi_section_items": 0
+   },
+   "QI": {
+    "parsed": {
+     "count": 10,
+     "modes": [
+      "integrative",
+      "whole"
+     ],
+     "topic": "that require evidence from different course sections."
+    },
+    "planned_slots": 10,
+    "note": "",
+    "declined": false,
+    "sufficiency_check_calls": 0,
+    "seconds": 235.3,
+    "calls": 14,
+    "input_tokens": 11855,
+    "output_tokens": 4642,
+    "batches": 14,
+    "invalid_items": 16,
+    "repairs": 12,
+    "parse_failures": 6,
+    "first_result_seconds": 93.8,
+    "requested": 10,
+    "n_items": 6,
+    "count_compliant": false,
+    "extra_duplicates": 0,
+    "duplicates_within_allowance": true,
+    "distinct_passages_used": 11,
+    "min_distinct_concepts": 9,
+    "sections_covered": [
+     "S1",
+     "S2",
+     "S3",
+     "S4",
+     "S5",
+     "S6"
+    ],
+    "section_coverage": 1.0,
+    "candidate_evidence_hit": "2/12",
+    "items_citing_valid_unit_ids": 0,
+    "lexically_supported": 5,
+    "multi_section_items": 6
+   }
+  },
+  "Q098": {
+   "live": {
+    "intent_recognised": false,
+    "production_returns": "document_chat prose (no quiz)"
+   },
+   "QP": {
+    "valid": true,
+    "errors": [],
+    "seconds": 69.4,
+    "calls": 10,
+    "input_tokens": 8810,
+    "output_tokens": 1390,
+    "truncated_prompts": null,
+    "requested": 10,
+    "n_items": 10,
+    "count_compliant": true,
+    "extra_duplicates": 10,
+    "duplicates_within_allowance": false,
+    "distinct_passages_used": 1,
+    "min_distinct_concepts": 0,
+    "sections_covered": [
+     "S6"
+    ],
+    "section_coverage": null,
+    "candidate_evidence_hit": "0/1",
+    "items_citing_valid_unit_ids": 0,
+    "lexically_supported": 10,
+    "multi_section_items": 0
+   },
+   "QI": {
+    "parsed": {
+     "count": 10,
+     "modes": [
+      "topic"
+     ],
+     "topic": "researchgrid gpu benchmarks and vendor-specific gpus."
+    },
+    "planned_slots": 0,
+    "note": "declined: the document does not support questions on 'researchgrid gpu benchmarks and vendor-specific gpus.'. Supported sections: S1, S2, S3, S4, S5, S6",
+    "declined": true,
+    "sufficiency_check_calls": 12,
+    "seconds": 1.9,
+    "calls": 12,
+    "input_tokens": 2232,
+    "output_tokens": 36,
+    "requested": 10,
+    "n_items": 0,
+    "count_compliant": false
+   },
+   "QI_nochk": {
+    "parsed": {
+     "count": 10,
+     "modes": [
+      "topic"
+     ],
+     "topic": "researchgrid gpu benchmarks and vendor-specific gpus."
+    },
+    "planned_slots": 10,
+    "note": "",
+    "declined": false,
+    "sufficiency_check_calls": 0,
+    "seconds": 65.8,
+    "calls": 2,
+    "input_tokens": 2079,
+    "output_tokens": 1303,
+    "batches": 2,
+    "invalid_items": 0,
+    "repairs": 0,
+    "parse_failures": 0,
+    "first_result_seconds": 35.4,
+    "requested": 10,
+    "n_items": 10,
+    "count_compliant": true,
+    "extra_duplicates": 0,
+    "duplicates_within_allowance": true,
+    "distinct_passages_used": 10,
+    "min_distinct_concepts": 0,
+    "sections_covered": [
+     "S1",
+     "S2",
+     "S4",
+     "S5",
+     "S6"
+    ],
+    "section_coverage": null,
+    "candidate_evidence_hit": "1/1",
+    "items_citing_valid_unit_ids": 0,
+    "lexically_supported": 9,
+    "multi_section_items": 0
+   }
+  },
+  "Q099": {
+   "live": {
+    "intent_recognised": false,
+    "production_returns": "document_chat prose (no quiz)"
+   },
+   "QP": {
+    "valid": true,
+    "errors": [],
+    "seconds": 26.0,
+    "calls": 5,
+    "input_tokens": 4757,
+    "output_tokens": 514,
+    "truncated_prompts": null,
+    "requested": 5,
+    "n_items": 5,
+    "count_compliant": true,
+    "extra_duplicates": 1,
+    "duplicates_within_allowance": false,
+    "distinct_passages_used": 0,
+    "min_distinct_concepts": 5,
+    "sections_covered": [
+     "S1",
+     "S6"
+    ],
+    "section_coverage": 0.333,
+    "candidate_evidence_hit": "1/6",
+    "items_citing_valid_unit_ids": 0,
+    "lexically_supported": 3,
+    "multi_section_items": 0
+   },
+   "QI": {
+    "parsed": {
+     "count": 5,
+     "modes": [
+      "numeric",
+      "whole"
+     ],
+     "topic": "create five numeric specification questions grounded in the pdf."
+    },
+    "planned_slots": 5,
+    "note": "",
+    "declined": false,
+    "sufficiency_check_calls": 0,
+    "seconds": 32.7,
+    "calls": 1,
+    "input_tokens": 919,
+    "output_tokens": 650,
+    "batches": 1,
+    "invalid_items": 0,
+    "repairs": 0,
+    "parse_failures": 0,
+    "first_result_seconds": 32.6,
+    "requested": 5,
+    "n_items": 5,
+    "count_compliant": true,
+    "extra_duplicates": 0,
+    "duplicates_within_allowance": true,
+    "distinct_passages_used": 0,
+    "min_distinct_concepts": 5,
+    "sections_covered": [
+     "S1",
+     "S2",
+     "S3",
+     "S4",
+     "S5"
+    ],
+    "section_coverage": 0.833,
+    "candidate_evidence_hit": "3/6",
+    "items_citing_valid_unit_ids": 0,
+    "lexically_supported": 4,
+    "multi_section_items": 0
+   }
+  },
+  "Q100": {
+   "live": {
+    "intent_recognised": false,
+    "production_returns": "document_chat prose (no quiz)"
+   },
+   "QP": {
+    "valid": true,
+    "errors": [],
+    "seconds": 81.5,
+    "calls": 10,
+    "input_tokens": 9660,
+    "output_tokens": 1626,
+    "truncated_prompts": null,
+    "requested": 10,
+    "n_items": 10,
+    "count_compliant": true,
+    "extra_duplicates": 0,
+    "duplicates_within_allowance": true,
+    "distinct_passages_used": 1,
+    "min_distinct_concepts": 8,
+    "sections_covered": [
+     "S4",
+     "S5",
+     "S6"
+    ],
+    "section_coverage": 0.5,
+    "candidate_evidence_hit": "0/11",
+    "items_citing_valid_unit_ids": 0,
+    "lexically_supported": 7,
+    "multi_section_items": 4
+   },
+   "QI": {
+    "parsed": {
+     "count": 10,
+     "modes": [
+      "terminology",
+      "whole"
+     ],
+     "topic": "differentiating similar terminology throughout the pdf."
+    },
+    "planned_slots": 10,
+    "note": "",
+    "declined": false,
+    "sufficiency_check_calls": 0,
+    "seconds": 189.3,
+    "calls": 10,
+    "input_tokens": 6194,
+    "output_tokens": 3817,
+    "batches": 10,
+    "invalid_items": 11,
+    "repairs": 8,
+    "parse_failures": 7,
+    "first_result_seconds": 30.8,
+    "requested": 10,
+    "n_items": 7,
+    "count_compliant": false,
+    "extra_duplicates": 0,
+    "duplicates_within_allowance": true,
+    "distinct_passages_used": 6,
+    "min_distinct_concepts": 8,
+    "sections_covered": [
+     "S1",
+     "S2",
+     "S3",
+     "S4",
+     "S5",
+     "S6"
+    ],
+    "section_coverage": 1.0,
+    "candidate_evidence_hit": "0/11",
+    "items_citing_valid_unit_ids": 0,
+    "lexically_supported": 6,
+    "multi_section_items": 0
+   }
+  }
+ },
+ "gpu_peak_gib": 14.15
+}
