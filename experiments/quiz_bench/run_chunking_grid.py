@@ -61,7 +61,7 @@ def main():
         }
         r = rows[name]
         print(f"{name:22s} n={r['n_chunks']:3d} medTok={r['chunk_tokens']['median']:6.0f} embTrunc={truncated_for_embedder:3d} "
-              f"anchors={r["concepts_with_anchor_chunk"]:2d} R@5={r['retrieval']['recall@5']:.3f} R@10={r['retrieval']['recall@10']:.3f} "
+              f"anchors={r['concepts_with_anchor_chunk']:2d} R@5={r['retrieval']['recall@5']:.3f} R@10={r['retrieval']['recall@10']:.3f} "
               f"MRR={r['retrieval']['mrr@10']:.3f} nDCG={r['retrieval']['ndcg@10']:.3f} vis500={r['visible_in_top6_view500']:.3f} "
               f"visFull={r['visible_in_top6_full']:.3f} D_tok={r['top6_evidence_tokens_full']['D']} D_tgt={r['quiz_request_target_visible_full'].get('D')} "
               f"E_tgt={r['quiz_request_target_visible_full'].get('E')} dupD={r['top6_duplicate_ratio_full']['D']}", flush=True)
