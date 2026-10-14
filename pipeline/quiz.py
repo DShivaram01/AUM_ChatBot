@@ -25,7 +25,21 @@ from pipeline.answer import generate_streaming
 from pipeline.memory import logger, query_fingerprint
 
 REQUIRED_OPTIONS = 4
-_MAX_ATTEMPTS_PER_QUESTION = 2  # one real attempt + one retry with feedback
+# One real attempt + three retries with feedback. Some contexts pull the
+# model toward a "which option is NOT..." framing strongly enough
+# (observed live, housing topic "housing policy": a list of zero-tolerance
+# violations) that it's not just a one-shot format slip -- even sampled
+# retries (see _RETRY_TEMPERATURES) sometimes land back on the same
+# negation framing by chance. Each extra attempt only costs time on a
+# question that's already failing (the loop still breaks on first
+# success), so the typical-case latency is unaffected.
+_MAX_ATTEMPTS_PER_QUESTION = 4
+# Escalating sampling temperature for attempts 2+ (attempt 1 always stays
+# greedy -- see generate_quiz()'s do_sample=attempt>1). A later retry having
+# already failed twice means the lower temperatures' mode didn't help, so
+# each further retry explores more aggressively rather than resampling
+# around the same already-rejected neighborhood.
+_RETRY_TEMPERATURES = {2: 0.7, 3: 0.9, 4: 1.1}
 # Housing/document grounding can hand generate_quiz() up to 6 full chunks
 # (each up to ~400 tokens / ~1600-2000 chars -- see structured_chunks()'s
 # own max_tokens=400). Joined untruncated, that routinely produced a
@@ -157,6 +171,22 @@ def _validate_question(q: dict, require_evidence: bool) -> list[str]:
         errors.append(f"correct_index must be an integer 0-{REQUIRED_OPTIONS - 1}")
 
     if require_evidence:
+        # Observed live (housing topic "housing policy"): for some
+        # contexts the model reliably reaches for a "which option is NOT
+        # mentioned/true" question no matter how the retry feedback is
+        # worded -- rephrasing the SAME negation question each retry
+        # (confirmed via raw-output inspection: "NOT a violation...",
+        # then "NOT a reason... to take action", both still negation-
+        # framed). Its correct answer has no supporting context by
+        # definition, so evidence_refs comes back empty every time. Reject
+        # on the negation wording itself, not just on the empty
+        # evidence_refs it causes -- catching the pattern directly (rather
+        # than waiting for the symptom) gives the retry one unambiguous
+        # thing to change, and also stops a negation question from
+        # slipping through on the rare case the model fabricates
+        # evidence_refs for it anyway.
+        if re.search(r"\b(not|except|excluding)\b", qtext, re.IGNORECASE):
+            errors.append("no NOT/EXCEPT questions -- ask one whose answer IS in the context")
         refs = q.get("evidence_refs")
         if not isinstance(refs, list) or not refs:
             errors.append("missing evidence_refs for a grounded quiz")
@@ -223,7 +253,11 @@ def _question_prompt(
         "number(s) (e.g. [1] or [1,2]) that support it. The correct answer "
         "must always be something the context DOES state -- never ask which "
         "option is NOT mentioned/true, since that answer has no supporting "
-        "evidence_refs by definition."
+        "evidence_refs by definition. For example, if the context lists "
+        "several prohibited actions, do NOT ask \"which of these is NOT "
+        "prohibited\" -- instead ask something like \"which of these IS "
+        "prohibited\" or \"what is the penalty for X\", where the context "
+        "states the correct option directly."
         if require_evidence else
         "Use your own general knowledge. Set \"evidence_refs\" to an empty "
         "list, since there is no source document."
@@ -271,6 +305,20 @@ def generate_quiz(
         feedback: str | None = None
         accepted: dict | None = None
         last_errors: list[str] = []
+        # Questions rejected for THIS slot only (reset per q_num, unlike
+        # seen_texts which accumulates across the whole quiz). Greedy
+        # decoding (do_sample=False) makes generate_streaming() fully
+        # deterministic for a fixed prompt -- observed live (housing topic
+        # "housing policy"): the model picked the exact same "which option
+        # is NOT mentioned" question on attempt 1, and since feedback alone
+        # doesn't change the prompt enough to escape that completion, got
+        # the near-identical text back on attempt 2 too (missing
+        # evidence_refs both times, truncated mid-JSON the second time).
+        # Banning the rejected attempt's own 4-grams (same mechanism
+        # avoid_texts already uses for already-accepted questions) forces
+        # the retry to actually produce different text instead of silently
+        # repeating the same unfixable question.
+        rejected_texts: list[str] = []
         for attempt in range(1, _MAX_ATTEMPTS_PER_QUESTION + 1):
             prompt = _question_prompt(topic, context, require_evidence, seen_texts, feedback)
             full = ""
@@ -285,7 +333,15 @@ def generate_quiz(
                 # 350-550; 320 is a smaller, quiz-appropriate raise, not a
                 # match to those longer free-form answers.
                 query_id=f"{query_id}-q{q_num}a{attempt}", max_new_tokens=320,
-                avoid_texts=seen_texts,
+                avoid_texts=seen_texts + rejected_texts,
+                # Attempt 1 stays greedy (the common case that already
+                # works shouldn't get noisier); only a retry -- which by
+                # definition means greedy already produced something
+                # invalid -- switches to sampling so it isn't just
+                # re-deriving the same rejected completion (see
+                # generate_streaming's do_sample docstring note).
+                do_sample=attempt > 1,
+                temperature=_RETRY_TEMPERATURES.get(attempt, 0.7),
             ):
                 full = partial
             try:
@@ -307,6 +363,7 @@ def generate_quiz(
                     f"output_len={len(full)} output_fp={query_fingerprint(full)}"
                 )
                 feedback = last_errors[0]
+                rejected_texts.append(full)
                 continue
             q_errors = _validate_question(data, require_evidence)
             qtext_key = str(data.get("question", "")).strip().lower()
@@ -339,6 +396,8 @@ def generate_quiz(
             last_errors = q_errors
             logger.warning(f"[{query_id}] Quiz q{q_num} attempt {attempt} invalid: {q_errors}")
             feedback = "; ".join(q_errors)
+            if qtext_key:
+                rejected_texts.append(str(data.get("question", "")).strip())
 
         if accepted is None:
             # A single question repeatedly failing (e.g. one bad model call)

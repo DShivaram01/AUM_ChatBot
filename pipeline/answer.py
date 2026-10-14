@@ -149,6 +149,8 @@ def generate_streaming(
     query_id="Q", max_new_tokens=300,
     trace: QueryTrace = None,
     avoid_texts: list[str] | None = None,
+    do_sample: bool = False,
+    temperature: float = 0.7,
 ):
     MAX_CHARS = _PROMPT_MAX_CHARS
     if len(prompt) > MAX_CHARS:
@@ -185,7 +187,7 @@ def generate_streaming(
         **inputs,
         streamer=streamer,
         max_new_tokens=max_new_tokens,
-        do_sample=False,
+        do_sample=do_sample,
         logits_processor=LogitsProcessorList(
             [GeneratedOnlyRepetitionGuard(
                 int(inputs["input_ids"].shape[1]),
@@ -195,6 +197,19 @@ def generate_streaming(
         eos_token_id=tokenizer.eos_token_id,
         pad_token_id=tokenizer.eos_token_id,
     )
+    if do_sample:
+        # Greedy decoding (the default) is fully deterministic: a retry
+        # that reuses the same prompt gets the exact same completion back,
+        # so a retry loop is useless against a context the model has a
+        # strong greedy-path attractor toward (observed live, quiz.py's
+        # housing "which option is NOT mentioned" repro -- banned 4-grams
+        # and reworded feedback still landed back on a negation question
+        # every time, because greedy always re-climbs to its single most
+        # likely completion). Sampling is opt-in per call, not the new
+        # default, so every other pipeline's deterministic behavior is
+        # unchanged.
+        gen_kw["temperature"] = temperature
+        gen_kw["top_p"] = 0.9
     t0     = time.time()
     thread = threading.Thread(target=model.generate, kwargs=gen_kw)
     thread.start()
