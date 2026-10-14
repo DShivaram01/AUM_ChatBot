@@ -220,7 +220,10 @@ def _question_prompt(
     grounding_rule = (
         "Base the question ONLY on the material inside <context> tags. "
         "Do NOT use outside knowledge. Set \"evidence_refs\" to the context "
-        "number(s) (e.g. [1] or [1,2]) that support it."
+        "number(s) (e.g. [1] or [1,2]) that support it. The correct answer "
+        "must always be something the context DOES state -- never ask which "
+        "option is NOT mentioned/true, since that answer has no supporting "
+        "evidence_refs by definition."
         if require_evidence else
         "Use your own general knowledge. Set \"evidence_refs\" to an empty "
         "list, since there is no source document."
@@ -338,10 +341,17 @@ def generate_quiz(
             feedback = "; ".join(q_errors)
 
         if accepted is None:
-            return None, [f"question {q_num}: {'; '.join(last_errors)}"]
+            # A single question repeatedly failing (e.g. one bad model call)
+            # used to discard the whole quiz, including every question
+            # already generated. Skip it and keep going instead -- only an
+            # ENTIRELY failed quiz (zero questions) is a hard failure.
+            logger.warning(f"[{query_id}] Quiz q{q_num} skipped after {_MAX_ATTEMPTS_PER_QUESTION} attempts: {last_errors}")
+            continue
         raw_data, finalized = accepted
         questions.append(finalized)
         seen_texts.append(str(raw_data["question"]).strip())
 
+    if not questions:
+        return None, [f"all {count} questions failed to generate"]
     title = f"{topic.strip().title()} Quiz" if topic.strip() else "Quiz"
     return {"title": title, "questions": questions}, []
