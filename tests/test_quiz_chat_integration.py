@@ -254,6 +254,41 @@ def test_regenerate_followup_reuses_the_same_params():
     assert body["quiz"] != first_quiz  # genuinely regenerated, not the cached copy
 
 
+# ---------- basic document quiz: real query_id so feedback can submit ----
+
+def test_ask_document_quiz_returns_a_real_query_id_for_feedback():
+    """The basic document quiz path (quiz_basic_document) returns its own
+    answer-kind response, same as any other chat answer -- it must carry
+    a real, non-empty query_id so the client's feedback buttons aren't
+    disabled (desktop/client/renderer.js: addReactionControls() disables
+    the button when query_id is falsy)."""
+    client = TestClient(api_server.app)
+    upload = client.post(
+        "/api/documents", data={"session_id": "quiz-feedback-test"},
+        files={"file": ("notes.txt", b"Mitochondria produce ATP through oxidative phosphorylation.", "text/plain")},
+    )
+    assert upload.status_code == 200, upload.text
+    document_id = upload.json()["document_id"]
+
+    import pipeline.quiz as quiz_module
+    real_generate_streaming = quiz_module.generate_streaming
+    quiz_module.generate_streaming = lambda prompt, *_a, **_kw: iter(["raw unvalidated model text"])
+    try:
+        response = client.post("/api/ask", json={
+            "question": "Create 2 MCQs on mitochondria",
+            "topic": "general", "session_id": "quiz-feedback-test",
+            "document_ids": [document_id],
+        })
+    finally:
+        quiz_module.generate_streaming = real_generate_streaming
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["kind"] == "answer"
+    assert body["quiz"] is None
+    assert body["query_id"], "query_id must be non-empty, or the feedback button stays disabled"
+
+
 def test_followup_phrase_without_a_prior_quiz_does_not_misfire():
     # "explain question 3" with nothing generated yet in this session --
     # must not crash or fabricate a quiz answer; falls through to normal

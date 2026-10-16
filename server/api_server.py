@@ -365,7 +365,7 @@ def _try_quiz_from_chat(req: "ChatRequest") -> dict | None:
             }
         return {
             "answer": result["answer"], "topic_used": "quiz", "kind": "answer",
-            "quiz": None, "source_mode": source_mode,
+            "quiz": None, "source_mode": source_mode, "query_id": result["query_id"],
         }
 
     result = get_assistant_service().quiz(
@@ -663,7 +663,13 @@ async def ask(req: ChatRequest) -> ChatResponse:
         if quiz_result is not None:
             return ChatResponse(
                 answer=quiz_result["answer"], topic_used=quiz_result["topic_used"],
-                query_id="", sources=[], kind=quiz_result["kind"], quiz=quiz_result["quiz"],
+                # Basic document quiz carries its own real query_id (see
+                # quiz_basic_document()) so the feedback button on its
+                # answer-kind response can actually submit, same as any
+                # other answer -- every other quiz_result branch still has
+                # no query_id to give, so this falls back to "".
+                query_id=quiz_result.get("query_id", ""), sources=[],
+                kind=quiz_result["kind"], quiz=quiz_result["quiz"],
                 source_mode=quiz_result.get("source_mode"),
                 latency_ms=int((time.time() - start) * 1000),
             )
@@ -712,7 +718,11 @@ async def ask_stream(req: ChatRequest) -> StreamingResponse:
                     yield _sse_event(quiz_result["answer"])
                 yield _sse_event(
                     json.dumps({
-                        "query_id": "", "topic_used": quiz_result["topic_used"],
+                        # See the /api/ask branch's matching comment: only
+                        # the basic document quiz path has a real
+                        # query_id to give here.
+                        "query_id": quiz_result.get("query_id", ""),
+                        "topic_used": quiz_result["topic_used"],
                         "kind": quiz_result["kind"], "quiz": quiz_result["quiz"],
                         "source_mode": quiz_result.get("source_mode"),
                     }),
