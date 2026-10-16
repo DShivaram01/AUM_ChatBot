@@ -350,6 +350,24 @@ def _try_quiz_from_chat(req: "ChatRequest") -> dict | None:
     if error:
         return {"answer": error, "topic_used": "quiz_unavailable", "kind": "answer", "quiz": None}
 
+    if source_mode == "document":
+        # Basic document quiz path: no structured quiz card, no
+        # validation/retries -- the model's raw output is returned as a
+        # normal answer, same as any other chat response, instead of
+        # AssistantService.quiz()'s validated quiz-card pipeline below.
+        result = get_assistant_service().quiz_basic_document(
+            intent.topic, intent.count, req.document_ids, req.session_id,
+        )
+        if "error" in result:
+            return {
+                "answer": result["error"], "topic_used": "quiz_unavailable",
+                "kind": "answer", "quiz": None,
+            }
+        return {
+            "answer": result["answer"], "topic_used": "quiz", "kind": "answer",
+            "quiz": None, "source_mode": source_mode,
+        }
+
     result = get_assistant_service().quiz(
         intent.topic, intent.count, source_mode, req.document_ids, req.session_id,
     )

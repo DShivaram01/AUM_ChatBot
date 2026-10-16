@@ -284,6 +284,39 @@ def _question_prompt(
     )
 
 
+def generate_quiz_basic(
+    topic: str, count: int, chunks: list[str], llm_tok, llm_model, query_id: str,
+) -> str:
+    """Minimal document quiz path: no JSON schema, no validation, no
+    retries, no evidence_refs. The document's chunks are split evenly
+    across the requested question count (chunks_per_question = total
+    chunks / count) and each group gets exactly one LLM call asking for
+    one plain-text MCQ. Whatever the model returns is used as-is and
+    handed back for direct display, the same as any other chat answer.
+    """
+    chunks = chunks or ["(no document text available)"]
+    per_question = max(1, len(chunks) // count)
+    parts: list[str] = []
+    for q_num in range(1, count + 1):
+        start = (q_num - 1) * per_question
+        group = chunks[start:start + per_question] or chunks
+        context = "\n\n".join(group)
+        prompt = (
+            "<s>[INST] Write one multiple-choice quiz question with four "
+            "options labeled A-D, and state the correct answer, based on "
+            "the following text.\n\n"
+            f"Topic: {topic}\n\n<context>\n{context}\n</context> [/INST]"
+        )
+        full = ""
+        for partial in generate_streaming(
+            prompt, llm_tok, llm_model,
+            query_id=f"{query_id}-basic-q{q_num}", max_new_tokens=320,
+        ):
+            full = partial
+        parts.append(f"Question {q_num}:\n{full.strip()}")
+    return "\n\n".join(parts)
+
+
 def generate_quiz(
     topic: str, count: int, llm_tok, llm_model, query_id: str,
     context_chunks: list[str] | None = None,

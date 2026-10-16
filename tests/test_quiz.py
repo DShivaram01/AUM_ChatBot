@@ -6,7 +6,10 @@ import numpy as np
 
 from core.assistant_service import AssistantService
 from core.runtime_manager import RuntimeManager
-from pipeline.quiz import _MAX_CONTEXT_CHARS_PER_CHUNK, _extract_json, _finalize_question, _validate, generate_quiz
+from pipeline.quiz import (
+    _MAX_CONTEXT_CHARS_PER_CHUNK, _extract_json, _finalize_question, _validate,
+    generate_quiz, generate_quiz_basic,
+)
 
 
 class WordOverlapEmbedder:
@@ -208,3 +211,63 @@ def test_quiz_generation_failure_is_a_controlled_error_not_a_malformed_quiz():
         quiz_module.generate_streaming = real_generate_streaming
     assert "quiz" not in result
     assert "error" in result
+
+
+# ---------- basic document quiz: no JSON schema, no validation, no retries ----
+
+def test_generate_quiz_basic_splits_chunks_evenly_and_skips_validation():
+    """6 chunks / 3 questions -> 2 chunks per question, and whatever the
+    model returns (even non-JSON prose) is passed through untouched."""
+    chunks = [f"chunk{i}" for i in range(1, 7)]
+    import pipeline.quiz as quiz_module
+    real_generate_streaming = quiz_module.generate_streaming
+    seen_prompts = []
+
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300, **_kwargs):
+        seen_prompts.append(prompt)
+        yield f"not json, just prose for {query_id}"
+
+    quiz_module.generate_streaming = fake_generate_streaming
+    try:
+        answer = generate_quiz_basic("topic", 3, chunks, None, None, "QZtest")
+    finally:
+        quiz_module.generate_streaming = real_generate_streaming
+
+    assert len(seen_prompts) == 3
+    assert "chunk1" in seen_prompts[0] and "chunk2" in seen_prompts[0] and "chunk3" not in seen_prompts[0]
+    assert "chunk3" in seen_prompts[1] and "chunk4" in seen_prompts[1]
+    assert "Question 1:" in answer and "Question 3:" in answer
+    assert "not json, just prose for QZtest-basic-q1" in answer
+
+
+def test_quiz_basic_document_requires_attached_document():
+    service = AssistantService(RuntimeManager(embedder=WordOverlapEmbedder()))
+    result = service.quiz_basic_document("anything", 3, document_ids=None, session_id="s1")
+    assert "error" in result and "attach a document" in result["error"]
+
+
+def test_quiz_basic_document_returns_raw_answer_not_a_structured_quiz():
+    service = AssistantService(RuntimeManager(embedder=WordOverlapEmbedder()))
+
+    class FakeChunk:
+        def __init__(self, text):
+            self.text = text
+
+    class FakeDocument:
+        chunks = [FakeChunk("alpha"), FakeChunk("beta"), FakeChunk("gamma"), FakeChunk("delta")]
+
+    service.documents.store.get = lambda document_id, session_id: FakeDocument()
+
+    import pipeline.quiz as quiz_module
+    real_generate_streaming = quiz_module.generate_streaming
+    quiz_module.generate_streaming = lambda prompt, *_a, **_kw: iter(["raw model text, unvalidated"])
+    try:
+        result = service.quiz_basic_document(
+            "anything", 2, document_ids=["doc1"], session_id="s1",
+        )
+    finally:
+        quiz_module.generate_streaming = real_generate_streaming
+
+    assert "error" not in result
+    assert "quiz" not in result
+    assert result["answer"].count("raw model text, unvalidated") == 2

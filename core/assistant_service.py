@@ -31,7 +31,7 @@ from pipeline.classifier import (
     store_trace,
 )
 from pipeline.memory import format_history, logger
-from pipeline.quiz import generate_quiz
+from pipeline.quiz import generate_quiz, generate_quiz_basic
 from pipeline.retrieval import retrieve_cos_rrf, retrieve_housing_logged
 from pipeline.semantic_router import classify_topic_hybrid, classify_topic_semantic
 
@@ -294,6 +294,42 @@ class AssistantService:
             f"document(s) {sorted(set(hit['document_id'] for hit in hits))}>"
         )
         store_trace(trace)
+
+    def quiz_basic_document(
+        self, topic: str, count: int,
+        document_ids: list[str] | None, session_id: str | None,
+    ) -> dict:
+        """Basic document quiz: every chunk of the attached document(s),
+        split evenly across the requested question count, one
+        unvalidated LLM call per question. No retries, no JSON parsing,
+        no evidence checks -- see pipeline.quiz.generate_quiz_basic().
+        Returns {"answer": "..."} on success or {"error": "..."}.
+        """
+        topic = topic.strip()
+        qid = next_query_id("QZ")
+        if not topic:
+            return {"error": "Please provide a topic for the quiz."}
+        if not 1 <= count <= 20:
+            return {"error": "Please request between 1 and 20 questions."}
+        if not document_ids:
+            return {"error": "Please attach a document for a document-grounded quiz."}
+        if not session_id:
+            return {"error": "A session is required to use uploaded documents."}
+
+        chunks: list[str] = []
+        try:
+            for document_id in document_ids:
+                document = self.documents.store.get(document_id, session_id)
+                chunks.extend(chunk.text for chunk in document.chunks)
+        except (KeyError, PermissionError) as exc:
+            return {"error": str(exc)}
+        if not chunks:
+            return {"error": "The uploaded document has no content to quiz on."}
+
+        answer = generate_quiz_basic(
+            topic, count, chunks, self.runtime.llm_tok, self.runtime.llm_model, qid,
+        )
+        return {"answer": answer, "query_id": qid}
 
     def quiz(
         self, topic: str, count: int, source_mode: str,
