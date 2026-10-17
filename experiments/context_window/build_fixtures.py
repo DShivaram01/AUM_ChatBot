@@ -21,7 +21,7 @@ from ingestion.document_parser import extract_pdf_pages
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
-TARGETS = {"8k": 8000, "12k": 12000, "16k": 16000, "25k": 25000}
+TARGETS = {"8k": 8000, "12k": 12000, "14k": 14000, "16k": 16000, "25k": 25000}
 
 
 def _housing_text() -> list[str]:

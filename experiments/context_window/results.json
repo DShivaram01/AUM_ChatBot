@@ -5,7 +5,7 @@
     "tokenize_seconds": 0.01,
     "max_new_tokens": 568,
     "status": "ok",
-    "generate_seconds": 40.52,
+    "generate_seconds": 40.51,
     "output_tokens": 445,
     "peak_gpu_gib": 15.5,
     "output_preview": "The document provides the AUM Housing and Residence Life Contractual Obligations & Community Standards for students living on campus. It includes a mission statement, commitments to community, quality, and inclusivity, contact information for office staff and resident assistants, housing and residence life services and standards (such as cable TV service, internet, campus police, laundry facilities, mail, maintenance, parking), contractual obligations with terms and conditions for student occupancy, a contract termination policy, community standards and points system, and housing regulations.\n\nThe community standards and point system outline various rules and consequences for violations, including abandoned personal property, alcohol use, appliances, balconies/patios/porches, bicycles, che"
@@ -22,23 +22,34 @@
     "output_preview": "The document outlines the rules and regulations for students living in Auburn University at Montgomery's (AUM) housing and residence life facilities. These rules cover various aspects such as appliances, balconies/patios/porches, bicycles, check-in/check-out procedures, children, cohabitation, collective accountability policy, compliance and failure to comply, contributing to an unsafe environment, courtesy and quiet hours, dangerous weapons and firearms, doors, elevators, furniture, grills, grounds, hall sports/horseplay, harassment, health and safety inspections, illegal drugs, paraphernalia, or suspicion of drug distribution or usage, keys, lock outs, laundry, mandatory meetings, open flames and heaters, pets, posting policy, profanity towards Housing staff, public areas, rape and sexua"
   },
   {
-    "label": "16k",
-    "input_tokens": 16280,
-    "tokenize_seconds": 0.02,
-    "max_new_tokens": 1085,
+    "label": "14k",
+    "input_tokens": 14117,
+    "tokenize_seconds": 0.01,
+    "max_new_tokens": 941,
     "status": "ok",
-    "generate_seconds": 110.36,
-    "output_tokens": 871,
-    "peak_gpu_gib": 17.31,
-    "output_preview": "The document contains abstracts for various research projects presented at an academic conference. The topics cover a wide range of fields, including mathematics, biology, computer science, and chemistry. Here are brief summaries of the projects:\n\n1. **Exploring Effects of Patch Size, Matrix Quality, and Functional Response on Prey Populations**: This study investigates how Type IV functional responses in prey populations interact with environmental factors like patch size and matrix quality in fragmented landscapes. The goal is to understand how these interactions shape prey persistence in heterogeneous ecosystems.\n\n2. **Identification of STING Protein as a Novel Target of RNF114 Suppression of Antiviral Immune Pathways**: Researchers investigated the impact of RNF-114 on Stimulator of In"
+    "generate_seconds": 74.31,
+    "output_tokens": 633,
+    "peak_gpu_gib": 16.79,
+    "output_preview": "The document contains abstracts for various research projects presented at an academic conference. The topics covered include the effects of Type IV functional responses on prey population dynamics, identification of a protein as a novel target in antiviral immune pathways, the impact of rotenone on brain endothelial cell migration, the development of an attenuated virus for vaccine development using Infectious Hematopoietic Necrosis Virus matrix protein, quantifying arm swimming in the octopus Muusoctopus robustus, real-time tactile texture classification and biomechanical sensing using low-cost embedded systems, a fast AI-based low-homology protein sequence alignment, modeling effects of explicit trade-offs on the evolution of dispersal, investigating whether Kudzu\u2019s soil microbiome impr"
+  },
+  {
+    "label": "16k",
+    "input_tokens": 16157,
+    "tokenize_seconds": 0.02,
+    "max_new_tokens": 1077,
+    "status": "ok",
+    "generate_seconds": 88.99,
+    "output_tokens": 700,
+    "peak_gpu_gib": 17.27,
+    "output_preview": "The document contains abstracts of various research projects presented at the Undergraduate and Graduate poster abstracts in 2023 and 204 at Auburn University Montgomery (AUM). The topics cover a wide range, including psychology, computer science, biology, chemistry, and mathematics.\n\n1. \"The Effects of a Token Economy on In-Class Participation Among College Students\" investigates the impact of a reward system on classroom participation among college students. The study uses an ABAB design to examine whether providing rewards increases participation.\n\n2. \"Exploration of Image Processing and Computer Vision for Recognition of Colonies of Coliform Bacteria in Water Quality Analysis\" introduces an approach using image processing tools and machine learning techniques to streamline the analysis"
   },
   {
     "label": "25k",
-    "input_tokens": 25247,
+    "input_tokens": 25073,
     "tokenize_seconds": 0.02,
-    "max_new_tokens": 1683,
+    "max_new_tokens": 1671,
     "status": "oom",
-    "generate_seconds": 4.2,
-    "error": "CUDA out of memory. Tried to allocate 692.00 MiB. GPU 0 has a total capacity of 19.54 GiB of which 222.38 MiB is free. Including non-PyTorch memory, this process has 19.07 GiB memory in use. Of the allocated memory 17.27 GiB is allocated by PyTorch, and 1.61 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)"
+    "generate_seconds": 4.17,
+    "error": "CUDA out of memory. Tried to allocate 686.00 MiB. GPU 0 has a total capacity of 19.54 GiB of which 270.38 MiB is free. Including non-PyTorch memory, this process has 19.03 GiB memory in use. Of the allocated memory 17.24 GiB is allocated by PyTorch, and 1.59 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)"
   }
 ]
