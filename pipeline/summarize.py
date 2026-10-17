@@ -55,6 +55,18 @@ def classify_summarize_intent(question: str, llm_tok, llm_model) -> bool:
     return decoded.startswith("yes")
 
 
+# Exploratory formula from exp/context-window-benchmark (commits
+# 5ac8706/be8b0b8): max(400, input_tokens // 15), locked in here after
+# it generated a summary that stopped on its own (EOS) well under
+# budget at every tested size -- 8k/12k/14k/16k input tokens all used
+# 46-80% of their allotted budget, never truncated. The fixed 400 the
+# first pass used DID truncate mid-sentence on an 8k-token document, so
+# this isn't a theoretical improvement. Not re-derived from first
+# principles -- just the one combination that was actually measured.
+_OUTPUT_TOKENS_PER_INPUT_TOKEN = 15
+_MIN_OUTPUT_TOKENS = 400
+
+
 def generate_summary_basic(chunks: list[str], llm_tok, llm_model, query_id: str) -> str:
     """Single-shot document summary: one Mistral call over the joined
     document chunks, no map-reduce, no validation. generate_streaming's
@@ -70,10 +82,16 @@ def generate_summary_basic(chunks: list[str], llm_tok, llm_model, query_id: str)
         "facts that aren't there.\n\n"
         f"<context>\n{context}\n</context> [/INST]"
     )
+    # Counted once here (cheap -- tokenize_seconds measured 0.01-0.03s in
+    # the benchmark) so the budget below can scale with this specific
+    # prompt's real size, rather than guessing from character count.
+    input_tokens = len(llm_tok.encode(prompt))
+    max_new_tokens = max(_MIN_OUTPUT_TOKENS, input_tokens // _OUTPUT_TOKENS_PER_INPUT_TOKEN)
+
     full = ""
     for partial in generate_streaming(
         prompt, llm_tok, llm_model,
-        query_id=f"{query_id}-summary", max_new_tokens=400,
+        query_id=f"{query_id}-summary", max_new_tokens=max_new_tokens,
     ):
         full = partial
     return full.strip()

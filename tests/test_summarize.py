@@ -14,6 +14,15 @@ class WordOverlapEmbedder:
         return np.zeros((len(texts), 4), dtype=np.float32)
 
 
+class FakeTok:
+    """Stand-in for the real tokenizer's .encode() -- generate_summary_basic
+    calls it once to size the output-token budget (pipeline/summarize.py's
+    _OUTPUT_TOKENS_PER_INPUT_TOKEN formula). One "token" per character is
+    plenty for exercising that formula without loading real weights."""
+    def encode(self, text):
+        return list(range(len(text)))
+
+
 # ---------- pipeline.summarize.generate_summary_basic ----------
 
 def test_generate_summary_basic_passes_through_raw_output_without_validation():
@@ -27,7 +36,7 @@ def test_generate_summary_basic_passes_through_raw_output_without_validation():
 
     summarize_module.generate_streaming = fake_generate_streaming
     try:
-        answer = generate_summary_basic(["chunk one text", "chunk two text"], None, None, "SUMtest")
+        answer = generate_summary_basic(["chunk one text", "chunk two text"], FakeTok(), None, "SUMtest")
     finally:
         summarize_module.generate_streaming = real_generate_streaming
 
@@ -41,10 +50,30 @@ def test_generate_summary_basic_handles_no_chunks_without_crashing():
     real_generate_streaming = summarize_module.generate_streaming
     summarize_module.generate_streaming = lambda prompt, *_a, **_kw: iter(["(nothing to summarize)"])
     try:
-        answer = generate_summary_basic([], None, None, "SUMtest")
+        answer = generate_summary_basic([], FakeTok(), None, "SUMtest")
     finally:
         summarize_module.generate_streaming = real_generate_streaming
     assert answer == "(nothing to summarize)"
+
+
+def test_generate_summary_basic_scales_output_budget_with_input_size():
+    import pipeline.summarize as summarize_module
+    real_generate_streaming = summarize_module.generate_streaming
+    seen_budgets = []
+
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300, **_kwargs):
+        seen_budgets.append(max_new_tokens)
+        yield "ok"
+
+    summarize_module.generate_streaming = fake_generate_streaming
+    try:
+        generate_summary_basic(["x" * 100], FakeTok(), None, "SUMtest")  # short -> floor of 400
+        generate_summary_basic(["x" * 30000], FakeTok(), None, "SUMtest")  # long -> scales past the floor
+    finally:
+        summarize_module.generate_streaming = real_generate_streaming
+
+    assert seen_budgets[0] == 400  # _MIN_OUTPUT_TOKENS floor, not 100 // 15
+    assert seen_budgets[1] > 400  # 30000 "tokens" // 15 = 2000, well past the floor
 
 
 # ---------- AssistantService.summarize_document / detect_summarize_intent ----------
@@ -62,7 +91,7 @@ def test_summarize_document_requires_a_session():
 
 
 def test_summarize_document_returns_raw_answer_with_a_real_query_id():
-    service = AssistantService(RuntimeManager(embedder=WordOverlapEmbedder()))
+    service = AssistantService(RuntimeManager(embedder=WordOverlapEmbedder(), llm_tok=FakeTok()))
 
     class FakeChunk:
         def __init__(self, text):

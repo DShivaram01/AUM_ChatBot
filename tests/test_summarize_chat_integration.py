@@ -23,8 +23,15 @@ class WordOverlapEmbedder:
         return np.zeros((len(texts), 4), dtype=np.float32)
 
 
+class FakeTok:
+    """generate_summary_basic calls llm_tok.encode() once to size its
+    output-token budget -- see tests/test_summarize.py's own FakeTok."""
+    def encode(self, text):
+        return list(range(len(text)))
+
+
 def setup_function(_fn):
-    set_assistant_service(AssistantService(RuntimeManager(embedder=WordOverlapEmbedder())))
+    set_assistant_service(AssistantService(RuntimeManager(embedder=WordOverlapEmbedder(), llm_tok=FakeTok())))
     api_server._model_loaded = True
 
 

@@ -58,7 +58,18 @@ def _relative_threshold(cands, top_n=10, absolute_floor=EVIDENCE_SCORE_FLOOR):
 
 # ── LLM streaming generation (backend.py:1041-1101) ────────────────────
 
-_PROMPT_MAX_CHARS = 3200
+# Raised from 3200 (exp/context-window-benchmark, commits 0af7108/5ac8706/
+# be8b0b8): real Mistral-7B-Instruct-v0.3 on this GPU holds a 14k-token
+# prompt comfortably (16.79 GiB peak, vs an observed ~19 GiB OOM ceiling
+# at 25k) -- the model's native 32k context was never the constraint,
+# this app's own unexamined default was. 56000 chars is sized off that
+# same benchmark's real-content ratio (~4.0 chars/token for AUM-domain
+# text, e.g. the 14k fixture measured 56493 chars for 14117 tokens) --
+# deliberately the LOW end of the observed 4.0-4.56 range, so this limit
+# stays the operative one (char truncation fires first and preserves
+# the closing "[/INST]" tag below) rather than the token-level backstop
+# below it, which does not.
+_PROMPT_MAX_CHARS = 56000
 _NO_REPEAT_NGRAM = 4
 _REPETITION_PENALTY = 1.1
 # n-gram ban on already-asked quiz questions. Measured 2026-10-11 (Task 51,
@@ -172,8 +183,15 @@ def generate_streaming(
     # persisting what was actually asked or what was in context.
     logger.info(f"[{query_id}] == LLM PROMPT == len={len(prompt)} fp={query_fingerprint(prompt)}")
 
+    # Backstop only, not the operative limit -- _PROMPT_MAX_CHARS above
+    # already keeps real content well under this in token terms (see its
+    # comment). Raised from 4096 to 16000 alongside it: proven safe twice
+    # in the same benchmark (16.79-17.31 GiB peak, succeeded both runs),
+    # so if content denser than the char limit assumes ever slips
+    # through, this still caps it at a size that's actually been tested
+    # rather than an arbitrary round number.
     inputs = tokenizer(
-        prompt, return_tensors="pt", truncation=True, max_length=4096
+        prompt, return_tensors="pt", truncation=True, max_length=16000
     ).to(model.device)
 
     if trace:

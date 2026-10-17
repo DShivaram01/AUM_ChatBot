@@ -43,15 +43,17 @@ _RETRY_TEMPERATURES = {2: 0.7, 3: 0.9, 4: 1.1}
 # Housing/document grounding can hand generate_quiz() up to 6 full chunks
 # (each up to ~400 tokens / ~1600-2000 chars -- see structured_chunks()'s
 # own max_tokens=400). Joined untruncated, that routinely produced a
-# prompt well past generate_streaming()'s MAX_CHARS safety net (3200),
-# which truncates by blindly slicing the END of the assembled prompt --
-# silently deleting the closing "[/INST]" tag along with most of the
-# context. The model then had no instruction to respond to at all and
-# just continued the context text instead of generating a question (found
-# via a real user's quiz failures, Task 52). Capping each chunk's
-# contribution here keeps the assembled context comfortably under that
-# limit for the realistic 1-6 chunk range, so truncation essentially never
-# has to fire for quiz prompts in the first place.
+# prompt well past generate_streaming()'s MAX_CHARS safety net (3200 at
+# the time; raised to 56000 by exp/context-window-benchmark, but the
+# same failure mode applies at any size), which truncates by blindly
+# slicing the END of the assembled prompt -- silently deleting the
+# closing "[/INST]" tag along with most of the context. The model then
+# had no instruction to respond to at all and just continued the
+# context text instead of generating a question (found via a real
+# user's quiz failures, Task 52). Capping each chunk's contribution here
+# keeps the assembled context comfortably under that limit for the
+# realistic 1-6 chunk range, so truncation essentially never has to fire
+# for quiz prompts in the first place.
 _MAX_CONTEXT_CHARS_PER_CHUNK = 500
 
 _KEY_CANONICAL = {
