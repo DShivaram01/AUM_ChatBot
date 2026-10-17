@@ -1,0 +1,20 @@
+[
+  {
+    "label": "8k",
+    "input_tokens": 8531,
+    "tokenize_seconds": 0.01,
+    "status": "ok",
+    "generate_seconds": 36.58,
+    "output_tokens": 400,
+    "peak_gpu_gib": 15.5,
+    "output_preview": "The document provides the AUM Housing and Residence Life Contractual Obligations & Community Standards for students living on campus. It includes a mission statement, commitments to community, quality, and inclusivity, contact information for office staff and resident assistants, housing and residence life services and standards (such as cable TV service, internet, campus police, laundry facilities, mail, maintenance, parking), contractual obligations with terms and conditions for student occupancy, a contract termination policy, community standards and points system, and housing regulations.\n\nThe community standards and point system outline various rules and consequences for violations, including abandoned personal property, alcohol use, appliances, balconies/patios/porches, bicycles, che"
+  },
+  {
+    "label": "25k",
+    "input_tokens": 25074,
+    "tokenize_seconds": 0.03,
+    "status": "oom",
+    "generate_seconds": 4.07,
+    "error": "CUDA out of memory. Tried to allocate 686.00 MiB. GPU 0 has a total capacity of 19.54 GiB of which 270.38 MiB is free. Including non-PyTorch memory, this process has 19.03 GiB memory in use. Of the allocated memory 17.24 GiB is allocated by PyTorch, and 1.59 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)"
+  }
+]
