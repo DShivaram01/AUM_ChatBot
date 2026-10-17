@@ -33,6 +33,7 @@ from pipeline.classifier import (
 from pipeline.memory import format_history, logger
 from pipeline.quiz import generate_quiz, generate_quiz_basic
 from pipeline.retrieval import retrieve_cos_rrf, retrieve_housing_logged
+from pipeline.summarize import classify_summarize_intent, generate_summary_basic
 from pipeline.semantic_router import classify_topic_hybrid, classify_topic_semantic
 
 _DOCUMENT_INSUFFICIENT_EVIDENCE = (
@@ -294,6 +295,46 @@ class AssistantService:
             f"document(s) {sorted(set(hit['document_id'] for hit in hits))}>"
         )
         store_trace(trace)
+
+    def detect_summarize_intent(self, question: str) -> bool:
+        """Mistral-classified: does this message ask to summarize an
+        attached document? See pipeline.summarize.classify_summarize_intent.
+        Callers should only invoke this when a document is actually
+        attached -- the LLM call isn't free, and there's nothing to
+        summarize otherwise.
+        """
+        return classify_summarize_intent(
+            question, self.runtime.llm_tok, self.runtime.llm_model,
+        )
+
+    def summarize_document(
+        self, document_ids: list[str] | None, session_id: str | None,
+    ) -> dict:
+        """Basic single-shot document summary: every chunk of the
+        attached document(s), one unvalidated LLM call, no map-reduce
+        (see pipeline.summarize module docstring for why). Returns
+        {"answer": "..."} on success or {"error": "..."}.
+        """
+        qid = next_query_id("SUM")
+        if not document_ids:
+            return {"error": "Please attach a document to summarize."}
+        if not session_id:
+            return {"error": "A session is required to use uploaded documents."}
+
+        chunks: list[str] = []
+        try:
+            for document_id in document_ids:
+                document = self.documents.store.get(document_id, session_id)
+                chunks.extend(chunk.text for chunk in document.chunks)
+        except (KeyError, PermissionError) as exc:
+            return {"error": str(exc)}
+        if not chunks:
+            return {"error": "The uploaded document has no content to summarize."}
+
+        answer = generate_summary_basic(
+            chunks, self.runtime.llm_tok, self.runtime.llm_model, qid,
+        )
+        return {"answer": answer, "query_id": qid}
 
     def quiz_basic_document(
         self, topic: str, count: int,

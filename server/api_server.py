@@ -97,6 +97,9 @@ class ChatResponse(BaseModel):
         # its dedicated /api/quiz endpoint) -- see pipeline/quiz_intent.py
         # and workspace.md TASK 53/55.
         "quiz", "quiz_unavailable",
+        # Mistral-classified "summarize the attached document" request --
+        # see pipeline/summarize.py and _try_summarize_from_chat().
+        "summarize", "summarize_unavailable",
     ]
     query_id: str
     sources: list[str] = []
@@ -386,6 +389,40 @@ def _try_quiz_from_chat(req: "ChatRequest") -> dict | None:
     }
 
 
+def _try_summarize_from_chat(req: "ChatRequest") -> dict | None:
+    """Mistral-classified "summarize the attached document" request.
+
+    Unlike quiz intent (deterministic regex, pipeline/quiz_intent.py),
+    summarize intent needs the LLM to classify (see
+    pipeline/summarize.py's module docstring for why map-reduce wasn't
+    used for the generation itself -- this classifier is a separate,
+    much cheaper 5-token call, not the summary generation). Only runs
+    that classifier call when a document is actually attached: every
+    ordinary message would otherwise pay for an LLM round trip it can
+    never need.
+
+    Returns None if this isn't a summarize request (caller falls through
+    to its normal routing, same contract as _try_quiz_from_chat).
+    """
+    if not req.document_ids:
+        return None
+
+    service = get_assistant_service()
+    if not service.detect_summarize_intent(req.question):
+        return None
+
+    result = service.summarize_document(req.document_ids, req.session_id)
+    if "error" in result:
+        return {
+            "answer": result["error"], "topic_used": "summarize_unavailable",
+            "kind": "answer", "quiz": None,
+        }
+    return {
+        "answer": result["answer"], "topic_used": "summarize", "kind": "answer",
+        "quiz": None, "query_id": result["query_id"],
+    }
+
+
 def _format_quiz_explanation(quiz: dict, question_number: int) -> str:
     questions = quiz.get("questions", [])
     if question_number == -1:  # "the last question" (detect_quiz_followup)
@@ -657,20 +694,26 @@ async def ask(req: ChatRequest) -> ChatResponse:
     start = time.time()
 
     async with _generate_lock:
-        quiz_result = await asyncio.to_thread(_try_quiz_followup_from_chat, req)
-        if quiz_result is None:
-            quiz_result = await asyncio.to_thread(_try_quiz_from_chat, req)
-        if quiz_result is not None:
+        activity_result = await asyncio.to_thread(_try_quiz_followup_from_chat, req)
+        if activity_result is None:
+            activity_result = await asyncio.to_thread(_try_quiz_from_chat, req)
+        if activity_result is None:
+            # Checked last: Mistral-classified (not regex), so it costs an
+            # extra LLM call -- only worth trying once quiz's cheap,
+            # deterministic checks have already said no.
+            activity_result = await asyncio.to_thread(_try_summarize_from_chat, req)
+        if activity_result is not None:
             return ChatResponse(
-                answer=quiz_result["answer"], topic_used=quiz_result["topic_used"],
-                # Basic document quiz carries its own real query_id (see
-                # quiz_basic_document()) so the feedback button on its
-                # answer-kind response can actually submit, same as any
-                # other answer -- every other quiz_result branch still has
-                # no query_id to give, so this falls back to "".
-                query_id=quiz_result.get("query_id", ""), sources=[],
-                kind=quiz_result["kind"], quiz=quiz_result["quiz"],
-                source_mode=quiz_result.get("source_mode"),
+                answer=activity_result["answer"], topic_used=activity_result["topic_used"],
+                # Basic document quiz and summarize both carry a real
+                # query_id (see quiz_basic_document()/summarize_document())
+                # so the feedback button on their answer-kind response can
+                # actually submit, same as any other answer -- every other
+                # activity_result branch still has no query_id to give, so
+                # this falls back to "".
+                query_id=activity_result.get("query_id", ""), sources=[],
+                kind=activity_result["kind"], quiz=activity_result["quiz"],
+                source_mode=activity_result.get("source_mode"),
                 latency_ms=int((time.time() - start) * 1000),
             )
 
@@ -708,23 +751,28 @@ async def ask_stream(req: ChatRequest) -> StreamingResponse:
             # placeholder delta rather than faking a token stream, then
             # replaces it client-side once the "done" event's quiz payload
             # arrives (see desktop/client/renderer.js).
-            quiz_result = await asyncio.to_thread(_try_quiz_followup_from_chat, req)
-            if quiz_result is None:
-                quiz_result = await asyncio.to_thread(_try_quiz_from_chat, req)
-            if quiz_result is not None:
-                if quiz_result["kind"] == "quiz":
+            activity_result = await asyncio.to_thread(_try_quiz_followup_from_chat, req)
+            if activity_result is None:
+                activity_result = await asyncio.to_thread(_try_quiz_from_chat, req)
+            if activity_result is None:
+                # Checked last, same reasoning as the /api/ask branch:
+                # Mistral-classified, so only worth the extra LLM call once
+                # quiz's cheap, deterministic checks have already said no.
+                activity_result = await asyncio.to_thread(_try_summarize_from_chat, req)
+            if activity_result is not None:
+                if activity_result["kind"] == "quiz":
                     yield _sse_event("Generating your quiz…")
                 else:
-                    yield _sse_event(quiz_result["answer"])
+                    yield _sse_event(activity_result["answer"])
                 yield _sse_event(
                     json.dumps({
                         # See the /api/ask branch's matching comment: only
-                        # the basic document quiz path has a real
-                        # query_id to give here.
-                        "query_id": quiz_result.get("query_id", ""),
-                        "topic_used": quiz_result["topic_used"],
-                        "kind": quiz_result["kind"], "quiz": quiz_result["quiz"],
-                        "source_mode": quiz_result.get("source_mode"),
+                        # the basic document quiz and summarize paths have
+                        # a real query_id to give here.
+                        "query_id": activity_result.get("query_id", ""),
+                        "topic_used": activity_result["topic_used"],
+                        "kind": activity_result["kind"], "quiz": activity_result["quiz"],
+                        "source_mode": activity_result.get("source_mode"),
                     }),
                     event="done",
                 )
