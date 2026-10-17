@@ -1,0 +1,403 @@
+Title: EXPLORING EFFECTS OF PATCH SIZE, MATRIX QUALITY, AND FUNCTIONAL RESPONSE ON PREY POPULATIONS
+Lead Presenters: Jaron Acreman, Peyton Baker
+Other Authors: Damien Bogan
+Mentor: Jerome Goddard II
+Department: Mathematics
+Category: Undergraduate Independent
+Year: 2025
+
+Abstract:
+This talk focuses on the effects of Type IV functional responses on prey population 
+dynamics in fragmented landscapes. A Type IV response, characterized by a decline in 
+predation rates at high prey densities due to factors like predator satiation or prey 
+switching, introduces complex dynamics that can either stabilize or destabilize prey 
+populations. We explore how this functional response interacts with environmental factors 
+such as patch size and matrix quality, and how these interactions shape prey persistence 
+in heterogeneous ecosystems. By modeling these dynamics, we aim to provide deeper 
+insights into how Type IV responses influence predator-prey interactions and prey 
+population stability.
+
+Title: IDENTIFICATION OF STIMULATOR OF INTERFERON GENES (STING) PROTEIN AS A NOVEL TARGET OF RNF114 SUPPRESSION OF ANTIVIRAL IMMUNE PATHWAYS
+Lead Presenters: Kaleb Beasley
+Other Authors: Justin Lee, Morris Sanders
+Mentor: Douglas Leaman1 and Haewon An2
+Department: 1Biology and Environmental Science and 2Chemistry
+Category: Undergraduate Independent
+Year: 2025
+
+Abstract:
+Viruses elicit innate immune responses by activating pattern-recognition receptors, such as toll-like receptors or cytosolic RIG-I-like helicases (RLHs), which sense viral single stranded or doubled stranded (ds) RNAs. A critical outcome of innate immune pathway activation is the induction of type I interferons (IFNs), which act upon surrounding cells to establish an antiviral state and stimulate adaptive immune responses. RING finger protein 114 (RNF114), the focus of this presentation, is an E3 ubiquitin ligase that we have characterized as a negative regulator of RLH-mediated IFN transcription and innate immune gene expression in vitro and in vivo. In this study we investigated whether RNF114 might also impact Stimulator of Interferon Genes (STING) signaling, which coordinates with RLHs to detect additional RNA and DNA viruses. To address this possibility, we: 1) performed a series of IFN promoter/luciferase reporter assay studies with a constitutively active STING and RNF114, 2) assessed STING degradation by RNF114 following co-transfection, and 3) investigated whether the two proteins associated using affinity pull-down studies. Our data showed that STING activation of an IFN promoter is suppressed by RNF114 in a manner similar to RLH inhibition, suggesting that RNF114 targets either a common pathway intermediate, or STING itself. Future studies will utilize primary cells from knockout mice to see if STING or its downstream signaling factors are altered in expression in the absence of RNF114. Long term studies will assess RNF114 knockout mouse responses to STING agonists or DNA viruses and development of autoimmune pathologies.
+
+Title: ROTENONE INHIBITS HUMAN BRAIN ENDOTHELIAL CELL MIGRATION
+Lead Presenters: Franziska Dempwolf, Hongyu Lin
+Other Authors: Nadine Rita Bulonza Bisimwa, Anil Sakamuri, David S. Ro
+Mentor: Siva S.V.P. Sakamuri
+Department: Chemistry
+Category: Undergraduate Independent
+Year: 2025
+
+Abstract:
+Brain microvascular endothelial cells (BMECs) are critical in maintaining blood flow, blood-brain barrier (BBB) integrity, and neurovascular coupling. These cells regulate nutrient exchange and immune surveillance in the central nervous system (CNS), making their function essential for brain homeostasis. While rotenone, a mitochondrial complex I inhibitor, is widely known to impair neuronal function and induce oxidative stress, its impact on BMECs remains unexplored. In this study, we investigated the effects of rotenone on BMEC migration using a wound-healing assay. Human brain endothelial cells (HBECs; Cell Systems, passage 8) were seeded in twenty-four well plates and grown to 100% confluency. A uniform scratch was made, and cells were treated with 0.5 µM rotenone. Phase-contrast images were captured using an ECHO microscope, and wound closure was analyzed with ImageJ. After 12 hours, rotenone significantly impaired cell migration, with a 4.39-fold decrease in wound coverage compared to control (n = 3–4 wells). Mean ± SE wound closure was 4.75 ± 2.45% in controls and 20.9 ± 4.4% in the rotenone group (p = 0.023, two-tailed Student’s t-test). Given that rotenone disrupts mitochondrial function and increases reactive oxygen species (ROS), our findings suggest that mitochondrial dysfunction may underlie the impaired migration of BMECs. While rotenone is known to affect neurons and other brain cells, its role in BMEC function has not been previously studied. These results highlight the need for further investigation into how mitochondrial dysfunction in endothelial cells contributes to cerebrovascular pathology.
+
+Title: INTEGRATING INFECTIOUS HEMATOPOIETIC NECROSIS VIRUS MATRIX (M) PROTEIN FUNCTIONAL DATA INTO THE DEVELOPMENT OF AN ATTENUATED VIRUS FOR VACCINE DEVELOPMENT
+Lead Presenters: Lama Farris, Shelbi Rall
+Other Authors: Kaleb Beasley, Jeffrey Ringiesn
+Mentor: Haewon An1 and Douglas Leaman2
+Department: 1Chemistry and 2Biology and Environmental Science
+Category: Undergraduate Independent
+Year: 2025
+
+Abstract:
+Infectious Hematopoietic Necrosis Virus (IHNV) is a member of the Rhabdoviridae family that causes severe viral infection and disease in salmonids. During viral infection, the innate immune system is activated, including upregulation of type I interferons that mediate antiviral responses. We’ve shown that rhabdoviral matrix protein (M) plays an important role in blocking cellular gene expression, and thus innate immune responses, by inhibiting host RNA polymerase II. We showed previously that IHNV M protein N terminal deletions of greater than five amino acids (∆5N, ∆10N, ∆20N) resulted in loss of protein stability/detection, and that mutations at the C-terminus altered protein half-life via an interplay between the N- and C-termini. Protein ubiquitination within the C-terminus was implicated and point mutations of three lysines in the C-terminus (K190/193/195A) blocked M instability associated with N-terminus deletions (∆5N and ∆10N). Having validated these results, we have now moved toward creating attenuated recombinant viruses harboring M mutations, including ∆10N, ∆10NC and ∆10N-K190/193/195A. To accomplish this, mutant M genes were PCR amplified and cloned into a full-length viral genome after excision of the wild type M gene. Recombinant genomes were validated by PCR and transfected into EPC fish cells to confirm expression of mutant M. Quantitative RT PCR was used to confirm the presence of M transcripts from the complete genome. Future goals will be to assess virus production and the ability of mutants to support viral replication and impact immune suppression.
+
+Title: QUANTIFYING ARM SWIMMING IN THE OCTOPUS MUUSOCTOPUS ROBUSTUS
+Lead Presenters: J. Ryan McMichael
+Other Authors: Joost Daniels, Kakani Katija, Paul Roberts
+Mentor: Christine Huffard1, M. Florencia Breitman2
+Department: 1Monterray Bay Aquarium Research Institute 2Biology and Environmental Science – AUM
+Category: Undergraduate Independent
+Year: 2025
+
+Abstract:
+The locomotion and object manipulation abilities of the octopus’ hydrostatic limbs are backed with incredible dexterity and effective force, inspiring promising applications as a model for soft robotics. While research on octopus biomechanics tends to emphasize the versatility of their body and degree of freedom in their movement, we must consider that specific motions will be selected for if they confer fitness. These develop into a predictable set of actions and behaviors, and research has shown that practical actions like punching and tactile communication culminate in a finite number of efficient, stereotyped movements. Arm swimming, the propulsion gained from oscillation of all 8 arms, may provide an excellent model of stereotyped motion, but still lacks formal analysis. By measuring 138 arm angles throughout 14 minutes of arm swimming motion in 8 Muusoctopus robustus individuals, we can recognize and quantify variation and consistencies in movements to identify the underlying fitness and efficiencies of arm swimming in this species.
+
+Title: REAL-TIME TACTILE TEXTURE CLASSIFICATION AND BIOMECHANICAL SENSING USING LOW-COST EMBEDDED SYSTEMS
+Lead Presenters: Ashwin Kulangara Shaji, Chandana Pagudala
+Other Authors: Shivaji Mallela
+Mentor: Olcay Kursun
+Department: Computer Science
+Category: Graduate Independent
+Year: 2025
+
+Abstract:
+This work presents the design of a low-cost embedded system for real-time tactile texture classification. A hardware platform is built from budget-friendly components, including an Arduino Nano 33 BLE Sense, an external analog-to-digital converter ADS1115, and a combination of 3-axis accelerometers and piezoelectric vibration sensors. The total system cost is less than $60, making it suitable for scalable and accessible tactile sensing applications. We are currently collecting a dataset of vibrotactile signals by interacting with various surface textures under controlled motion conditions. To analyze signals in real-time, we use FFT-based frequency analysis for feature extraction followed by compact machine learning classifiers optimized for microcontroller deployment. The experiments aim at identifying optimal sensor configurations, signal lengths, and classification methods. Beyond texture classification, the real-time sensitivity and accuracy of the sensors allow capturing subtle biomechanical phenomena. We created a simple application that displays a growing circle on a tablet, and subjects are asked to follow this expanding circle using an Apple Pencil attached to our sensor system. This controlled movement ensures consistent speed, enabling the sensor system to record vibrations accurately. The captured data allows visual representation and quantification of hand tremors and offers valuable insights into conditions like tremor. This sensor system can help telediagnosis of Parkinson's disease and it has potential biomedical applications, such as evaluating skin properties like hardness or softness, aiding clinicians during palpation tasks for early detection of skin disorders or cancers. These example applications are potential future directions for the proposed low-cost embedded tactile sensing solution.
+
+Title: A FAST AI-BASED LOW-HOMOLOGY PROTEIN SEQUENCE ALIGNMENT
+Lead Presenters: Robert Spicer
+Other Authors: Sai Prashanthi Pallati, Ben Okeke, and Olcay Kursun
+Mentor: Sutanu Bhattacharya
+Department: Computer Science
+Category: Graduate Independent
+Year: 2025
+
+Abstract:
+Accurate detection of protein sequence homology is essential for understanding evolutionary relationships and predicting protein functions, particularly for low-homology proteins in the "twilight zone" (<30% sequence identity). Traditional sequence alignment methods often fail in these cases, and while AlphaFold2 has revolutionized protein structure prediction, its applicability is limited by the vast gap between known protein sequences and predicted structures. Metagenomics datasets alone reveal billions of unique protein sequences, with only a fraction having experimentally determined or reliably predicted structures. Additionally, AlphaFold2's high computational cost often requires hours or even days for large-scale analyses. To address these challenges, we propose a novel embedding-based sequence alignment approach that leverages residue level embeddings from pre-trained protein language models (e.g., ProtT5, ESM-1b). Our tool integrates clustering and double dynamic programming (refer to Figure 1) to achieve Spearman correlation coefficients of up to 0.93 (TM-min), outperforming existing embedding based tools, and completes alignments in seconds, offering a scalable and efficient solution for bioinformatics applications.
+
+Title: MODELING EFFECTS OF EXPLICIT TRADE-OFFS ON THE EVOLUTION OF DISPERSAL
+Lead Presenters: Christian VanErmen, Cleveland Stockman
+Other Authors: Jerome Goddard II
+Mentor: —
+Department: Mathematics
+Category: Undergraduate Independent
+Year: 2025
+
+Abstract:
+This talk explores the mathematical modeling of dispersal evolution in spatially heterogeneous landscapes, focusing on the explicit trade-offs between dispersal strategies and intrinsic growth rates. Using reaction-diffusion models, we investigate how these trade-offs, including density-dependent and density-independent emigration, influence the evolution of dispersal in fragmented habitats. We examine the effects of patch size and matrix hostility on dispersal decisions and explore how these factors shape population dynamics, species persistence, and adaptation. By modeling these trade-offs, we aim to gain insights into the mechanisms driving species distribution in changing environments.
+
+Title: DOES KUDZU’S SOIL MICROBIOME IMPROVE DROUGHT TOLERANCE IN CROPS?
+Lead Presenters: Darlyn Bravo
+Other Authors: Brittney Smith, Benedict C. Okeke
+Mentor: Claudia Stein
+Department: Biology and Environmental Science
+Category: Undergraduate Independent
+Year: 2025
+
+Abstract:
+Ensuring food security for the growing human population under global change is a daunting challenge our society is facing. Drought is undoubtedly one of the major abiotic stresses to crop productivity. One promising avenue is the use of plant growth-promoting microbes (PGPM) as bio-fertilizers. We are investigating the potential of extracting PGPM’s from the invasive legume kudzu (Pueriara montana var. lobata). Kudzu is one of the fastest growing and most noxious invasive plants in the US. Results from previous experiments indicate that root endophytes associated with kudzu can have a growth promoting effect on some plant species. Furthermore, kudzu is also known for its ability to endure water stress and soil microbes have been shown to positively influence water regulation for other plants, we propose that kudzu’s drought tolerance is mediated via the soil microbiome. We performed whole-soil inoculation experiments in the greenhouse to assess how kudzu’s soil microbiome influences drought responses of kudzu itself and four different crop species. Our results indicate that during its early seedling establishment phase, kudzu is negatively affected by drought. Growing in its own soil microbial community did not improve growth under drought compared to growing with a non-kudzu associated soil microbiome nor growing without any live soil microbiome. The crop species did not show any improved growth under drought when grown in soil with the kudzu-associated soil microbiome. We discuss future experiments needed to fully assess if kudzu’s soil microbiome could provide drought tolerance to itself or crop species.
+
+Title: ANTIBACTERIAL ACTIVITY OF WHOLE-CELL AND CELL-FREE CULTURE SUPERNATANT OF A PAENIBACILLUS SPECIES
+Lead Presenters: Cameren Cunningham
+Other Authors: Adrian Lewis, Jecayla Howard, Madison Foshee
+Mentor: Benedict Okeke
+Department: Biology and Environmental Science
+Category: Undergraduate Independent
+Year: 2025
+
+Abstract:
+The increasing resistance of microbes to antibiotics is a serious public health problem. Antibiotics include natural microbial products, and other synthetic products that inhibit or inactive microbes. They were originally from microbial sources, but synthetic products with similar activity are also as antibiotics. The discovery of the first antibiotic penicillin by Alexander Fleming was a major development in the treatment of microbial diseases with antibiotics. Natural evolution in soil environments can lead to the emergence of unique antibiotic-producing strains. Thus, in this study, we screened microbes isolated from soil samples for antibacterial activity on both Gram-positive and Gram-negative bacteria. One isolate was identified by 16s rRNA gene sequence analysis as Paenibacillus species C21 (99% identical to Paenibacillus polymyxa). Whole cells of Paenibacillus species C21 displayed antibacterial activity against Staphylococcus aureus and Citrobacter freundii. Further studies on the spectrum of antibacterial activity of cell-free culture supernatant of Paenibacillus species C21 are in progress.
+
+Title: ANTIOXIDANT ACTIVITY OF LACTIC ACID BACTERIA AND YEASTS SELECTED FROM LOCAL FRUITS AND VEGETABLES
+Lead Presenters: Madison Foshee
+Other Authors: Adrian Lewis, Cameren Cunningham, Jecayla Howard, Kayla Stojak and Tikayla Barker
+Mentor: Benedict Okeke
+Department: Biology and Environmental Science
+Category: Undergraduate Independent
+Year: 2025
+
+Abstract:
+Lactic acid bacteria (LAB) and yeasts are important industrial organisms because of their probiotic and fermentation qualities. Strains of LAB can have antioxidant or antibacterial effects. Antioxidants mitigate oxidative damage and play crucial roles in promoting health and preventing disease. Certain yeasts produce carotenoid pigments that have potential industrial applications. This study focused on potential antioxidant and antibiotic activity of lactic acid bacteria and yeast isolated from local fruits and vegetables collected from farmers markets in Montgomery, AL. Selected LAB and yeasts were identified using 16S rRNA gene sequence and the ITS DNA sequence, respectively. Identified isolates include BLU1 (Latilactobacillus sakei 100 % similarity), BLU 2 (L. Sakei 100% similarity), BLA1 (Paenibacillus ourofinensis 100 % similarity), BLUY2 (Sporobolomyces pararoseus 100% similarity), PINY2 (Rhodotorula mucilaginosa 100% similarity), OKRY2 (S. pararoseus 100% similarity) and RPY1 (S. pararoseus 100% similarity). DPPH (2,2-diphenyl-1-picrylhydrazyl) radical scavenging assays indicated that isolates BLU1, BLU2, PINY2, PPY2 and TOMY1 displayed antioxidant activity. BLU1 and BLU2 exhibited the highest antioxidant activities, with DPPH scavenging rates of 22.52% and 37.72%, respectively. BLU2 displayed strong antibacterial activity against Citrobacter freundii. Future directions include a comparison of the antioxidant effects of the lactic acid bacteria strains with antioxidants.
+
+Title: MULTI-YEAR AMPHIBIAN SAMPLING FOR BATRACHOCHYTRIUM DENDROBATIDIS AND B. SALAMANDRIVORANS IN A TRIBUTARY OF THE TALLAPOOSA RIVER, ALABAMA
+Lead Presenters: Kyla Garcia and Nathan Lochte
+Other Authors: Bagley, J.C., Aho, J., Grear, D., Winzeler, M., Hyman, O., Andress, C., Batten, N., Bozeman, S., Budo Shet, H., Dorsey, S., Dozier, H., Dunn, K., Garcia, I., Garcia, K., Gibson, G., Glenn, S., Graham, L., Henry, T., Hill, C., Johnson, M., Jordan, L., Julien, K., Kaur, R., Khan, S., Langford, C., Lebron Lopez, J., Lochte, N., Logan, L., Makowski, E., Mejia, N., Panchal, K., Robbins, A., Scott, T., Shirosky, J., Slemp, D., Smith, B., Wilson, J., Xu, J., Stoeckel, D., and Breitman, M.F.B.
+Mentor: Maria Florencia Breitman1 and Justin Colonial Bagley2
+Department: 1Biology and Environmental Science and 2Alabama Department of Environmental Management
+Category: Undergraduate Course-Based
+Year: 2025
+
+Abstract:
+Amphibians are susceptible to various diseases, including chytridiomycosis, a severe disease of keratinized skin tissues that poses a major threat to amphibians. About 10 years ago, some European salamanders have been lethally affected by the chytrid Batrachochytrium salamandrivorans (Bsal); this fungus is expected to invade North America and affect our amphibians negatively. Luckily, multiple organizations have been working together towards screening North America to act immediately when a positive Bsal is discovered. This network (SNAPS) relies on undergraduate students at 60+ institutions, to conduct the field sampling. AUM students have participated in SNAPS for the last 3 years. We have written the first SNAPS paper including students, and it is now accepted for publication reporting our findings (no Bsal yet in North America); it is worth noticing that 30+ AUM students are co-authors in this publication. SNAPS at AUM includes 8-15 undergraduate students every spring. Here we present results of our recently accepted paper.
+
+Title: AI-BASED DETECTION OF COLIFORM COLONIES USING CNN TRANSFER LEARNING FOR WATER QUALITY MONITORING
+Lead Presenters: Abria Gates
+Other Authors: Shivaji Mallela
+Mentor: Olcay Kursun1 and Benedict Okeke2
+Department: 1Computer and Computer Information Systems and 2Biology and Environmental Science
+Category: Graduate Independent
+Year: 2025
+
+Abstract:
+Water contamination by pathogenic microorganisms such as bacteria and viruses poses a significant public health risk globally. Indicator organisms like Escherichia coli and other coliform bacteria, typically originating from fecal contamination, are essential for assessing water quality. Traditional detection methods for coliform bacteria are costly, labor-intensive, and time-consuming. This study explores advanced artificial intelligence (AI)-based approaches, specifically utilizing computer vision and image processing techniques, for the automated recognition and classification of bacterial colonies on solid culture media. An image dataset, including data collected at AUM, comprising snippets of bacterial colonies—such as E. coli, Citrobacter freundii, Enterobacter aerogenes, and Klebsiella pneumoniae—was analyzed. Colony detection and segmentation were performed using YOLO, supplemented with comparisons using ImageJ. Feature extraction was carried out through Histogram of Oriented Gradients (HOG), Local Binary Patterns (LBP), and Convolutional Neural Networks (CNN) with transfer learning. Classification accuracy was evaluated using Support Vector Machines (SVM), Random Forests, and CNN models. Results demonstrated improved accuracy in colony recognition and species-level classification with CNN-based transfer learning. This study shows the potential of AI-driven techniques to streamline and enhance microbial water quality monitoring. While simpler feature extraction methods showed effectiveness, as future work we will show that neural networks are more versatile when handling color images and incorporating additional metadata as inputs.
+
+Title: INVESTIGATING LEAF AREA AS AN INVASIVE TRAIT OF COMMON PERIWINKLE
+Lead Presenters: Cody Kilpatrick
+Other Authors: —
+Mentor: Claudia Stein
+Department: Biology and Environmental Science
+Category: Undergraduate Course-Based
+Year: 2025
+
+Abstract:
+Non-native invasive plant species out-compete native organisms, reducing biodiversity and altering the abiotic environment, causing environmental and/or economic damage in their introduced ranges. Morphological traits like plant size, leaf area, influence the fitness of a plant. Therefore, pre-adaptation to the climate found in a plant’s novel range may influence its ability to colonize and establish in a new location. Phenotypic plasticity in morphological traits is another mechanism that can aid plants in colonizing new areas, but many invasive species also have the potential to rapidly evolve once they are exposed to novel environments. We used digitized natural history collections to investigate whether leaf area of Vinca minor differs in their invaded range compared to their native range. Vinca minor, commonly known as periwinkle, is a perennial evergreen that forms dense and extensive mats along forest floors. It was first introduced into North America in the 1700s as an ornamental and is native to Europe and Western Asia. Our results showed that mean leaf area of Vinca minor was significantly higher in its native range (mean leaf area 348.1 mm2) compared to its invasive range (mean leaf area 295.7 mm2). Having a smaller leaf area in the introduced ranges might indicate rapid adaptation to the new environment, or lower understory competition. It might also indicate a founder effect, where genetic variability of the initially introduced individuals was low and contained mainly individuals with smaller leaves. Future molecular studies are needed to understand the underlying mechanisms.
+
+Title: THE EFFECTS OF MANUKA HONEY ON MELANOMA CELL GROWTH AND PROLIFERATION
+Lead Presenters: Emilee McCracken
+Other Authors: Aeryn Nations
+Mentor: Ann Marie O’Neill, Tim Kroft
+Department: Biology and Environmental Science
+Category: Undergraduate Independent
+Year: 2025
+
+Abstract:
+Melanoma, an aggressive form of skin cancer, is characterized by uncontrolled growth of melanocytes. Despite advances in treatment, the prognosis for advanced melanoma remains poor, highlighting the need for novel therapeutic strategies. Recent studies have investigated the potential of natural compounds, such as manuka honey, for their anticancer properties. Manuka honey, derived from the nectar of the Leptospermum scoparium plant, contains bioactive compounds such as methylglyoxal (MGO), which has demonstrated antimicrobial and anti-inflammatory effects. Emerging evidence suggests that manuka honey may also exhibit antiproliferative activity against cancer cells. This study explores the effects of manuka honey on melanoma cell growth, focusing on its ability to inhibit cell proliferation. In vitro experiments were conducted on melanoma cell line B16-F10, where cells were treated with varying concentrations of manuka honey. The results showed a dose-dependent reduction in cell viability and proliferation, suggesting that manuka honey exerts a significant inhibitory effect on melanoma cell growth. The potential mechanisms underlying these effects may involve the modulation of signaling pathways related to cell cycle regulation and apoptosis. These findings provide promising insights into the therapeutic potential of manuka honey as an adjunctive treatment for melanoma. Further studies are needed to explore its effectiveness and its possible role in combination with existing melanoma therapies.
+
+Title: DISCOVERING REPTILE AND AMPHIBIAN DIVERSITY IN AUM’S FOREST
+Lead Presenters: Ryan McMichael and Cody Kilpatrick
+Other Authors: Tony Bamberg, Da’Vine Bush, Kayin Dunn, Aly Elbadawy, Kyla Garcia, Noelle Kim, Antonio Neal, Justin C. Bagley, M. Florencia Breitman, and Richard Chen
+Mentor: M. Florencia Breitman
+Department: Biology and Environmental Science
+Category: Undergraduate Course-Based
+Year: 2025
+
+Abstract:
+Alabama has a rich and diverse herpetofauna with ~166 species and the highest diversity in the Southeastern Coastal Plain (SCP) biodiversity ‘hotspot’. Many of these species are now threatened or endangered because of the impacts of urbanization and other human activities. Auburn University in Montgomery (AUM) is located in the city of Montgomery and has a ~250-acre secondary urban forest. Urban forests have emerged as habitats that can balance the negative effect of urbanization on diversity, and reptiles and amphibians are considered model organisms for studying ecological and evolutionary patterns, including ecosystem health and function in natural and urban areas. Here, we set out to understand the community composition of the AUM forest herpetofauna, as well as its genetic diversity under different management treatments (invasive species removal, prescribed burns, prairie habitat, and control). In this presentation, we will summarize the results of our first year of sampling the Long-Term Ecological Research Experiment (LTERE) studying herp diversity in the AUM forest using 40 pit-fall trap surveys. Specimens are identified, measured, and released. Our study will allow us to make recommendations regarding conservation, preservation, and management of habitats. In addition, our study allows for students and classes to work on campus on relevant ecological questions, increasing AUM student representation in science.
+
+Title: DEVELOPMENT OF A HYBRID MONOCYTE CANCER CELL MODEL FOR THE STUDY OF METASTASIS
+Lead Presenters: Aeryn Nations
+Other Authors: Madison Cole
+Mentor: Ann Marie O’Neill, Tim Kroft
+Department: Biology and Environmental Science
+Category: Undergraduate Independent
+Year: 2025
+
+Abstract:
+Metastatic disease is the cause of mortality in 90% of solid tumors, yet the underlying mechanisms whereby a cancer cell from a primary tumor travels to and colonizes a distant site have not yet been fully elucidated. While cell-cell fusion occurs as a normal and essential cellular process, aberrant cell fusion has been linked to metastasis. The fusion of tumor cells with monocytes may enhance the metastatic potential due to changes in gene expression patterns in hybrids, generating cells that are both motile and capable of continuous cell division. Much remains unknown about the post-hybridization gene activation events leading to this phenotype. The mechanisms by which hybrid cells activate genes that enhance cell migration remain unresolved and is an important area for further investigation. To conduct these investigations, it is necessary to first establish a hybrid model. The monocyte cell line RAW264.7 was transfected to express GFP (RAW-GFP) and resistance to G418, and the colorectal cancer cell line MC-38, transfected to express RFP (MC-38-RFP) and resistance to blasticidin. Cells were cocultured under various conditions, including those that replicate the tumor microenvironment, and hybrids selected in media containing both G418 and blasticidin. The fused cells provide a model in which to compare the genotype and phenotype of these cells to the parental tumor cells, MC-38-RFP.
+
+Title: A DEEP LEARNING FRAMEWORK FOR SCALABLE PROTEIN STRUCTURAL SIMILARITY SEARCH FROM SEQUENCES
+Lead Presenters: Sai Prashanthi Pallati
+Other Authors: Robert Spicer, Ben Okeke, and Olcay Kursun
+Mentor: Sutanu Bhattacharya
+Department: Computer Science
+Category: Graduate Independent
+Year: 2025
+
+Abstract:
+Background: Protein sequence similarity has traditionally been the primary approach for identifying evolutionary relationships and functional annotations. However, this method is often limited when dealing with remote homologs with low sequence similarity (<30%), where structural information provides a more reliable metric for assessing protein relationships. Existing structural alignment tools require either experimentally determined structures or computationally intensive structure predictions, making large-scale (e.g., metagenomic) structural similarity searches challenging. Methods: Our work introduces a deep learning-based approach that enables the prediction of structural similarity scores directly from sequence pairs. The model is trained using a twin neural network architecture to approximate structure-based alignment scores, allowing for efficient indexing, and querying of large protein sequence databases. By transforming protein sequences into vector representations that encode structural features, our approach facilitates rapid structural similarity searches without the need for explicit structure computation. Results: Our method significantly improves sensitivity in detecting remote homologs compared to traditional or recent AI-based sequence alignment techniques. Benchmarking on multiple protein structure databases demonstrates that it achieves high accuracy in predicting structural similarity, even for proteins with minimal sequence identity. Additionally, our approach scales efficiently, allowing for rapid and accurate searches across large protein sequence datasets. The results highlight the effectiveness of this method in enhancing structural annotation and remote homology detection, providing a scalable solution for large-scale protein sequence analysis.
+
+Title: OCEAN GENES: DISCOVERING SUBSTRATES FOR MEMBRANE TRANSPORTERS IN RUEGERIA POMEROYI
+Lead Presenters: Kushali Panchal, Kelly Corbin
+Other Authors: Alexze DeJarnett, Sarah Folmar, Paige Blankenship, Romeria Martin, Caje Naranjo, Gabriel Rissman, Anjelica Valencia, Victoria Centurino, Erin Dolan, McKenzie Powers, Madeline Kriston Shepard, Jeremy Schreier, William Schroer
+Mentor: M. Florencia Breitman1 and Mary Ann Moran2
+Department: 1Biology and Environmental Science and 2Marine Sciences, University of Georgia
+Category: Undergraduate Course-Based
+Year: 2025
+
+Abstract:
+Carbon is the foundation of all organic molecules and plays a crucial role in climate change. Carbon can be incorporated into biomass, can be sedimented at the bottom of the ocean, or can be in the atmosphere as CO2, making the Earth warmer along with other greenhouse gasses. Studying the oceans is crucial because that’s where half of the Earth’s photosynthesis happens; and in particular studying bacteria in the ocean is of extreme importance because they drive key steps in the carbon cycle. The bacteria Ruegeria pomeroyi is emerging as a model organism to understand carbon flux in the ocean. Ruegeria pomeroyi has a published genome and is easy to grow in the lab; colleagues from UGA have been researching this organism from +20 years, and have developed ~4000 lines of mutants along with lab protocols for the discovery of genes that regulate metabolite uptake. In this work we describe the results of a Course-based Undergraduate Research Experience that was conducted in Spring 2025 at Auburn University at Montgomery. In this study, we grew ~ 20 mutant R. pomeroyi bacteria that have unique disruptions in transporter genes for which the substrate taken up by the transporter is unknown, on a variety of substrates. We performed t- tests to understand if growth was significantly different and we discussed results in light of available literature.
+
+Title: PROTECTIVE ROLE OF MAMMALIAN SESTRIN2 AGAINST ARSENIC-INDUCED CYTOTOXICITY
+Lead Presenters: Michkayla Prince, Colby Tillman
+Other Authors: Mason McCollister
+Mentor: David S. Ro
+Department: Chemistry
+Category: Graduate Independent
+Year: 2025
+
+Abstract:
+Sestrins, proteins that accumulates in cells exposed to environmental or genotoxic stress, play an important role in cell health, protecting tissues from damage or death by removing reactive oxygen species and inhibiting mTORC1 to induce autophagy. Arsenic is an environmental pollutant and is classified as class 1A carcinogen. One member of the Sestrin family, Sestrin2, also plays a role in inducing autophagy, clearance of damaged proteins and organelles, which is crucial for cellular homeostasis and integrity. However, while the molecular mechanism by which Sestrin2 induces autophagy in cells and tissues has been studied, how it induces autophagy against arsenic-induced toxicity is significantly less understood. Given the importance of cellular homeostasis in controlling redox status and energy metabolism, it is important that this knowledge gap be filled. The goal of this project is to determine the novel defense mechanisms by which Sestrins protect mammalian cells through autophagy induction caused by arsenic induced oxidative stress. Our central hypothesis is that the ULK1/Sestrin2 complex is activated by arsenic-induced oxidative stress, and that it induces autophagy, thus preventing further oxidative damage, improving cell metabolism. The following research questions will be pursued to test this hypothesis: 1) Are Sestrin2 and ULK1 robustly induced by ROS causing- arsenic? 2) How Sestrin2 regulates the gene and protein expressions of autophagy pathway? 3) Does the induction of Sestrin2 useful for autophagy activity, recycling of damaged protein? We will utilize western blotting, qRT PCR and immunofluorescence techniques in wild type and Sestrin2- manipulated mammalian cells to investigate the protective roles of autophagy process against arsenic induced toxicity. The work proposed here will shed new light on the physiological roles of Sestrin2 in maintaining cellular homeostasis and in protecting cells against arsenic induced oxidative stress and its associated metabolic disease.
+
+Title: FLIGHT SCHOOL: USING PEER-MENTORS TO MAKE CLASS AWESOME
+Lead Presenters: Neha Sehar, Emilee McCracken
+Other Authors: Curtney Pettaway
+Mentor: Tara Beziat1, Matthew Grilliot2, M. Florencia Breitman2, Chelsea Ward2
+Department: 1Curriculum, Instruction, & Technology and 2Biology and Environmental Science
+Category: Undergraduate Independent
+Year: 2025
+
+Abstract:
+Our NSF-funded model, ‘Flight School’, uses a tiered peer-mentor structure that allows learners and mentors to engage directly with the learning experience, provide feedback, and make real-time adjustments to the learning process. After 3 years of research and implementation, our results indicate that training undergraduate students and faculty in community building, communication, lesson planning, and concepts from educational and cognitive psychology positively impact the learners, mentors, and faculty. Specifically, learners showed significant learning gains, and a reduction in their DFW rates, mentors showed a greater sense of belonging in science, and faculty reported higher satisfaction while teaching. Our results suggest that Flight School can emerge as a mechanism to increase representation in STEM jobs and careers because empowers students to advocate for their learning and promotes a more efficient use of class time and study sessions
+
+Title: USING NATURAL HISTORY COLLECTIONS TO ASSESS FACTORS INFLUENCING RANGE EXPANSION OF INVASIVE PLANTS IN THE UNITED STATES
+Lead Presenters: Brittney Smith
+Other Authors: Braxton Talbot, Kailey Higgins
+Mentor: Claudia Stein
+Department: Biology and Environmental Science
+Category: Undergraduate Course-Based
+Year: 2025
+
+Abstract:
+Invasive plant species quickly reproduce and thrive in a variety of conditions outcompeting plant species native to the ecosystems. Understanding factors that contribute to their rapid range expansion can substantially improve our ability to prevent and control their spread. We used digital natural history collections data, (i.e. herbarium data from iDigBio, citizen science observations from GBIF) to compare the rate of range expansion of three invasive species Ligustrum sinense (Chinese privet), Lonicera japonica (Japanese honeysuckle) and Imperata cylindrica (Cogon grass) in North America. Privet and honeysuckle are escaped ornamental plants in the US, as their seeds are spread by birds. Cogon grass was introduced as forage and seeds are wind dispersed. We hypothesized that the wind pollinated and wind dispersed Cogon grass spreads more rapidly compared to Chinese privet and Japanese honeysuckle which both rely on insect pollinators and animals for seed disperal. We used QGIS to map species occurrences in North America and calculated the range expansion for all three species using 20-year intervals. Using covariance analysis, we tested the rate of range expansion. Our results showed that Chinese privet had the fastest range expansion, while range expansion rates did not differ significantly between Cogon grass and Japanese honeysuckle. Our study also showed that the range expansion rate for Chinese privet increased significantly 80 years post introduction, indicating that monitoring the range expansion of potential invasive species via natural history collections could be an important early warning tool to identify invasive species that require implementation of large-scale distribution restrictions.
+
+Title: UNSUPERVISED CLUSTERING OF PROTEIN LANGUAGE MODEL EMBEDDINGS FOR HOMOLOGY DETECTION
+Lead Presenters: Priscilla Udomprasert, William Rochell
+Other Authors: Ben Okeke, Olcay Kursun
+Mentor: Sutanu Bhattacharya
+Department: Computer Science
+Category: Undergraduate Independent
+Year: 2025
+
+Abstract:
+Background: Homology detection plays a crucial role in understanding protein evolution and functional annotation. Traditional sequence similarity-based approaches often struggle to detect remote homologs with low sequence identity, necessitating the use of structure-based or machine learning methods. Recent advancements in protein language models have provided new opportunities for improved homology detection by generating meaningful sequence representations. However, efficient clustering of these embeddings to extract homologous relationships remains a challenge. Methods: Our work employs a protein language model to generate embeddings that capture evolutionary and functional signals from protein sequences. Using an unsupervised clustering approach, we systematically optimize the grouping of protein sequences based on these embeddings. The impact of different clustering parameters, including the number of clusters and dimensionality reduction techniques, is evaluated to enhance homology detection. Comparative analyses with existing methods assess the accuracy and scalability of this approach. Results: Our approach effectively identifies homologous relationships by leveraging protein sequence embeddings and unsupervised clustering. It demonstrates strong performance in grouping related proteins while maintaining scalability for large datasets. The method shows promise in reconstructing evolutionary relationships and functional similarities, offering a computationally efficient alternative to traditional sequence alignment techniques. These findings highlight the potential of embedding-based clustering for large-scale protein analysis and annotation.
+
+Title: SEED PRODUCTION NOT FAST VEGETATIVE GROWTH DRIVES RAPID RANGE EXPANSION
+Lead Presenters: J Myles Wright
+Other Authors: —
+Mentor: Claudia Stein
+Department: Biology and Environmental Science
+Category: Undergraduate Course-Based
+Year: 2025
+
+Abstract:
+Non-native invasive species out-compete native organisms, reduce biodiversity and alter the abiotic environment as they spread, causing environmental and/or economic damage in their introduced ranges. Identifying the attributes that allow invasives to expand their ranges is imperative to preventing and controlling their spread. We used digital natural history collections data, (herbarium data, citizen science observations) to compare the rate of range expansion of two noxious invasive plants, Pueraria montana (kudzu), and Sorghum halepense (johnsongrass) in North America. Both are fast-growing herbaceous perennials that spread rapidly via rhizomes or tuberous roots. They were introduced to North America as livestock feed and soil erosion control in the mid-19th century. Johnsongrass, is wind-pollinated and produces vast numbers of viable seeds easily spread by birds, mixed in baled hay, and on agricultural equipment. Kudzu, a climbing vine in the family Fabaceae, is extremely fast growing, girdles trees and shrubs, and its large trifoliate leaves shade out most understory species. However, kudzu has very low seed viability, possibly due to missing pollinators. We hypothesized that johnsongrass will invade faster due to the sheer number of viable seeds and how easily they are spread. Using QGIS we mapped species occurrences in North America, calculated the range expansion for both species using 20-year intervals. Using covariance analysis, we tested the rate of range expansion. We showed that Johnsongrass did indeed spread faster and had a much larger invasive range over time, leading us to conclude that seed viability and dispersal in this comparison overcame impressive vegetative growth.
+
+Title: INTERDISCIPLINARY ARDUINO PROJECTS IN UNDERGRADUATE PROGRAMMING EDUCATION
+Lead Presenters: Samuel Alford, Logan Davies
+Other Authors: Lexi Brock, LaQuante Calloway, Larry Davis, Termerion Evans, Preston Hamilton, Duane Harris, William Judge, Jordan Julian, Imran Kochi, Matthew Middleton, Robert Mitchell, Aryan Anilkumar Patel, Donald Pearson, Omari Pinkett, Landon Sankey, Hyobeen Shin, Mostakim Sifat, Adam Sires, Sean Stanfield, Keia Strickland, Jun Thit, MOKSHITA VARMA VARADA RAJU, Divija Reddy Varkuti, Quan Vo, Christopher Williams, Dwight Williams, Goldton Williams, Kody Williams, Ryan Yang.
+Mentor: Jesus Linares
+Department: Computer Science and Computer Information Systems
+Category: Undergraduate oral abstracts
+Year: 2024
+
+Abstract:
+This study explores the transformative impact of Arduino-based projects on undergraduate programming education and their broad spectrum of research applications. The Arduino microcontroller serves as a vital link between theoretical concepts and practical applications, a critical aspect often overlooked in traditional pedagogical approaches. By integrating Arduino-based projects into undergraduate curricula, students not only develop programming skills but also directly confront real world challenges. These projects, spanning fields like biomedical science and sustainable agriculture, highlight the interdisciplinary potential of Arduino technology. Students undertook group research endeavors, resulting in a range of innovations, including "Helping Glasses" aiding the visually impaired, "BrainWave LCD Game" merging brainwave technology with gaming, "AI Seeds Spreader" for sustainable agriculture, “Coin sorter” for efficient currency handling, “Automatic Baby Gate” for enhanced child safety, “Baking Helper” for precise kitchen assistance, “Smart Hydrate” for personalized hydration monitoring, “Mental Health AI Supporter” for proactive mental wellness, and “Auto Volume Speaker” for dynamic audio experiences. These projects, alongside others showcased during this symposium, underscore the versatility of Arduino technology. Equipped with various sensors and actuators, Arduino projects captivate student interest and nurture a culture of innovation. Preliminary findings indicate the transformative impact of these projects, sparking students' passion for computer programming and encouraging exploration across technological and scientific domains. Further research is needed to evaluate the long-term effects of Arduino integration and to identify additional interdisciplinary research opportunities.
+
+Title: STRUCTURE-FUNCTION RELATIONSHIP OF INFECTIOUS HEMATOPOIETIC NECROSIS VIRUS MATRIX (M) PROTEIN: ELUCIDATION OF THE ROLES OF CONSERVED RESIDUES IN HOST ANTIVIRAL RESPONSES
+Lead Presenters: Kaleb Beasley and Lama Farris
+Other Authors: Shelbi Rall, Jeffrey Ringiesn
+Mentor: Douglas W. Leaman1 and Haewon An2
+Department: 1Biology and Environmental Sciences and 2Chemistry
+Category: Undergraduate oral abstracts
+Year: 2024
+
+Abstract:
+Infectious Hematopoietic Necrosis Virus (IHNV) is a member of the Rhabdoviridae family that causes severe viral infection and disease in salmonids. During viral infection, the innate immune system is activated, including upregulation of type I interferons that mediate antiviral responses. We’ve shown that Rhabdoviral matrix protein (M) plays an important role in blocking cellular gene expression, and thus innate immune responses, by inhibiting host RNA polymerase II. IHNV M protein N-terminal deletions of greater than five amino acids (∆5N, ∆10N, ∆20N) resulted in loss of protein stability/detection, and loss of anti-transcriptional activity. Interestingly, concomitant deletions at the C-terminus (i.e. ∆5NC, ∆10NC, ∆20NC) restored M protein detection and/or anti-transcriptional activity. We hypothesized that M half-life is regulated via an interplay the N- and C-termini such that protein ubiquitination within the C-terminus is prevented by interference by N-terminal residues that, when deleted, results in rapid protein degradation. Potential Lysine ubiquitination sites in the C-terminus were mutated to assess M protein structural stability. Point mutations of three lysines in the C-terminus (K190/193/195A) blocked M instability associated with N-terminus deletions (∆5N and ∆10N) in a manner that was similar to that observed with the ∆5NC, ∆10NC, ∆20NC variants. These results strongly suggested that these residues are target sites for M protein ubiquitination, and thus impact M stability. Ongoing studies will assess direct ubiquitination of M on the implicated lysines. Future goals are to develop attenuated viral vaccine candidates involving targeted mutations within M to allow infected hosts to mount a better antiviral response.
+
+Title: HOW SMALL IS TOO SMALL? ESTIMATING MINIMUM PATCH SIZE FOR BOBWHITE QUAIL
+Lead Presenters: Jacob Garrett
+Other Authors: —
+Mentor: Jerome Goddard II
+Department: Mathematics
+Category: Undergraduate oral abstracts
+Year: 2024
+
+Abstract:
+Trait-mediated behavioral responses (an indirect effect) to other species can affect population dynamics significantly. One example of such a response is modification of emigration probability, which has the potential to change single species persistence, as well as interactions and community structure. Habitat loss and fragmentation due to anthropogenic activities creates landscape-level spatial heterogeneity where remnant patches are often surrounded by a hostile matrix. Matrix composition or hostility is an important component of a landscape and can have profound effects on species movement and boundary behavior, persistence of a single species, and coexistence of interacting species. In this talk, we will introduce a modeling framework to explore effects of harvesting-mediated emigration on population persistence and share some recent results.
+
+Title: THE EFFECTS OF PRICE AND FOOD SECURITY ON NUTRITIONAL CHOICES
+Lead Presenters: Ay’lanna Turner and Charlesea Witherington
+Other Authors: Christopher Alex Ennis
+Mentor: Jessica Stagner Bodily
+Department: Psychology
+Category: Undergraduate oral abstracts
+Year: 2024
+
+Abstract:
+The price of food has been proposed as one mechanism for food selection, with evidence suggesting that men are more likely than women to pay a higher price when higher energy-dense foods are more expensive than lower energy-dense foods. The current research focused on whether monetary cost of food was associated with preference for foods that may be immediately reinforcing but have negative health effects in the long term. Participants were randomly placed into one of three conditions: Higher energy-dense foods priced higher than lower energy-dense foods, higher energy-dense foods priced less than lower energy-dense foods, and higher energy-dense foods priced the same as lower energy-dense foods. Via computer task, participants were presented with multiple simultaneous discriminations between two food items (one low and one high energy-dense) and allowed to select which they preferred. Following the food choice portion of the task, participants were asked to report their food security status, Body Mass Index (BMI), and their gender identification. The relationships between food choices and food price, food choices and food security, food choices and BMI, and food choices and gender identification will be discussed.
+
+Title: ENHANCING CLOUD CLASSIFICATION IN HYPERSPECTRAL IMAGERY THROUGH PATCH-ORIGIN EMBEDDING AND MACHINE LEARNING
+Lead Presenters: Rachel Zheng, Brandon Phillip Boehm
+Other Authors: —
+Mentor: Hua Yan1, Randy Russell2, Olcay Kursun1
+Department: 1Department of Computer and Computer Information Systems and 2Department of Chemistry
+Category: Undergraduate oral abstracts
+Year: 2024
+
+Abstract:
+This study explores machine-learning techniques for hyperspectral cloud classification on our spectral image dataset captured by the Resonon PIKA XC2 camera, which spans 462 spectral bands. Our preliminary dataset comprises of 28 parent hyperspectral images (HSIs), each a substantial unlabelled image measuring 5000x1500 pixels. With the meteorological expertise within our project team, we hand-labeled pixels by extracting 10 to 20 sample patches from each parent image, each patch consisting of a 50x50 pixel field. This process yielded a collection of 380 patches, each categorically labeled into one of seven cloud and sky condition categories. Aiming to embed the inherent data structure while classifying individual pixels, we introduced an innovative technique to boost classification accuracy by incorporating patch-specific information directly into each pixel's feature vector. This enhancement involved calculating dense coding for patch membership and training a suite of binary classifiers—one for each bit of the dense code—resulting in an enriched 462-dimensional feature vector augmented with our embedding algorithm for patch identification. The posterior probabilities generated by these classifiers, which capture the unique attributes of each patch, were subsequently concatenated with the pixel’s original spectral data to form an augmented feature vector. We then applied various machine learning algorithms to classify pixels, comparing the results with a baseline model devoid of patch-origin embedding. The results show that incorporating the spatial context along with the the spectral information inherent in hyperspectral images enhances the classification accuracy in hyperspectral cloud classification.
+
+Title: THE POWER OF KUDZU - IDENTIFYING SPECIFIC ROOT ENDOPHYTES TO PROMOTE CROP PRODUCTIVITY
+Lead Presenters: Rachel Davenport
+Other Authors: Robert W. Kiefer, Benedict C. Okeke
+Mentor: Claudia Stein
+Department: Biology & Environmental Sciences, College of Sciences
+Category: Undergraduate poster abstracts
+Year: 2024
+
+Abstract:
+The invasive legume kudzu (Pueriara montana var. lobata) is one of the fastest growing and most noxious invasive plants in the US. The roots of legumes are associated with arbuscular mycorrhizal fungi and with rhizobia, which are nitrogen fixating bacteria located in the root nodules. Results from previous experiments indicate that these root endophytes associated with kudzu can have a growth promoting effect on some plant species, such as graminoids, while strongly suppressing the growth of other species, such as legume species native to grassland systems in Alabama. These results support the hypothesis that soil microbial effects are species specific and that different root endophytes might be at play. We performed inoculation experiments in the greenhouse to assess the potential of specific strains of root endophytes (rhizobia and other growth promoting bacteria) isolated from kudzu to improve plant growth of different crop species. Preliminary results indicate that germination rates of crop species belonging to the poaceae increase when inoculated with a bacterial strain isolated from kudzu roots. In contrast, the isolated rhizobial strain did not affect germination rates of the legumes. Our results suggest, that specific root endophytic strains from kudzu have plant promoting properties and might be useful for the development of biofertilizers. Sustainably promoting agricultural productivity is crucial to support our growing human population. The use of biofertilizer is one practice that is more beneficial to plant and soil health compared to chemical fertilizers.
+
+Title: MOLECULAR CHARACTERIZATION OF L-ASPARAGINASE PRODUCING MICROBES
+Lead Presenters: Asya D. Davis
+Other Authors: Katrina Vance, JoAnna Sheffield, Olivia Taylor, Joy Odoms, Christopher Kirk, and Andrea Barnett
+Mentor: Benedict Okeke
+Department: Biology and Environmental Science
+Category: Undergraduate poster abstracts
+Year: 2024
+
+Abstract:
+L-asparaginase (L-Asparagine amidohydrolase, E.C. 3.5.1.1) is a biocatalyst that converts L-asparagine to aspartic acid and ammonia. L-asparaginase is a valuable enzyme used for the treatment of lymphoblastic leukemia (a type of cancer), prevention of acrylamide formation in heat processed foods and development of biosensor for asparagine. In our previous work, we demonstrated production of L-asparaginase in liquid culture by bacteria and fungi isolated from soil environments. Our present work focuses on molecular characterization of selected L-asparaginase producing bacteria and fungi using 16s ribosomal RNA gene and ITS DNA sequences, respectively. Purified PCR amplicons of 16s rRNA gene and ITS DNA were sequenced. GenBank Blast was used for homology and phylogenetic analysis. Bacterial isolate B1-6 was found to be most closely related to Paraburkholderia caribensis strain MNL-133 (100% homology). B1-7 is most closely related to Pseudomonas mosselii strain ABAP1 (99.88% homology). B1-10 was found to be related to Priestia megaterium strain W1156 (99.89% homology), whereas the closest match for BF1-10 was Sporosarcina luteola strain EB270 (99.55% homology). For our fungal isolates, F1-1 displayed 99.36% homology to Mucor circinelloides UWR_148. F1-7 is most closely related to Mucor circinelloides isolate FD (98.98 % homology), F2-3 showed 99.82 % homology to Mucor janssenii culture CBS:227.29. Future work will focus on cloning, expression, characterization of selected L-asparaginase genes and their potential inhibition of cell proliferation activity.
+
+Title: THE EFFECTS OF A TOKEN ECONOMY ON IN-CLASS PARTICIPATION AMONG COLLEGE STUDENTS
+Lead Presenters: Christopher Alex Ennis
+Other Authors: —
+Mentor: Jessica Stagner Bodily
+Department: Psychology
+Category: Undergraduate poster abstracts
+Year: 2024
+
+Abstract:
+Reinforcement theory states that the use of reinforcement following a behavior will increase the likelihood of that behavior occurring in the future. Positive reinforcement and token economies are a reinforcement system in which the learner earns tokens that can be traded in for desired reinforcers, are commonly used in educational settings to shape and maintain positive classroom behaviors. By the time students reach college, the type of reinforcement used by instructors is likely to be both qualitatively and quantitatively different from what students may have experienced early in their education. The current study conducted two experiments that both employed an ABAB design to examine the effect of a token economy on classroom participation. Undergraduate students enrolled in a college course at AUM were recruited as participants and were given a data sheet each day that instructed them to mark the sheet each time they participated. During "A" phases, participation was recorded. During "B" phases, participation was recorded, and participants could exchange three marks for a reward. Reward options included candy, school supplies, and various "play items.” Results of the first experiment suggest that participation increased when reinforcement was available, while results of the second experiment suggest that participation did not increase when reinforcement was available. Further research is needed to determine the relationship between participation and reinforcement using rewards not related to course grades.
+
+Title: EXPLORATION OF IMAGE PROCESSING AND COMPUTER VISON FOR RECOGNITION OF COLONIES OF COLIFORM BACTERIA IN WATER QUALITY ANALYSIS
+Lead Presenters: Abria Gates, Torry Wilson
+Other Authors: —
+Mentor: Olcay Kursun1 and Benedict Okeke2
+Department: 1Computer and Computer Information Systems and 2Biology and Environmental Science
+Category: Undergraduate poster abstracts
+Year: 2024
+
+Abstract:
+Water pollution by pathogenic agents, notably bacteria and viruses, is a critical public health issue. The presence of Escherichia coli and other coliform bacteria in water indicates potential contamination by pathogens, as these bacteria originate from the gastrointestinal tracts of humans and animals. Coliforms are essential indicators of water quality, with contamination sources including sewage and fecal matter. Traditional methods for identifying coliform colonies on agar plates are time-consuming and costly, involving biochemical and molecular techniques. This research introduces an approach using two open-source image processing tools, ImageJ for image analysis and OpenCV for computer vision tasks, integrating machine learning (ML) and artificial intelligence (AI) techniques to streamline the analysis of E. coli and Citrobacter freundii colonies. While ImageJ assists in basic image processing and analysis, our focus on OpenCV includes exploring advanced preprocessing techniques. In this research, we used image binarization to convert images into binary images, blurring and connected component analysis to reduce noise, and the Hough Transform for circle detection. These preprocessing techniques are followed by ML classifiers such as Naive Bayes and Logistic Regression for predicting the presence of specific pathogens based on colony radii and shape descriptors. In our study, we analyzed two images, each containing multiple colonies of Escherichia coli and Citrobacter freundii. Using the two alternative methods, ImageJ and OpenCV, we detected colonies for the two distinct classes. We obtained over 90% accuracy through leave-one-out cross-validation. The proposed method is a potential rapid and cost-effective alternative for pathogen detection in water resources.
+
+Title: SYNTHESIS AND PROPERTIES OF BIS (4-DIMETHYLAMINO)BENZOYLACETONE ETHYLENEDIIMINE AND ITS COPPER COMPLEX
+Lead Presenters: Michael Hayden
+Other Authors: —
+Mentor: Steven Arnold
+Department: Chemistry
+Category: Undergraduate poster abstracts
+Year: 2024
+
+Abstract:
+Copper complexes are known to have antibiotic properties. Additionally, metal complexes of Schiff bases are known to be good catalysts. Schiff base copper complexes with high light absorptivity are under investigation for light harvesting in dyed solar cells. In this work, synthesis of bis (4-dimethylamino)benzoylacetone ethylenediimine (DMABBE) was carried out by adding a solution of ethylenediamine to a solution of 4 dimethylaminobenozylacetone. The reaction was allowed to react over 2 days. The product (DMABBE) is a light yellow solid. To our knowledge, this compound has not been synthesized previously. Identification was performed by 1H and 13C NMR spectroscopy. The copper complex was synthesized from Copper chloride dihydrate with DMABBE in methanol. Properties will include UV-visible spectrum and absorptivity.
+
+Title: OCEAN GENES: DISCOVERING THE FUNCTION OF UNKNOWN MEMBRANE TRANSPORTERS IN RUEGERIA POMEROYI VIA CURE
+Lead Presenters: Kailey Higgins and Sarah Folmar
+Other Authors: Vistoria Centurino, Alexze DeJarnett, Erin Dolan, Jerome Godwin, Julie Langdon, J. Ryan McMichael, Antonio Neal, McKenzie Powers, Madeline Kriston Shepard, Jeremy Schreier, William Schroer, J. Kyle Taylor, and Cristopher Webb
+Mentor: M. Florencia Breitman1 and Mary Ann Moran2
+Department: 1Biology and Environmental Science, 2Marine Sciences, University of Georgia
+Category: Undergraduate poster abstracts
+Year: 2024
+
+Abstract:
+Carbon is the foundation of all organic molecules and plays a crucial role in climate change. Carbon can be incorporated into biomass, can be sedimented at the bottom of the ocean, or can be in the atmosphere as CO2, making the Earth warmer along with other greenhouse gasses. Studying the oceans is crucial because that’s where half of the Earth’s photosynthesis happens; and in particular studying bacteria in the ocean is of extreme importance because they drive key steps in the carbon cycle. The bacteria Ruegeria pomeroyi is emerging as a model organism to understand carbon flux in the ocean. Ruegeria pomeroyi has a published genome and is easy to grow in the lab; colleges from UGA have been researching this organism from +20 years, and have developed ~4000 lines of mutants along with lab protocols for the discovery of genes that regulate metabolite uptake. In this work we describe the results of a Course-based Undergraduate Research Course that was conducting in Spring 2024 at Auburn University at Montgomery. In this study, we grew ~ 20 mutant R. pomeroyi bacteria that have unique disruptions in transporter genes for which the substrate taken up by the transporter is unknown, on a variety of substrates. We performed statistical tests to understand if growth was significantly different and we discussed results in light of available literature.
+
+Title: GROUP-MEMBERSHIP EMBEDDINGS FOR ACCURATE PARKINSON'S DISEASE DETECTION FROM VOCAL BIOMARKERS
+Lead Presenters: Justin Jackson, Benjermain Kim
+Other Authors: Dylan Hilliard
+Mentor: Olcay Kursun
+Department: Department of Computer and Computer Information Systems
+Category: Undergraduate poster abstracts
+Year: 2024
+
+Abstract:
+Our study investigates the application of machine learning techniques for discriminating healthy individuals from those with Parkinson's Disease (PD), utilizing a dataset of biomedical voice measurements from 32 people, 24 of whom are diagnosed with PD. The dataset encompasses 195 voice recordings represented by 22 voice measures (e.g., jitter, shimmer, and formants) obtained from these subjects. A common approach with such datasets involves applying ML classifiers directly to individual recordings, often employing leave-one-group-out cross-validation to ensure that samples from the same individual are exclusively in either the training set or the test set, but not both. Alternatively, classifiers may be applied to features aggregated across an individual's voice samples (to encapsulate the variability and central tendencies of the voice measurements), utilizing statistical measures like the mean, maximum, and minimum for each feature, followed by leave-one-out cross-validation. However, these strategies fail to take full advantage of the group membership. We propose an embedding technique that incorporates the group membership for voice recordings through a classifier whose posterior probabilities serve as representations of the individual's vocal biomarkers, which are then concatenated with the original voice measures, crafting an augmented feature vector for each recording. Our findings, which extend the pioneering algorithm developed by our hyperspectral imaging group, underscore that incorporating individual-specific context significantly boosts classification accuracy. This advancement not only underscores the method's potential as a versatile tool in the telediagnosis of PD but also has potential in telemonitoring other neurological and communication disorders characterized by vocal biomarkers.

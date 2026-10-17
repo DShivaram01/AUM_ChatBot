@@ -52,14 +52,22 @@ def run_one(label: str, text: str, llm_tok, llm_model) -> dict:
     input_tokens = int(inputs["input_ids"].shape[1])
     tokenize_s = time.time() - t0
 
+    # Exploratory scaling only -- not the production formula yet (that's
+    # still to be designed/measured properly). Picked so a longer
+    # document gets more room to finish its summary instead of being cut
+    # off mid-sentence the way the fixed 400 did at 8k tokens, while
+    # staying in the same ballpark the 8k run already proved affordable.
+    max_new_tokens = max(400, input_tokens // 15)
+
     result = {
         "label": label, "input_tokens": input_tokens,
         "tokenize_seconds": round(tokenize_s, 2),
+        "max_new_tokens": max_new_tokens,
     }
 
     gen_kw = dict(
         **inputs,
-        max_new_tokens=400,
+        max_new_tokens=max_new_tokens,
         do_sample=False,
         logits_processor=LogitsProcessorList([GeneratedOnlyRepetitionGuard(input_tokens)]),
         eos_token_id=llm_tok.eos_token_id,

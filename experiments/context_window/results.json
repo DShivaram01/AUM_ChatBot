@@ -3,18 +3,42 @@
     "label": "8k",
     "input_tokens": 8531,
     "tokenize_seconds": 0.01,
+    "max_new_tokens": 568,
     "status": "ok",
-    "generate_seconds": 36.58,
-    "output_tokens": 400,
+    "generate_seconds": 40.52,
+    "output_tokens": 445,
     "peak_gpu_gib": 15.5,
     "output_preview": "The document provides the AUM Housing and Residence Life Contractual Obligations & Community Standards for students living on campus. It includes a mission statement, commitments to community, quality, and inclusivity, contact information for office staff and resident assistants, housing and residence life services and standards (such as cable TV service, internet, campus police, laundry facilities, mail, maintenance, parking), contractual obligations with terms and conditions for student occupancy, a contract termination policy, community standards and points system, and housing regulations.\n\nThe community standards and point system outline various rules and consequences for violations, including abandoned personal property, alcohol use, appliances, balconies/patios/porches, bicycles, che"
   },
   {
+    "label": "12k",
+    "input_tokens": 12061,
+    "tokenize_seconds": 0.01,
+    "max_new_tokens": 804,
+    "status": "ok",
+    "generate_seconds": 40.53,
+    "output_tokens": 368,
+    "peak_gpu_gib": 16.32,
+    "output_preview": "The document outlines the rules and regulations for students living in Auburn University at Montgomery's (AUM) housing and residence life facilities. These rules cover various aspects such as appliances, balconies/patios/porches, bicycles, check-in/check-out procedures, children, cohabitation, collective accountability policy, compliance and failure to comply, contributing to an unsafe environment, courtesy and quiet hours, dangerous weapons and firearms, doors, elevators, furniture, grills, grounds, hall sports/horseplay, harassment, health and safety inspections, illegal drugs, paraphernalia, or suspicion of drug distribution or usage, keys, lock outs, laundry, mandatory meetings, open flames and heaters, pets, posting policy, profanity towards Housing staff, public areas, rape and sexua"
+  },
+  {
+    "label": "16k",
+    "input_tokens": 16280,
+    "tokenize_seconds": 0.02,
+    "max_new_tokens": 1085,
+    "status": "ok",
+    "generate_seconds": 110.36,
+    "output_tokens": 871,
+    "peak_gpu_gib": 17.31,
+    "output_preview": "The document contains abstracts for various research projects presented at an academic conference. The topics cover a wide range of fields, including mathematics, biology, computer science, and chemistry. Here are brief summaries of the projects:\n\n1. **Exploring Effects of Patch Size, Matrix Quality, and Functional Response on Prey Populations**: This study investigates how Type IV functional responses in prey populations interact with environmental factors like patch size and matrix quality in fragmented landscapes. The goal is to understand how these interactions shape prey persistence in heterogeneous ecosystems.\n\n2. **Identification of STING Protein as a Novel Target of RNF114 Suppression of Antiviral Immune Pathways**: Researchers investigated the impact of RNF-114 on Stimulator of In"
+  },
+  {
     "label": "25k",
-    "input_tokens": 25074,
-    "tokenize_seconds": 0.03,
+    "input_tokens": 25247,
+    "tokenize_seconds": 0.02,
+    "max_new_tokens": 1683,
     "status": "oom",
-    "generate_seconds": 4.07,
-    "error": "CUDA out of memory. Tried to allocate 686.00 MiB. GPU 0 has a total capacity of 19.54 GiB of which 270.38 MiB is free. Including non-PyTorch memory, this process has 19.03 GiB memory in use. Of the allocated memory 17.24 GiB is allocated by PyTorch, and 1.59 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)"
+    "generate_seconds": 4.2,
+    "error": "CUDA out of memory. Tried to allocate 692.00 MiB. GPU 0 has a total capacity of 19.54 GiB of which 222.38 MiB is free. Including non-PyTorch memory, this process has 19.07 GiB memory in use. Of the allocated memory 17.27 GiB is allocated by PyTorch, and 1.61 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)"
   }
 ]
