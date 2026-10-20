@@ -67,19 +67,51 @@ _OUTPUT_TOKENS_PER_INPUT_TOKEN = 15
 _MIN_OUTPUT_TOKENS = 400
 
 
+_SENTENCE_ENDERS = ".!?"
+
+
+def _trim_to_last_sentence(text: str) -> str:
+    """If text doesn't end on a sentence boundary -- the signature of
+    being cut off mid-sentence by the output-token budget running out --
+    trim back to the last complete sentence. Leaves text unchanged if no
+    sentence-ending punctuation exists anywhere, rather than deleting
+    everything; this is a safety net, not a guarantee the content itself
+    is complete (a trimmed summary may still be missing what would have
+    come after the cut).
+    """
+    stripped = text.rstrip()
+    if not stripped or stripped[-1] in _SENTENCE_ENDERS:
+        return stripped
+    last_end = max((stripped.rfind(ch) for ch in _SENTENCE_ENDERS), default=-1)
+    if last_end == -1:
+        return stripped
+    return stripped[:last_end + 1]
+
+
 def generate_summary_basic(chunks: list[str], llm_tok, llm_model, query_id: str) -> str:
     """Single-shot document summary: one Mistral call over the joined
-    document chunks, no map-reduce, no validation. generate_streaming's
+    document chunks, no map-reduce, no JSON validation. generate_streaming's
     own prompt-length safety net truncates (preserving the closing
     "[/INST]") if the document doesn't fit -- the summary then simply
     covers only what made it into the prompt, same as quiz's grounded
     context handling.
+
+    Two things guard against a mid-word cutoff, found live on a
+    heterogeneous test document that pushed the model toward listing
+    every topic individually instead of writing a few paragraphs: the
+    prompt explicitly tells it not to enumerate, and _trim_to_last_sentence()
+    below catches it if that instruction doesn't fully work. Neither one
+    is validation in the quiz/document-JSON sense -- the raw text is
+    still returned as-is otherwise, just with an explicit instruction up
+    front and a sentence-boundary safety net on the way out.
     """
     context = "\n\n".join(chunks) if chunks else "(no document text available)"
     prompt = (
-        "<s>[INST] Summarize the following document in a few clear "
-        "paragraphs. Use only information in the text below; do not add "
-        "facts that aren't there.\n\n"
+        "<s>[INST] Summarize the following document in no more than 5-6 "
+        "clear paragraphs. Use only information in the text below; do "
+        "not add facts that aren't there. Do NOT list or enumerate every "
+        "item, topic, or section individually -- group similar things "
+        "together and describe them collectively instead.\n\n"
         f"<context>\n{context}\n</context> [/INST]"
     )
     # Counted once here (cheap -- tokenize_seconds measured 0.01-0.03s in
@@ -94,4 +126,4 @@ def generate_summary_basic(chunks: list[str], llm_tok, llm_model, query_id: str)
         query_id=f"{query_id}-summary", max_new_tokens=max_new_tokens,
     ):
         full = partial
-    return full.strip()
+    return _trim_to_last_sentence(full.strip())
