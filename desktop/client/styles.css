@@ -462,6 +462,23 @@ body {
   cursor: default;
 }
 
+/* Swaps in for #sendBtn while a response is streaming -- same size, a
+   plain outlined treatment (not --accent) so it reads as the OTHER
+   available action rather than a second "Ask" button. */
+#stopBtn {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 13.5px;
+  padding: 0 20px;
+  border: 1px solid var(--hairline);
+  border-radius: 5px;
+  background: var(--panel-soft);
+  color: var(--ink);
+  cursor: pointer;
+}
+#stopBtn:hover { border-color: var(--accent); color: var(--accent); }
+#stopBtn.hidden { display: none; }
+
 
 /* ---------- Message feedback ---------- */
 

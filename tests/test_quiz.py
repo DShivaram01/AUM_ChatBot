@@ -6,6 +6,7 @@ import numpy as np
 
 from core.assistant_service import AssistantService
 from core.runtime_manager import RuntimeManager
+from pipeline.answer import clear_stop, request_stop
 from pipeline.classifier import get_trace
 from pipeline.quiz import (
     _MAX_CONTEXT_CHARS_PER_CHUNK, _extract_json, _finalize_question, _validate,
@@ -353,3 +354,59 @@ def test_quiz_basic_document_stores_a_trace_even_on_a_validation_error():
     trace = get_trace(qid)
     assert trace is not None
     assert trace.final_answer == text
+
+
+# ---------- stop mid-generation ----------
+
+def test_generate_quiz_basic_stops_the_loop_not_just_the_in_flight_question():
+    """A stop request interrupts the question in flight (generate_streaming's
+    own StoppingCriteria -- tested separately in test_stop_generation.py)
+    AND must stop the loop from starting the next question -- otherwise
+    "stop" would only ever pause between questions, not actually stop
+    the quiz."""
+    chunks = [f"chunk{i}" for i in range(1, 7)]
+    import pipeline.quiz as quiz_module
+    real_generate_streaming = quiz_module.generate_streaming
+    calls = []
+
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300, **_kwargs):
+        calls.append(query_id)
+        if len(calls) == 2:
+            request_stop("QZtest")  # simulates the user clicking Stop during question 2
+        yield f"answer for {query_id}"
+
+    quiz_module.generate_streaming = fake_generate_streaming
+    try:
+        seen = list(generate_quiz_basic("topic", 5, chunks, None, None, "QZtest"))
+    finally:
+        quiz_module.generate_streaming = real_generate_streaming
+        clear_stop("QZtest")
+
+    assert len(calls) == 2  # never reached question 3, 4, or 5
+    assert "Question 3" not in seen[-1]
+
+
+def test_generate_quiz_stops_the_loop_not_just_the_in_flight_question():
+    """Same check for the validated/structured quiz generator."""
+    import pipeline.quiz as quiz_module
+    real_generate_streaming = quiz_module.generate_streaming
+    calls = []
+
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300, avoid_texts=None, **_kwargs):
+        calls.append(query_id)
+        if len(calls) == 1:
+            request_stop("QZtest2")  # simulates clicking Stop while question 1 is still generating
+        yield _fake_single_question_response(len(calls), evidence_refs=[])
+
+    quiz_module.generate_streaming = fake_generate_streaming
+    try:
+        quiz, errors = generate_quiz("topic", 5, None, None, "QZtest2")
+    finally:
+        quiz_module.generate_streaming = real_generate_streaming
+        clear_stop("QZtest2")
+
+    assert len(calls) == 1  # never attempted question 2 onward
+    # question 1 itself still completed normally (the stop fires AFTER
+    # it, simulating the StoppingCriteria having already let that one
+    # call finish) -- only the loop's own next iteration is cut short.
+    assert quiz is not None and len(quiz["questions"]) == 1

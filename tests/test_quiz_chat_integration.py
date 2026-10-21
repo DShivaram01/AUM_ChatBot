@@ -320,7 +320,13 @@ def test_ask_stream_document_quiz_delivers_multiple_real_deltas_not_one_blocking
         quiz_module.generate_streaming = real_generate_streaming
 
     events = raw.strip().split("\n\n")
-    delta_events = [e for e in events if not e.startswith("event: done")]
+    # Excludes "done" and "meta" (the early query_id announcement added
+    # for the Stop feature, covered separately in
+    # tests/test_stop_generation.py) -- neither is a text delta.
+    delta_events = [
+        e for e in events
+        if not e.startswith("event: done") and not e.startswith("event: meta")
+    ]
     assert len(delta_events) == 3
     # Each delta here contains its own newline ("Question 1:\n...") --
     # _sse_event() splits a multi-line delta into several "data:" lines

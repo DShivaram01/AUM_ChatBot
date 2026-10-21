@@ -32,7 +32,10 @@ import threading
 
 import numpy as np
 import torch
-from transformers import LogitsProcessor, LogitsProcessorList, TextIteratorStreamer
+from transformers import (
+    LogitsProcessor, LogitsProcessorList, StoppingCriteria, StoppingCriteriaList,
+    TextIteratorStreamer,
+)
 
 import config
 from pipeline.memory import logger, query_fingerprint
@@ -128,6 +131,59 @@ class GeneratedOnlyRepetitionGuard(LogitsProcessor):
         return scores
 
 
+# ── Stop requests ────────────────────────────────────────────────────
+# transformers' generate() has no kill switch -- you can't safely stop a
+# thread mid-CUDA-op -- but it does check StoppingCriteria once per
+# generated token, which is the documented, correct way to interrupt it.
+# A plain set works here because this app serializes ALL generation
+# through one global asyncio.Lock (server/api_server.py's
+# _generate_lock): at most one generate() call is ever running, so there
+# is nothing to race against the set add/discard/membership-check below.
+_STOPPED_QUERY_IDS: set[str] = set()
+
+
+def request_stop(query_id: str) -> None:
+    """Mark query_id's in-flight generation (and, for an activity that
+    makes several sequential calls -- quiz's one-call-per-question loop
+    -- every call still to come under the same base id) for early stop.
+    """
+    _STOPPED_QUERY_IDS.add(query_id)
+
+
+def clear_stop(query_id: str) -> None:
+    """Called once a request finishes, successfully or not. query_ids
+    are never reused (next_query_id() is a monotonically increasing
+    counter, see pipeline/classifier.py), so a stale entry can't affect
+    a later request by accident -- this is purely so _STOPPED_QUERY_IDS
+    doesn't grow for the life of the server process.
+    """
+    _STOPPED_QUERY_IDS.discard(query_id)
+
+
+def is_stop_requested(query_id: str) -> bool:
+    """True if query_id itself, or the base id it's a sub-call of, was
+    asked to stop. generate_streaming() is called with sub-ids like
+    "SUM0001-summary" or "QZ0001-basic-q3" -- a stop request always
+    names the bare base id the client was shown ("SUM0001"/"QZ0001"),
+    never a sub-id it never saw -- so this matches by prefix, not exact
+    equality.
+    """
+    return any(
+        query_id == stopped or query_id.startswith(stopped + "-")
+        for stopped in _STOPPED_QUERY_IDS
+    )
+
+
+class _StopRequested(StoppingCriteria):
+    """Checked by model.generate() after every generated token."""
+
+    def __init__(self, query_id: str):
+        self.query_id = query_id
+
+    def __call__(self, input_ids, scores, **kwargs) -> bool:
+        return is_stop_requested(self.query_id)
+
+
 def _truncate_prompt(prompt: str, max_chars: int = _PROMPT_MAX_CHARS) -> str:
     """Enforce a hard ceiling on prompt length without breaking the
     prompt's own structure.
@@ -212,6 +268,7 @@ def generate_streaming(
                 banned_sequences=[tokenizer(t, add_special_tokens=False)["input_ids"] for t in (avoid_texts or [])],
             )]
         ),
+        stopping_criteria=StoppingCriteriaList([_StopRequested(query_id)]),
         eos_token_id=tokenizer.eos_token_id,
         pad_token_id=tokenizer.eos_token_id,
     )
@@ -249,7 +306,8 @@ def generate_streaming(
     # Same reasoning as the prompt log above -- the real model output can
     # itself contain paraphrased document/policy content.
     logger.info(f"[{query_id}] == LLM OUTPUT == len={len(full)} fp={query_fingerprint(full)}")
-    logger.info(f"[{query_id}] Generation: {ms:.0f}ms  {len(full)} chars")
+    stopped_note = " (stopped early by request)" if is_stop_requested(query_id) else ""
+    logger.info(f"[{query_id}] Generation: {ms:.0f}ms  {len(full)} chars{stopped_note}")
 
 
 # ── Citation / text helpers (backend.py:1114-1134) ─────────────────────

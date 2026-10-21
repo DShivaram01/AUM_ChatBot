@@ -54,6 +54,7 @@ from pipeline.classifier import (
     next_query_id,
     store_trace,
 )
+from pipeline.answer import clear_stop, request_stop
 from pipeline.memory import query_fingerprint
 from stores.session_store import SessionStore
 from pipeline.quiz_intent import detect_quiz_followup, detect_quiz_intent, resolve_quiz_source
@@ -110,6 +111,10 @@ class ChatResponse(BaseModel):
     kind: Literal["answer", "quiz"] = "answer"
     quiz: dict | None = None
     source_mode: Literal["pretrained", "housing", "document"] | None = None
+
+
+class StopRequest(BaseModel):
+    query_id: str
 
 
 class FeedbackRequest(BaseModel):
@@ -498,6 +503,8 @@ def _drain_activity_generator_sync(gen) -> tuple[str, str]:
     for text, _sources, _trace, item_query_id in gen:
         final_text = text
         query_id = item_query_id
+    if query_id:
+        clear_stop(query_id)
     return final_text, query_id
 
 
@@ -818,11 +825,23 @@ async def ask_stream(req: ChatRequest) -> StreamingResponse:
                         if item is GEN_DONE:
                             break
                         text, item_query_id = item
-                        query_id = item_query_id or query_id
+                        if item_query_id and not query_id:
+                            # First time the real query_id is known --
+                            # announce it immediately, before any text,
+                            # so the client can show a Stop button and
+                            # actually target THIS request with it
+                            # (server/api_server.py's /api/ask/stop).
+                            # Without this, the client only learns the
+                            # query_id from "done", by which point
+                            # there's nothing left to stop.
+                            query_id = item_query_id
+                            yield _sse_event(json.dumps({"query_id": query_id}), event="meta")
                         delta = text[len(last_sent):] if text.startswith(last_sent) else text
                         last_sent = text
                         if delta:
                             yield _sse_event(delta)
+                    if query_id:
+                        clear_stop(query_id)
                     yield _sse_event(
                         json.dumps({
                             "query_id": query_id, "topic_used": activity_result["topic_used"],
@@ -879,17 +898,38 @@ async def ask_stream(req: ChatRequest) -> StreamingResponse:
                 if item is DONE:
                     break
                 text, item_query_id = item
-                query_id = item_query_id or query_id
+                if item_query_id and not query_id:
+                    # See the matching comment in the activity-generator
+                    # branch above: announced as soon as known, so the
+                    # Stop button has a real query_id to send before the
+                    # answer is already finished.
+                    query_id = item_query_id
+                    yield _sse_event(json.dumps({"query_id": query_id}), event="meta")
                 delta = text[len(last_sent):] if text.startswith(last_sent) else text
                 last_sent = text
                 if delta:
                     yield _sse_event(delta)
+            if query_id:
+                clear_stop(query_id)
 
         yield _sse_event(
             json.dumps({'query_id': query_id, 'topic_used': topic_used}), event="done"
         )
 
     return StreamingResponse(token_stream(), media_type="text/event-stream")
+
+
+@app.post("/api/ask/stop")
+async def ask_stop(req: StopRequest) -> dict[str, str]:
+    """Mark an in-flight generation for early stop (pipeline/answer.py's
+    is_stop_requested(), checked by model.generate() after every token).
+    No-op, not an error, if query_id has already finished or never
+    existed -- the client only ever has a query_id to send because it
+    already saw a "meta" event naming the request it's currently
+    streaming, but a stop can always race the response finishing first.
+    """
+    request_stop(req.query_id)
+    return {"status": "ok"}
 
 
 @app.post("/api/feedback")

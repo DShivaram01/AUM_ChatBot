@@ -2,6 +2,7 @@ const messagesEl = document.getElementById('messages');
 const composer = document.getElementById('composer');
 const questionInput = document.getElementById('questionInput');
 const sendBtn = document.getElementById('sendBtn');
+const stopBtn = document.getElementById('stopBtn');
 const newChatBtn = document.getElementById('newChatBtn');
 const newProjectBtn = document.getElementById('newProjectBtn');
 const projectCreator = document.getElementById('projectCreator');
@@ -631,7 +632,7 @@ function addReactionControls(card, query_id) {
   card.appendChild(controls);
 }
 
-async function consumeSSE(response, onDelta) {
+async function consumeSSE(response, onDelta, onMeta) {
   if (!response.body) throw new Error('streaming is not supported by this response');
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
@@ -644,6 +645,12 @@ async function consumeSSE(response, onDelta) {
     if (!dataLines.length) return;
     const data = dataLines.join('\n');
     if (eventName === 'done') donePayload = JSON.parse(data);
+    // "meta" announces the real query_id as soon as the server knows it
+    // -- well before the answer is finished -- specifically so a Stop
+    // button has something real to send (server/api_server.py's
+    // /api/ask/stop). Without this, query_id is only ever known from
+    // "done", by which point there's nothing left to stop.
+    else if (eventName === 'meta') { if (onMeta) onMeta(JSON.parse(data)); }
     else onDelta(data);
     eventName = 'message';
     dataLines = [];
@@ -750,6 +757,34 @@ function labelForTopic(topic, pending) {
 
 // ---------- Composer ----------
 
+// Set once "meta" announces the query_id of whatever is currently
+// streaming (see consumeSSE's onMeta below); cleared once that request
+// finishes. stopBtn's click handler sends whatever this holds, so it's
+// null (nothing to stop) outside of an active generation.
+let currentStreamQueryId = null;
+
+stopBtn.addEventListener('click', async () => {
+  if (!currentStreamQueryId) return;
+  stopBtn.disabled = true;
+  try {
+    await fetch(`${serverUrl}/api/ask/stop`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query_id: currentStreamQueryId }),
+    });
+    // No client-side UI change here beyond this -- the in-flight
+    // fetch/consumeSSE loop above is still reading the same stream, and
+    // finishes normally (a real, if short, "done" event) once the
+    // server-side stop takes effect, same code path as any other
+    // completed answer.
+  } catch (err) {
+    // Stop is best-effort: if this request itself fails, the answer
+    // just keeps streaming -- nothing else to show the user here.
+  } finally {
+    stopBtn.disabled = false;
+  }
+});
+
 composer.addEventListener('submit', async (e) => {
   e.preventDefault();
   const question = questionInput.value.trim();
@@ -793,6 +828,11 @@ composer.addEventListener('submit', async (e) => {
       streamedAnswer += delta;
       pendingCard.lastChild.textContent = streamedAnswer;
       messagesEl.scrollTop = messagesEl.scrollHeight;
+    }, (meta) => {
+      if (meta.query_id) {
+        currentStreamQueryId = meta.query_id;
+        stopBtn.classList.remove('hidden');
+      }
     });
 
     if (data.kind === 'quiz') {
@@ -833,6 +873,8 @@ composer.addEventListener('submit', async (e) => {
     activeChat.messages.push({ who: 'bot', text: errText, topic: null, query_id: null });
   } finally {
     sendBtn.disabled = false;
+    stopBtn.classList.add('hidden');
+    currentStreamQueryId = null;
     questionInput.focus();
     renderChatList();
     await saveActiveChatIfNeeded();

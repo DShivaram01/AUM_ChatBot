@@ -167,7 +167,14 @@ def test_ask_stream_summarize_delivers_multiple_real_deltas_not_one_blocking_chu
         summarize_module.generate_streaming = real_generate_streaming
 
     events = raw.strip().split("\n\n")
-    delta_events = [e for e in events if not e.startswith("event: done")]
+    # Excludes "done" (the completion payload) and "meta" (the early
+    # query_id announcement added for the Stop feature -- its own
+    # behavior is covered in tests/test_stop_generation.py) -- neither
+    # is a text delta.
+    delta_events = [
+        e for e in events
+        if not e.startswith("event: done") and not e.startswith("event: meta")
+    ]
     # One SSE event per incremental yield (minus the "done" event) -- if
     # this were still the old blocking behavior, there would be exactly
     # one delta event carrying the whole final answer, not four.
