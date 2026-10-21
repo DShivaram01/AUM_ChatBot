@@ -54,6 +54,7 @@ from pipeline.classifier import (
     next_query_id,
     store_trace,
 )
+from pipeline.answer import clear_stop, request_stop
 from pipeline.memory import query_fingerprint
 from stores.session_store import SessionStore
 from pipeline.quiz_intent import detect_quiz_followup, detect_quiz_intent, resolve_quiz_source
@@ -97,6 +98,9 @@ class ChatResponse(BaseModel):
         # its dedicated /api/quiz endpoint) -- see pipeline/quiz_intent.py
         # and workspace.md TASK 53/55.
         "quiz", "quiz_unavailable",
+        # Mistral-classified "summarize the attached document" request --
+        # see pipeline/summarize.py and _try_summarize_from_chat().
+        "summarize", "summarize_unavailable",
     ]
     query_id: str
     sources: list[str] = []
@@ -107,6 +111,10 @@ class ChatResponse(BaseModel):
     kind: Literal["answer", "quiz"] = "answer"
     quiz: dict | None = None
     source_mode: Literal["pretrained", "housing", "document"] | None = None
+
+
+class StopRequest(BaseModel):
+    query_id: str
 
 
 class FeedbackRequest(BaseModel):
@@ -350,6 +358,26 @@ def _try_quiz_from_chat(req: "ChatRequest") -> dict | None:
     if error:
         return {"answer": error, "topic_used": "quiz_unavailable", "kind": "answer", "quiz": None}
 
+    if source_mode == "document":
+        # Basic document quiz path: no structured quiz card, no
+        # validation/retries -- the model's raw output is returned as a
+        # normal answer, same as any other chat response, instead of
+        # AssistantService.quiz()'s validated quiz-card pipeline below.
+        # quiz_basic_document() is a generator now (streams, and stores
+        # its own QueryTrace on completion) -- returning it un-drained
+        # under "generator" lets the caller choose to stream it
+        # (/api/ask/stream) or drain it (/api/ask), same split
+        # _run_chat_sync/_run_chat_stream_sync already use for
+        # document_chat(). Calling a generator function doesn't run any
+        # of its body yet, so this is not itself a blocking call.
+        gen = get_assistant_service().quiz_basic_document(
+            intent.topic, intent.count, req.document_ids, req.session_id,
+        )
+        return {
+            "topic_used": "quiz", "kind": "answer", "quiz": None,
+            "source_mode": source_mode, "generator": gen,
+        }
+
     result = get_assistant_service().quiz(
         intent.topic, intent.count, source_mode, req.document_ids, req.session_id,
     )
@@ -366,6 +394,35 @@ def _try_quiz_from_chat(req: "ChatRequest") -> dict | None:
         "answer": "", "topic_used": "quiz", "kind": "quiz", "quiz": result["quiz"],
         "source_mode": source_mode,
     }
+
+
+def _try_summarize_from_chat(req: "ChatRequest") -> dict | None:
+    """Mistral-classified "summarize the attached document" request.
+
+    Unlike quiz intent (deterministic regex, pipeline/quiz_intent.py),
+    summarize intent needs the LLM to classify (see
+    pipeline/summarize.py's module docstring for why map-reduce wasn't
+    used for the generation itself -- this classifier is a separate,
+    much cheaper 5-token call, not the summary generation). Only runs
+    that classifier call when a document is actually attached: every
+    ordinary message would otherwise pay for an LLM round trip it can
+    never need.
+
+    Returns None if this isn't a summarize request (caller falls through
+    to its normal routing, same contract as _try_quiz_from_chat).
+    """
+    if not req.document_ids:
+        return None
+
+    service = get_assistant_service()
+    if not service.detect_summarize_intent(req.question):
+        return None
+
+    # summarize_document() is a generator (streams, and stores its own
+    # QueryTrace on completion) -- same "generator" convention as the
+    # document-quiz branch above; see that branch's comment.
+    gen = service.summarize_document(req.document_ids, req.session_id, question=req.question)
+    return {"topic_used": "summarize", "kind": "answer", "quiz": None, "generator": gen}
 
 
 def _format_quiz_explanation(quiz: dict, question_number: int) -> str:
@@ -432,6 +489,23 @@ def _try_quiz_followup_from_chat(req: "ChatRequest") -> dict | None:
         "answer": "", "topic_used": "quiz", "kind": "quiz", "quiz": result["quiz"],
         "source_mode": last["source_mode"],
     }
+
+
+def _drain_activity_generator_sync(gen) -> tuple[str, str]:
+    """Run a quiz-basic/summarize generator (core/assistant_service.py's
+    quiz_basic_document()/summarize_document()) to completion and return
+    its final (text, query_id) -- the blocking-endpoint equivalent of
+    the producer loop ask_stream() uses to stream the same generator
+    incrementally. Same drain-to-last-item convention _run_chat_sync
+    already uses for document_chat().
+    """
+    final_text, query_id = "", ""
+    for text, _sources, _trace, item_query_id in gen:
+        final_text = text
+        query_id = item_query_id
+    if query_id:
+        clear_stop(query_id)
+    return final_text, query_id
 
 
 def _run_chat_sync(
@@ -639,14 +713,38 @@ async def ask(req: ChatRequest) -> ChatResponse:
     start = time.time()
 
     async with _generate_lock:
-        quiz_result = await asyncio.to_thread(_try_quiz_followup_from_chat, req)
-        if quiz_result is None:
-            quiz_result = await asyncio.to_thread(_try_quiz_from_chat, req)
-        if quiz_result is not None:
+        activity_result = await asyncio.to_thread(_try_quiz_followup_from_chat, req)
+        if activity_result is None:
+            activity_result = await asyncio.to_thread(_try_quiz_from_chat, req)
+        if activity_result is None:
+            # Checked last: Mistral-classified (not regex), so it costs an
+            # extra LLM call -- only worth trying once quiz's cheap,
+            # deterministic checks have already said no.
+            activity_result = await asyncio.to_thread(_try_summarize_from_chat, req)
+        if activity_result is not None:
+            if "generator" in activity_result:
+                # Basic document quiz / summarize: drain their generator
+                # on a worker thread (same as the chunk below does for
+                # document_chat() via _run_chat_sync) rather than
+                # blocking the event loop for the whole generation.
+                answer, query_id = await asyncio.to_thread(
+                    _drain_activity_generator_sync, activity_result["generator"],
+                )
+                return ChatResponse(
+                    answer=answer, topic_used=activity_result["topic_used"],
+                    query_id=query_id, sources=[],
+                    kind=activity_result["kind"], quiz=activity_result["quiz"],
+                    source_mode=activity_result.get("source_mode"),
+                    latency_ms=int((time.time() - start) * 1000),
+                )
             return ChatResponse(
-                answer=quiz_result["answer"], topic_used=quiz_result["topic_used"],
-                query_id="", sources=[], kind=quiz_result["kind"], quiz=quiz_result["quiz"],
-                source_mode=quiz_result.get("source_mode"),
+                answer=activity_result["answer"], topic_used=activity_result["topic_used"],
+                # Every other activity_result branch (quiz_unavailable,
+                # structured quiz, quiz follow-ups) has no real query_id
+                # to give, so this falls back to "".
+                query_id=activity_result.get("query_id", ""), sources=[],
+                kind=activity_result["kind"], quiz=activity_result["quiz"],
+                source_mode=activity_result.get("source_mode"),
                 latency_ms=int((time.time() - start) * 1000),
             )
 
@@ -684,19 +782,88 @@ async def ask_stream(req: ChatRequest) -> StreamingResponse:
             # placeholder delta rather than faking a token stream, then
             # replaces it client-side once the "done" event's quiz payload
             # arrives (see desktop/client/renderer.js).
-            quiz_result = await asyncio.to_thread(_try_quiz_followup_from_chat, req)
-            if quiz_result is None:
-                quiz_result = await asyncio.to_thread(_try_quiz_from_chat, req)
-            if quiz_result is not None:
-                if quiz_result["kind"] == "quiz":
+            activity_result = await asyncio.to_thread(_try_quiz_followup_from_chat, req)
+            if activity_result is None:
+                activity_result = await asyncio.to_thread(_try_quiz_from_chat, req)
+            if activity_result is None:
+                # Checked last, same reasoning as the /api/ask branch:
+                # Mistral-classified, so only worth the extra LLM call once
+                # quiz's cheap, deterministic checks have already said no.
+                activity_result = await asyncio.to_thread(_try_summarize_from_chat, req)
+            if activity_result is not None:
+                if "generator" in activity_result:
+                    # Basic document quiz / summarize now genuinely
+                    # stream: same producer-thread-plus-queue pattern as
+                    # the topic-routing branch below, just fed by this
+                    # generator instead of _run_chat_stream_sync(). This
+                    # is the fix for "streaming doesn't work" on these
+                    # two features -- they used to block silently for
+                    # the entire generation (minutes, for a long
+                    # document) and deliver everything in one SSE event
+                    # at the end.
+                    import queue
+                    import threading
+
+                    gen_q: "queue.Queue[object]" = queue.Queue()
+                    GEN_DONE = object()
+
+                    def gen_producer():
+                        try:
+                            for item in activity_result["generator"]:
+                                gen_q.put((item[0], item[3]))
+                        except Exception as exc:
+                            log.exception("Pipeline error during activity streaming")
+                            gen_q.put((f"[error] {exc}", ""))
+                        finally:
+                            gen_q.put(GEN_DONE)
+
+                    threading.Thread(target=gen_producer, daemon=True).start()
+                    last_sent = ""
+                    query_id = ""
+                    while True:
+                        item = await asyncio.to_thread(gen_q.get)
+                        if item is GEN_DONE:
+                            break
+                        text, item_query_id = item
+                        if item_query_id and not query_id:
+                            # First time the real query_id is known --
+                            # announce it immediately, before any text,
+                            # so the client can show a Stop button and
+                            # actually target THIS request with it
+                            # (server/api_server.py's /api/ask/stop).
+                            # Without this, the client only learns the
+                            # query_id from "done", by which point
+                            # there's nothing left to stop.
+                            query_id = item_query_id
+                            yield _sse_event(json.dumps({"query_id": query_id}), event="meta")
+                        delta = text[len(last_sent):] if text.startswith(last_sent) else text
+                        last_sent = text
+                        if delta:
+                            yield _sse_event(delta)
+                    if query_id:
+                        clear_stop(query_id)
+                    yield _sse_event(
+                        json.dumps({
+                            "query_id": query_id, "topic_used": activity_result["topic_used"],
+                            "kind": activity_result["kind"], "quiz": activity_result["quiz"],
+                            "source_mode": activity_result.get("source_mode"),
+                        }),
+                        event="done",
+                    )
+                    return
+                if activity_result["kind"] == "quiz":
                     yield _sse_event("Generating your quiz…")
                 else:
-                    yield _sse_event(quiz_result["answer"])
+                    yield _sse_event(activity_result["answer"])
                 yield _sse_event(
                     json.dumps({
-                        "query_id": "", "topic_used": quiz_result["topic_used"],
-                        "kind": quiz_result["kind"], "quiz": quiz_result["quiz"],
-                        "source_mode": quiz_result.get("source_mode"),
+                        # Every other activity_result branch (quiz_unavailable,
+                        # structured quiz, quiz follow-ups) has no real
+                        # query_id to give here.
+                        "query_id": activity_result.get("query_id", ""),
+                        "topic_used": activity_result["topic_used"],
+                        "kind": activity_result["kind"], "quiz": activity_result["quiz"],
+                        "source_mode": activity_result.get("source_mode"),
                     }),
                     event="done",
                 )
@@ -731,17 +898,38 @@ async def ask_stream(req: ChatRequest) -> StreamingResponse:
                 if item is DONE:
                     break
                 text, item_query_id = item
-                query_id = item_query_id or query_id
+                if item_query_id and not query_id:
+                    # See the matching comment in the activity-generator
+                    # branch above: announced as soon as known, so the
+                    # Stop button has a real query_id to send before the
+                    # answer is already finished.
+                    query_id = item_query_id
+                    yield _sse_event(json.dumps({"query_id": query_id}), event="meta")
                 delta = text[len(last_sent):] if text.startswith(last_sent) else text
                 last_sent = text
                 if delta:
                     yield _sse_event(delta)
+            if query_id:
+                clear_stop(query_id)
 
         yield _sse_event(
             json.dumps({'query_id': query_id, 'topic_used': topic_used}), event="done"
         )
 
     return StreamingResponse(token_stream(), media_type="text/event-stream")
+
+
+@app.post("/api/ask/stop")
+async def ask_stop(req: StopRequest) -> dict[str, str]:
+    """Mark an in-flight generation for early stop (pipeline/answer.py's
+    is_stop_requested(), checked by model.generate() after every token).
+    No-op, not an error, if query_id has already finished or never
+    existed -- the client only ever has a query_id to send because it
+    already saw a "meta" event naming the request it's currently
+    streaming, but a stop can always race the response finishing first.
+    """
+    request_stop(req.query_id)
+    return {"status": "ok"}
 
 
 @app.post("/api/feedback")

@@ -32,7 +32,10 @@ import threading
 
 import numpy as np
 import torch
-from transformers import LogitsProcessor, LogitsProcessorList, TextIteratorStreamer
+from transformers import (
+    LogitsProcessor, LogitsProcessorList, StoppingCriteria, StoppingCriteriaList,
+    TextIteratorStreamer,
+)
 
 import config
 from pipeline.memory import logger, query_fingerprint
@@ -58,7 +61,18 @@ def _relative_threshold(cands, top_n=10, absolute_floor=EVIDENCE_SCORE_FLOOR):
 
 # ── LLM streaming generation (backend.py:1041-1101) ────────────────────
 
-_PROMPT_MAX_CHARS = 3200
+# Raised from 3200 (exp/context-window-benchmark, commits 0af7108/5ac8706/
+# be8b0b8): real Mistral-7B-Instruct-v0.3 on this GPU holds a 14k-token
+# prompt comfortably (16.79 GiB peak, vs an observed ~19 GiB OOM ceiling
+# at 25k) -- the model's native 32k context was never the constraint,
+# this app's own unexamined default was. 56000 chars is sized off that
+# same benchmark's real-content ratio (~4.0 chars/token for AUM-domain
+# text, e.g. the 14k fixture measured 56493 chars for 14117 tokens) --
+# deliberately the LOW end of the observed 4.0-4.56 range, so this limit
+# stays the operative one (char truncation fires first and preserves
+# the closing "[/INST]" tag below) rather than the token-level backstop
+# below it, which does not.
+_PROMPT_MAX_CHARS = 56000
 _NO_REPEAT_NGRAM = 4
 _REPETITION_PENALTY = 1.1
 # n-gram ban on already-asked quiz questions. Measured 2026-10-11 (Task 51,
@@ -117,6 +131,59 @@ class GeneratedOnlyRepetitionGuard(LogitsProcessor):
         return scores
 
 
+# ── Stop requests ────────────────────────────────────────────────────
+# transformers' generate() has no kill switch -- you can't safely stop a
+# thread mid-CUDA-op -- but it does check StoppingCriteria once per
+# generated token, which is the documented, correct way to interrupt it.
+# A plain set works here because this app serializes ALL generation
+# through one global asyncio.Lock (server/api_server.py's
+# _generate_lock): at most one generate() call is ever running, so there
+# is nothing to race against the set add/discard/membership-check below.
+_STOPPED_QUERY_IDS: set[str] = set()
+
+
+def request_stop(query_id: str) -> None:
+    """Mark query_id's in-flight generation (and, for an activity that
+    makes several sequential calls -- quiz's one-call-per-question loop
+    -- every call still to come under the same base id) for early stop.
+    """
+    _STOPPED_QUERY_IDS.add(query_id)
+
+
+def clear_stop(query_id: str) -> None:
+    """Called once a request finishes, successfully or not. query_ids
+    are never reused (next_query_id() is a monotonically increasing
+    counter, see pipeline/classifier.py), so a stale entry can't affect
+    a later request by accident -- this is purely so _STOPPED_QUERY_IDS
+    doesn't grow for the life of the server process.
+    """
+    _STOPPED_QUERY_IDS.discard(query_id)
+
+
+def is_stop_requested(query_id: str) -> bool:
+    """True if query_id itself, or the base id it's a sub-call of, was
+    asked to stop. generate_streaming() is called with sub-ids like
+    "SUM0001-summary" or "QZ0001-basic-q3" -- a stop request always
+    names the bare base id the client was shown ("SUM0001"/"QZ0001"),
+    never a sub-id it never saw -- so this matches by prefix, not exact
+    equality.
+    """
+    return any(
+        query_id == stopped or query_id.startswith(stopped + "-")
+        for stopped in _STOPPED_QUERY_IDS
+    )
+
+
+class _StopRequested(StoppingCriteria):
+    """Checked by model.generate() after every generated token."""
+
+    def __init__(self, query_id: str):
+        self.query_id = query_id
+
+    def __call__(self, input_ids, scores, **kwargs) -> bool:
+        return is_stop_requested(self.query_id)
+
+
 def _truncate_prompt(prompt: str, max_chars: int = _PROMPT_MAX_CHARS) -> str:
     """Enforce a hard ceiling on prompt length without breaking the
     prompt's own structure.
@@ -172,8 +239,15 @@ def generate_streaming(
     # persisting what was actually asked or what was in context.
     logger.info(f"[{query_id}] == LLM PROMPT == len={len(prompt)} fp={query_fingerprint(prompt)}")
 
+    # Backstop only, not the operative limit -- _PROMPT_MAX_CHARS above
+    # already keeps real content well under this in token terms (see its
+    # comment). Raised from 4096 to 16000 alongside it: proven safe twice
+    # in the same benchmark (16.79-17.31 GiB peak, succeeded both runs),
+    # so if content denser than the char limit assumes ever slips
+    # through, this still caps it at a size that's actually been tested
+    # rather than an arbitrary round number.
     inputs = tokenizer(
-        prompt, return_tensors="pt", truncation=True, max_length=4096
+        prompt, return_tensors="pt", truncation=True, max_length=16000
     ).to(model.device)
 
     if trace:
@@ -194,6 +268,7 @@ def generate_streaming(
                 banned_sequences=[tokenizer(t, add_special_tokens=False)["input_ids"] for t in (avoid_texts or [])],
             )]
         ),
+        stopping_criteria=StoppingCriteriaList([_StopRequested(query_id)]),
         eos_token_id=tokenizer.eos_token_id,
         pad_token_id=tokenizer.eos_token_id,
     )
@@ -231,7 +306,8 @@ def generate_streaming(
     # Same reasoning as the prompt log above -- the real model output can
     # itself contain paraphrased document/policy content.
     logger.info(f"[{query_id}] == LLM OUTPUT == len={len(full)} fp={query_fingerprint(full)}")
-    logger.info(f"[{query_id}] Generation: {ms:.0f}ms  {len(full)} chars")
+    stopped_note = " (stopped early by request)" if is_stop_requested(query_id) else ""
+    logger.info(f"[{query_id}] Generation: {ms:.0f}ms  {len(full)} chars{stopped_note}")
 
 
 # ── Citation / text helpers (backend.py:1114-1134) ─────────────────────

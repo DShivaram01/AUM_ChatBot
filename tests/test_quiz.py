@@ -6,7 +6,12 @@ import numpy as np
 
 from core.assistant_service import AssistantService
 from core.runtime_manager import RuntimeManager
-from pipeline.quiz import _MAX_CONTEXT_CHARS_PER_CHUNK, _extract_json, _finalize_question, _validate, generate_quiz
+from pipeline.answer import clear_stop, request_stop
+from pipeline.classifier import get_trace
+from pipeline.quiz import (
+    _MAX_CONTEXT_CHARS_PER_CHUNK, _extract_json, _finalize_question, _validate,
+    generate_quiz, generate_quiz_basic,
+)
 
 
 class WordOverlapEmbedder:
@@ -208,3 +213,200 @@ def test_quiz_generation_failure_is_a_controlled_error_not_a_malformed_quiz():
         quiz_module.generate_streaming = real_generate_streaming
     assert "quiz" not in result
     assert "error" in result
+
+
+# ---------- basic document quiz: no JSON schema, no validation, no retries ----
+
+def test_generate_quiz_basic_splits_chunks_evenly_and_skips_validation():
+    """6 chunks / 3 questions -> 2 chunks per question, and whatever the
+    model returns (even non-JSON prose) is passed through untouched."""
+    chunks = [f"chunk{i}" for i in range(1, 7)]
+    import pipeline.quiz as quiz_module
+    real_generate_streaming = quiz_module.generate_streaming
+    seen_prompts = []
+
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300, **_kwargs):
+        seen_prompts.append(prompt)
+        yield f"not json, just prose for {query_id}"
+
+    quiz_module.generate_streaming = fake_generate_streaming
+    try:
+        # generate_quiz_basic() streams now -- drain to the last yield
+        # for the final concatenated text, same as any caller that just
+        # wants the finished result would.
+        answer = ""
+        for partial in generate_quiz_basic("topic", 3, chunks, None, None, "QZtest"):
+            answer = partial
+    finally:
+        quiz_module.generate_streaming = real_generate_streaming
+
+    assert len(seen_prompts) == 3
+    assert "chunk1" in seen_prompts[0] and "chunk2" in seen_prompts[0] and "chunk3" not in seen_prompts[0]
+    assert "chunk3" in seen_prompts[1] and "chunk4" in seen_prompts[1]
+    assert "Question 1:" in answer and "Question 3:" in answer
+    assert "not json, just prose for QZtest-basic-q1" in answer
+
+
+def _drain(gen) -> tuple[str, str]:
+    """quiz_basic_document()/summarize_document() are generators now,
+    streaming (text, sources, trace_placeholder, query_id) 4-tuples like
+    document_chat() -- drain to the last one for the final (text, qid),
+    same convention server/api_server.py's _drain_activity_generator_sync
+    uses for the real blocking endpoint."""
+    text, qid = "", ""
+    for text, _sources, _trace, qid in gen:
+        pass
+    return text, qid
+
+
+def test_quiz_basic_document_requires_attached_document():
+    service = AssistantService(RuntimeManager(embedder=WordOverlapEmbedder()))
+    text, qid = _drain(service.quiz_basic_document("anything", 3, document_ids=None, session_id="s1"))
+    assert "attach a document" in text
+    assert qid  # still gets a real query_id -- a QueryTrace was stored even for this error
+
+
+def test_quiz_basic_document_returns_raw_answer_not_a_structured_quiz():
+    service = AssistantService(RuntimeManager(embedder=WordOverlapEmbedder()))
+
+    class FakeChunk:
+        def __init__(self, text):
+            self.text = text
+
+    class FakeDocument:
+        chunks = [FakeChunk("alpha"), FakeChunk("beta"), FakeChunk("gamma"), FakeChunk("delta")]
+
+    service.documents.store.get = lambda document_id, session_id: FakeDocument()
+
+    import pipeline.quiz as quiz_module
+    real_generate_streaming = quiz_module.generate_streaming
+    quiz_module.generate_streaming = lambda prompt, *_a, **_kw: iter(["raw model text, unvalidated"])
+    try:
+        text, qid = _drain(service.quiz_basic_document(
+            "anything", 2, document_ids=["doc1"], session_id="s1",
+        ))
+    finally:
+        quiz_module.generate_streaming = real_generate_streaming
+
+    assert qid
+    assert text.count("raw model text, unvalidated") == 2
+
+
+# ---------- real streaming, and the QueryTrace fix ----------
+
+def test_generate_quiz_basic_yields_growing_text_across_all_questions_not_just_a_final_value():
+    """The whole point of making this a generator: a caller watching the
+    stream sees each question's text grow and accumulate, not silence
+    for the whole multi-call run followed by one final blob -- this is
+    the actual "streaming doesn't work" bug for basic quiz."""
+    chunks = ["chunk one", "chunk two"]
+    import pipeline.quiz as quiz_module
+    real_generate_streaming = quiz_module.generate_streaming
+    quiz_module.generate_streaming = lambda prompt, *_a, **_kw: iter(["Q", "Q done."])
+    try:
+        seen = list(generate_quiz_basic("topic", 2, chunks, None, None, "QZtest"))
+    finally:
+        quiz_module.generate_streaming = real_generate_streaming
+
+    assert len(seen) == 4  # 2 growing yields per question x 2 questions
+    assert seen[0] == "Question 1:\nQ"
+    assert seen[1] == "Question 1:\nQ done."
+    # question 2's text accumulates ON TOP of question 1's finished text:
+    assert seen[2] == "Question 1:\nQ done.\n\nQuestion 2:\nQ"
+    assert seen[3] == "Question 1:\nQ done.\n\nQuestion 2:\nQ done."
+
+
+def test_quiz_basic_document_stores_a_retrievable_query_trace():
+    """Quiz/summarize never stored a QueryTrace before this fix, so
+    /api/feedback's get_trace(query_id) lookup always missed. This must
+    store one, same as document_chat() does."""
+    service = AssistantService(RuntimeManager(embedder=WordOverlapEmbedder()))
+
+    class FakeChunk:
+        def __init__(self, text):
+            self.text = text
+
+    class FakeDocument:
+        chunks = [FakeChunk("alpha"), FakeChunk("beta")]
+
+    service.documents.store.get = lambda document_id, session_id: FakeDocument()
+
+    import pipeline.quiz as quiz_module
+    real_generate_streaming = quiz_module.generate_streaming
+    quiz_module.generate_streaming = lambda prompt, *_a, **_kw: iter(["a question."])
+    try:
+        text, qid = _drain(service.quiz_basic_document(
+            "computational biology", 1, document_ids=["doc1"], session_id="s1",
+        ))
+    finally:
+        quiz_module.generate_streaming = real_generate_streaming
+
+    trace = get_trace(qid)
+    assert trace is not None
+    assert trace.query == "computational biology"
+    assert trace.final_answer == text
+    assert trace.intent_type == "quiz"
+
+
+def test_quiz_basic_document_stores_a_trace_even_on_a_validation_error():
+    service = AssistantService(RuntimeManager(embedder=WordOverlapEmbedder()))
+    text, qid = _drain(service.quiz_basic_document("anything", 3, document_ids=None, session_id="s1"))
+    trace = get_trace(qid)
+    assert trace is not None
+    assert trace.final_answer == text
+
+
+# ---------- stop mid-generation ----------
+
+def test_generate_quiz_basic_stops_the_loop_not_just_the_in_flight_question():
+    """A stop request interrupts the question in flight (generate_streaming's
+    own StoppingCriteria -- tested separately in test_stop_generation.py)
+    AND must stop the loop from starting the next question -- otherwise
+    "stop" would only ever pause between questions, not actually stop
+    the quiz."""
+    chunks = [f"chunk{i}" for i in range(1, 7)]
+    import pipeline.quiz as quiz_module
+    real_generate_streaming = quiz_module.generate_streaming
+    calls = []
+
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300, **_kwargs):
+        calls.append(query_id)
+        if len(calls) == 2:
+            request_stop("QZtest")  # simulates the user clicking Stop during question 2
+        yield f"answer for {query_id}"
+
+    quiz_module.generate_streaming = fake_generate_streaming
+    try:
+        seen = list(generate_quiz_basic("topic", 5, chunks, None, None, "QZtest"))
+    finally:
+        quiz_module.generate_streaming = real_generate_streaming
+        clear_stop("QZtest")
+
+    assert len(calls) == 2  # never reached question 3, 4, or 5
+    assert "Question 3" not in seen[-1]
+
+
+def test_generate_quiz_stops_the_loop_not_just_the_in_flight_question():
+    """Same check for the validated/structured quiz generator."""
+    import pipeline.quiz as quiz_module
+    real_generate_streaming = quiz_module.generate_streaming
+    calls = []
+
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300, avoid_texts=None, **_kwargs):
+        calls.append(query_id)
+        if len(calls) == 1:
+            request_stop("QZtest2")  # simulates clicking Stop while question 1 is still generating
+        yield _fake_single_question_response(len(calls), evidence_refs=[])
+
+    quiz_module.generate_streaming = fake_generate_streaming
+    try:
+        quiz, errors = generate_quiz("topic", 5, None, None, "QZtest2")
+    finally:
+        quiz_module.generate_streaming = real_generate_streaming
+        clear_stop("QZtest2")
+
+    assert len(calls) == 1  # never attempted question 2 onward
+    # question 1 itself still completed normally (the stop fires AFTER
+    # it, simulating the StoppingCriteria having already let that one
+    # call finish) -- only the loop's own next iteration is cut short.
+    assert quiz is not None and len(quiz["questions"]) == 1

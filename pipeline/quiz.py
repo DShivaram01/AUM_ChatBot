@@ -21,7 +21,7 @@ from __future__ import annotations
 import json
 import re
 
-from pipeline.answer import generate_streaming
+from pipeline.answer import generate_streaming, is_stop_requested
 from pipeline.memory import logger, query_fingerprint
 
 REQUIRED_OPTIONS = 4
@@ -43,15 +43,17 @@ _RETRY_TEMPERATURES = {2: 0.7, 3: 0.9, 4: 1.1}
 # Housing/document grounding can hand generate_quiz() up to 6 full chunks
 # (each up to ~400 tokens / ~1600-2000 chars -- see structured_chunks()'s
 # own max_tokens=400). Joined untruncated, that routinely produced a
-# prompt well past generate_streaming()'s MAX_CHARS safety net (3200),
-# which truncates by blindly slicing the END of the assembled prompt --
-# silently deleting the closing "[/INST]" tag along with most of the
-# context. The model then had no instruction to respond to at all and
-# just continued the context text instead of generating a question (found
-# via a real user's quiz failures, Task 52). Capping each chunk's
-# contribution here keeps the assembled context comfortably under that
-# limit for the realistic 1-6 chunk range, so truncation essentially never
-# has to fire for quiz prompts in the first place.
+# prompt well past generate_streaming()'s MAX_CHARS safety net (3200 at
+# the time; raised to 56000 by exp/context-window-benchmark, but the
+# same failure mode applies at any size), which truncates by blindly
+# slicing the END of the assembled prompt -- silently deleting the
+# closing "[/INST]" tag along with most of the context. The model then
+# had no instruction to respond to at all and just continued the
+# context text instead of generating a question (found via a real
+# user's quiz failures, Task 52). Capping each chunk's contribution here
+# keeps the assembled context comfortably under that limit for the
+# realistic 1-6 chunk range, so truncation essentially never has to fire
+# for quiz prompts in the first place.
 _MAX_CONTEXT_CHARS_PER_CHUNK = 500
 
 _KEY_CANONICAL = {
@@ -284,6 +286,53 @@ def _question_prompt(
     )
 
 
+def generate_quiz_basic(
+    topic: str, count: int, chunks: list[str], llm_tok, llm_model, query_id: str,
+):
+    """Minimal document quiz path: no JSON schema, no validation, no
+    retries, no evidence_refs. The document's chunks are split evenly
+    across the requested question count (chunks_per_question = total
+    chunks / count) and each group gets exactly one LLM call asking for
+    one plain-text MCQ. Whatever the model returns is used as-is and
+    handed back for direct display, the same as any other chat answer.
+
+    A generator: yields the growing concatenated text across all N
+    questions as they're generated, one model call at a time, so the UI
+    can show real progress instead of going silent for the entire
+    multi-call run and dumping everything at once at the end.
+
+    Stopping mid-question interrupts that question's own generate() call
+    (generate_streaming()'s own StoppingCriteria -- see pipeline/answer.py),
+    but this is a loop of SEPARATE calls, so that alone would only pause
+    between questions, not stop the quiz: checked again at the top of
+    each iteration so a stop request also cancels every question still
+    to come, not just the one in flight.
+    """
+    chunks = chunks or ["(no document text available)"]
+    per_question = max(1, len(chunks) // count)
+    parts: list[str] = []
+    for q_num in range(1, count + 1):
+        if is_stop_requested(query_id):
+            break
+        start = (q_num - 1) * per_question
+        group = chunks[start:start + per_question] or chunks
+        context = "\n\n".join(group)
+        prompt = (
+            "<s>[INST] Write one multiple-choice quiz question with four "
+            "options labeled A-D, and state the correct answer, based on "
+            "the following text.\n\n"
+            f"Topic: {topic}\n\n<context>\n{context}\n</context> [/INST]"
+        )
+        full = ""
+        for partial in generate_streaming(
+            prompt, llm_tok, llm_model,
+            query_id=f"{query_id}-basic-q{q_num}", max_new_tokens=320,
+        ):
+            full = partial
+            yield "\n\n".join(parts + [f"Question {q_num}:\n{partial.strip()}"])
+        parts.append(f"Question {q_num}:\n{full.strip()}")
+
+
 def generate_quiz(
     topic: str, count: int, llm_tok, llm_model, query_id: str,
     context_chunks: list[str] | None = None,
@@ -302,6 +351,12 @@ def generate_quiz(
     questions: list[dict] = []
     seen_texts: list[str] = []
     for q_num in range(1, count + 1):
+        # Same reasoning as generate_quiz_basic()'s identical check: this
+        # loop makes a separate generate() call per question (and up to
+        # _MAX_ATTEMPTS_PER_QUESTION more per retry), so stopping the one
+        # in flight alone would only pause between questions.
+        if is_stop_requested(query_id):
+            break
         feedback: str | None = None
         accepted: dict | None = None
         last_errors: list[str] = []
@@ -320,6 +375,8 @@ def generate_quiz(
         # repeating the same unfixable question.
         rejected_texts: list[str] = []
         for attempt in range(1, _MAX_ATTEMPTS_PER_QUESTION + 1):
+            if is_stop_requested(query_id):
+                break
             prompt = _question_prompt(topic, context, require_evidence, seen_texts, feedback)
             full = ""
             for partial in generate_streaming(

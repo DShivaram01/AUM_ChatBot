@@ -254,6 +254,100 @@ def test_regenerate_followup_reuses_the_same_params():
     assert body["quiz"] != first_quiz  # genuinely regenerated, not the cached copy
 
 
+# ---------- basic document quiz: real query_id so feedback can submit ----
+
+def test_ask_document_quiz_returns_a_real_query_id_for_feedback():
+    """The basic document quiz path (quiz_basic_document) returns its own
+    answer-kind response, same as any other chat answer -- it must carry
+    a real, non-empty query_id so the client's feedback buttons aren't
+    disabled (desktop/client/renderer.js: addReactionControls() disables
+    the button when query_id is falsy)."""
+    client = TestClient(api_server.app)
+    upload = client.post(
+        "/api/documents", data={"session_id": "quiz-feedback-test"},
+        files={"file": ("notes.txt", b"Mitochondria produce ATP through oxidative phosphorylation.", "text/plain")},
+    )
+    assert upload.status_code == 200, upload.text
+    document_id = upload.json()["document_id"]
+
+    import pipeline.quiz as quiz_module
+    real_generate_streaming = quiz_module.generate_streaming
+    quiz_module.generate_streaming = lambda prompt, *_a, **_kw: iter(["raw unvalidated model text"])
+    try:
+        response = client.post("/api/ask", json={
+            "question": "Create 2 MCQs on mitochondria",
+            "topic": "general", "session_id": "quiz-feedback-test",
+            "document_ids": [document_id],
+        })
+    finally:
+        quiz_module.generate_streaming = real_generate_streaming
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["kind"] == "answer"
+    assert body["quiz"] is None
+    assert body["query_id"], "query_id must be non-empty, or the feedback button stays disabled"
+
+
+def test_ask_stream_document_quiz_delivers_multiple_real_deltas_not_one_blocking_chunk():
+    """Same bug, same proof as summarize's equivalent test: basic
+    document quiz used to go silent for the whole multi-question run
+    and deliver everything in one SSE event. A multi-step fake
+    generation for a single question must still arrive as multiple
+    separate delta events through the full HTTP/SSE stack, not one."""
+    client = TestClient(api_server.app)
+    upload = client.post(
+        "/api/documents", data={"session_id": "quiz-stream-delta-test"},
+        files={"file": ("notes.txt", b"Mitochondria produce ATP through oxidative phosphorylation.", "text/plain")},
+    )
+    assert upload.status_code == 200, upload.text
+    document_id = upload.json()["document_id"]
+
+    import pipeline.quiz as quiz_module
+    real_generate_streaming = quiz_module.generate_streaming
+    quiz_module.generate_streaming = lambda prompt, *_a, **_kw: iter(
+        ["Q", "Q: What", "Q: What organelle?"],
+    )
+    try:
+        with client.stream("POST", "/api/ask/stream", json={
+            "question": "Create 1 MCQ on mitochondria",
+            "topic": "general", "session_id": "quiz-stream-delta-test",
+            "document_ids": [document_id],
+        }) as response:
+            assert response.status_code == 200
+            raw = "".join(response.iter_text())
+    finally:
+        quiz_module.generate_streaming = real_generate_streaming
+
+    events = raw.strip().split("\n\n")
+    # Excludes "done" and "meta" (the early query_id announcement added
+    # for the Stop feature, covered separately in
+    # tests/test_stop_generation.py) -- neither is a text delta.
+    delta_events = [
+        e for e in events
+        if not e.startswith("event: done") and not e.startswith("event: meta")
+    ]
+    assert len(delta_events) == 3
+    # Each delta here contains its own newline ("Question 1:\n...") --
+    # _sse_event() splits a multi-line delta into several "data:" lines
+    # WITHIN one event, so each event's lines must be rejoined with "\n"
+    # before concatenating across events, not flattened as one line each.
+    def _event_text(event: str) -> str:
+        # Strip exactly the one formatting space _sse_event() adds after
+        # "data:" -- a blind .lstrip(" ") would also eat a real leading
+        # space that's part of the delta's own content (e.g. " organelle?").
+        lines = []
+        for ln in event.split("\n"):
+            if ln.startswith("data: "):
+                lines.append(ln[len("data: "):])
+            elif ln == "data:":
+                lines.append("")
+        return "\n".join(lines)
+
+    reassembled = "".join(_event_text(e) for e in delta_events)
+    assert reassembled == "Question 1:\nQ: What organelle?"
+
+
 def test_followup_phrase_without_a_prior_quiz_does_not_misfire():
     # "explain question 3" with nothing generated yet in this session --
     # must not crash or fabricate a quiz answer; falls through to normal
