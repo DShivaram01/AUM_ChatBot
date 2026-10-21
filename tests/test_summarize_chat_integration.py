@@ -133,3 +133,46 @@ def test_ask_stream_summarize_emits_answer_kind_in_done_event():
     assert payload["kind"] == "answer"
     assert payload["topic_used"] == "summarize"
     assert payload["query_id"]
+
+
+def test_ask_stream_summarize_delivers_multiple_real_deltas_not_one_blocking_chunk():
+    """The actual bug report: summarize used to go silent for the whole
+    generation and deliver everything in a single SSE event right
+    before "done". This proves real incremental streaming through the
+    full HTTP/SSE stack -- a multi-step fake generation (simulating
+    token-by-token growth) must arrive as multiple separate delta
+    events, not one, before "done"."""
+    client = TestClient(api_server.app)
+    document_id = _upload_doc(client, "summarize-multi-delta-test")
+
+    import core.assistant_service as assistant_service_module
+    real_classify = assistant_service_module.classify_summarize_intent
+    assistant_service_module.classify_summarize_intent = lambda question, *_a, **_kw: True
+
+    import pipeline.summarize as summarize_module
+    real_generate_streaming = summarize_module.generate_streaming
+    summarize_module.generate_streaming = lambda prompt, *_a, **_kw: iter(
+        ["The", "The cell", "The cell is", "The cell is the basic unit of life."],
+    )
+    try:
+        with client.stream("POST", "/api/ask/stream", json={
+            "question": "summarize this document",
+            "topic": "auto", "session_id": "summarize-multi-delta-test",
+            "document_ids": [document_id],
+        }) as response:
+            assert response.status_code == 200
+            raw = "".join(response.iter_text())
+    finally:
+        assistant_service_module.classify_summarize_intent = real_classify
+        summarize_module.generate_streaming = real_generate_streaming
+
+    events = raw.strip().split("\n\n")
+    delta_events = [e for e in events if not e.startswith("event: done")]
+    # One SSE event per incremental yield (minus the "done" event) -- if
+    # this were still the old blocking behavior, there would be exactly
+    # one delta event carrying the whole final answer, not four.
+    assert len(delta_events) == 4
+    reassembled = "".join(
+        e[len("data: "):] for e in delta_events if e.startswith("data: ")
+    )
+    assert reassembled == "The cell is the basic unit of life."

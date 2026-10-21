@@ -6,6 +6,7 @@ import numpy as np
 
 from core.assistant_service import AssistantService
 from core.runtime_manager import RuntimeManager
+from pipeline.classifier import get_trace
 from pipeline.summarize import _trim_to_last_sentence, generate_summary_basic
 
 
@@ -21,6 +22,26 @@ class FakeTok:
     plenty for exercising that formula without loading real weights."""
     def encode(self, text):
         return list(range(len(text)))
+
+
+def _drain_text(gen) -> str:
+    """generate_summary_basic() streams now -- drain to the last yielded
+    string for the finished summary."""
+    text = ""
+    for text in gen:
+        pass
+    return text
+
+
+def _drain(gen) -> tuple[str, str]:
+    """summarize_document() streams (text, sources, trace_placeholder,
+    query_id) 4-tuples like document_chat() -- drain to the last one for
+    the final (text, qid), same convention
+    server/api_server.py's _drain_activity_generator_sync uses."""
+    text, qid = "", ""
+    for text, _sources, _trace, qid in gen:
+        pass
+    return text, qid
 
 
 # ---------- pipeline.summarize._trim_to_last_sentence ----------
@@ -53,7 +74,7 @@ def test_generate_summary_basic_trims_mid_sentence_cutoff_from_the_real_model_ou
         "Paragraph one is complete. Paragraph two starts but gets cut off mid-wo"
     ])
     try:
-        answer = generate_summary_basic(["chunk"], FakeTok(), None, "SUMtest")
+        answer = _drain_text(generate_summary_basic(["chunk"], FakeTok(), None, "SUMtest"))
     finally:
         summarize_module.generate_streaming = real_generate_streaming
     assert answer == "Paragraph one is complete."
@@ -70,7 +91,7 @@ def test_generate_summary_basic_prompt_tells_the_model_not_to_enumerate():
 
     summarize_module.generate_streaming = fake_generate_streaming
     try:
-        generate_summary_basic(["chunk"], FakeTok(), None, "SUMtest")
+        _drain_text(generate_summary_basic(["chunk"], FakeTok(), None, "SUMtest"))
     finally:
         summarize_module.generate_streaming = real_generate_streaming
 
@@ -90,7 +111,7 @@ def test_generate_summary_basic_passes_through_raw_output_without_validation():
 
     summarize_module.generate_streaming = fake_generate_streaming
     try:
-        answer = generate_summary_basic(["chunk one text", "chunk two text"], FakeTok(), None, "SUMtest")
+        answer = _drain_text(generate_summary_basic(["chunk one text", "chunk two text"], FakeTok(), None, "SUMtest"))
     finally:
         summarize_module.generate_streaming = real_generate_streaming
 
@@ -104,7 +125,7 @@ def test_generate_summary_basic_handles_no_chunks_without_crashing():
     real_generate_streaming = summarize_module.generate_streaming
     summarize_module.generate_streaming = lambda prompt, *_a, **_kw: iter(["(nothing to summarize)"])
     try:
-        answer = generate_summary_basic([], FakeTok(), None, "SUMtest")
+        answer = _drain_text(generate_summary_basic([], FakeTok(), None, "SUMtest"))
     finally:
         summarize_module.generate_streaming = real_generate_streaming
     assert answer == "(nothing to summarize)"
@@ -121,8 +142,8 @@ def test_generate_summary_basic_scales_output_budget_with_input_size():
 
     summarize_module.generate_streaming = fake_generate_streaming
     try:
-        generate_summary_basic(["x" * 100], FakeTok(), None, "SUMtest")  # short -> floor of 400
-        generate_summary_basic(["x" * 30000], FakeTok(), None, "SUMtest")  # long -> scales past the floor
+        _drain_text(generate_summary_basic(["x" * 100], FakeTok(), None, "SUMtest"))  # short -> floor of 400
+        _drain_text(generate_summary_basic(["x" * 30000], FakeTok(), None, "SUMtest"))  # long -> scales past the floor
     finally:
         summarize_module.generate_streaming = real_generate_streaming
 
@@ -134,14 +155,16 @@ def test_generate_summary_basic_scales_output_budget_with_input_size():
 
 def test_summarize_document_requires_attached_document():
     service = AssistantService(RuntimeManager(embedder=WordOverlapEmbedder()))
-    result = service.summarize_document(document_ids=None, session_id="s1")
-    assert "error" in result and "attach a document" in result["error"]
+    text, qid = _drain(service.summarize_document(document_ids=None, session_id="s1"))
+    assert "attach a document" in text
+    assert qid  # still gets a real query_id -- a QueryTrace was stored even for this error
 
 
 def test_summarize_document_requires_a_session():
     service = AssistantService(RuntimeManager(embedder=WordOverlapEmbedder()))
-    result = service.summarize_document(document_ids=["doc1"], session_id=None)
-    assert "error" in result and "session is required" in result["error"]
+    text, qid = _drain(service.summarize_document(document_ids=["doc1"], session_id=None))
+    assert "session is required" in text
+    assert qid
 
 
 def test_summarize_document_returns_raw_answer_with_a_real_query_id():
@@ -160,13 +183,12 @@ def test_summarize_document_returns_raw_answer_with_a_real_query_id():
     real_generate_streaming = summarize_module.generate_streaming
     summarize_module.generate_streaming = lambda prompt, *_a, **_kw: iter(["the raw summary, unvalidated"])
     try:
-        result = service.summarize_document(document_ids=["doc1"], session_id="s1")
+        text, qid = _drain(service.summarize_document(document_ids=["doc1"], session_id="s1"))
     finally:
         summarize_module.generate_streaming = real_generate_streaming
 
-    assert "error" not in result
-    assert result["answer"] == "the raw summary, unvalidated"
-    assert result["query_id"]  # non-empty, needed for the feedback button
+    assert text == "the raw summary, unvalidated"
+    assert qid  # non-empty, needed for the feedback button
 
 
 def test_detect_summarize_intent_delegates_to_the_mistral_classifier():
@@ -193,3 +215,67 @@ def test_detect_summarize_intent_delegates_to_the_mistral_classifier():
     finally:
         assistant_service_module.classify_summarize_intent = real_classify
     assert seen == ["summarize this please", "what time is it"]
+
+
+# ---------- real streaming, and the QueryTrace fix ----------
+
+def test_generate_summary_basic_yields_growing_text_not_just_a_final_value():
+    """The whole point of making this a generator: a caller watching the
+    stream sees it grow token by token, not silence followed by one
+    final blob -- this is the actual "streaming doesn't work" bug."""
+    import pipeline.summarize as summarize_module
+    real_generate_streaming = summarize_module.generate_streaming
+    summarize_module.generate_streaming = lambda prompt, *_a, **_kw: iter(
+        ["The", "The quick", "The quick fox."],
+    )
+    try:
+        seen = list(generate_summary_basic(["chunk"], FakeTok(), None, "SUMtest"))
+    finally:
+        summarize_module.generate_streaming = real_generate_streaming
+
+    assert seen == ["The", "The quick", "The quick fox."]  # already ends on "." -- no extra trim yield
+    assert len(seen) > 1  # more than one yield: this is real incremental streaming
+
+
+def test_summarize_document_stores_a_retrievable_query_trace():
+    """Quiz/summarize never stored a QueryTrace before this fix, so
+    /api/feedback's get_trace(query_id) lookup always missed and fell
+    back to a bare signal with no query/answer text. summarize_document()
+    must store one, same as document_chat() does."""
+    service = AssistantService(RuntimeManager(embedder=WordOverlapEmbedder(), llm_tok=FakeTok()))
+
+    class FakeChunk:
+        def __init__(self, text):
+            self.text = text
+
+    class FakeDocument:
+        chunks = [FakeChunk("alpha"), FakeChunk("beta")]
+
+    service.documents.store.get = lambda document_id, session_id: FakeDocument()
+
+    import pipeline.summarize as summarize_module
+    real_generate_streaming = summarize_module.generate_streaming
+    summarize_module.generate_streaming = lambda prompt, *_a, **_kw: iter(["a complete summary."])
+    try:
+        text, qid = _drain(service.summarize_document(
+            document_ids=["doc1"], session_id="s1", question="summarize this please",
+        ))
+    finally:
+        summarize_module.generate_streaming = real_generate_streaming
+
+    trace = get_trace(qid)
+    assert trace is not None
+    assert trace.query == "summarize this please"
+    assert trace.final_answer == text == "a complete summary."
+    assert trace.intent_type == "summarize"
+
+
+def test_summarize_document_stores_a_trace_even_on_a_validation_error():
+    """So a feedback click on an error response (e.g. the student
+    flagged "no document attached") still resolves to something via
+    get_trace(), instead of only ever hitting the bare-signal fallback."""
+    service = AssistantService(RuntimeManager(embedder=WordOverlapEmbedder()))
+    text, qid = _drain(service.summarize_document(document_ids=None, session_id="s1"))
+    trace = get_trace(qid)
+    assert trace is not None
+    assert trace.final_answer == text

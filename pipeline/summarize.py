@@ -88,13 +88,22 @@ def _trim_to_last_sentence(text: str) -> str:
     return stripped[:last_end + 1]
 
 
-def generate_summary_basic(chunks: list[str], llm_tok, llm_model, query_id: str) -> str:
+def generate_summary_basic(chunks: list[str], llm_tok, llm_model, query_id: str):
     """Single-shot document summary: one Mistral call over the joined
     document chunks, no map-reduce, no JSON validation. generate_streaming's
     own prompt-length safety net truncates (preserving the closing
     "[/INST]") if the document doesn't fit -- the summary then simply
     covers only what made it into the prompt, same as quiz's grounded
     context handling.
+
+    A generator (same reason document_chat() is one): yields the growing
+    raw text as it streams, so the caller can forward real deltas to the
+    UI instead of blocking silently for the whole generation and
+    delivering it all at once -- summarize/basic-quiz requests used to
+    do exactly that, which is what "streaming doesn't work" turned out
+    to mean for these two features. One extra yield at the end carries
+    the trimmed text, only if trimming actually changed anything, so a
+    clean stream doesn't get a redundant final update.
 
     Two things guard against a mid-word cutoff, found live on a
     heterogeneous test document that pushed the model toward listing
@@ -126,4 +135,7 @@ def generate_summary_basic(chunks: list[str], llm_tok, llm_model, query_id: str)
         query_id=f"{query_id}-summary", max_new_tokens=max_new_tokens,
     ):
         full = partial
-    return _trim_to_last_sentence(full.strip())
+        yield full
+    trimmed = _trim_to_last_sentence(full.strip())
+    if trimmed != full:
+        yield trimmed

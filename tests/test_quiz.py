@@ -6,6 +6,7 @@ import numpy as np
 
 from core.assistant_service import AssistantService
 from core.runtime_manager import RuntimeManager
+from pipeline.classifier import get_trace
 from pipeline.quiz import (
     _MAX_CONTEXT_CHARS_PER_CHUNK, _extract_json, _finalize_question, _validate,
     generate_quiz, generate_quiz_basic,
@@ -229,7 +230,12 @@ def test_generate_quiz_basic_splits_chunks_evenly_and_skips_validation():
 
     quiz_module.generate_streaming = fake_generate_streaming
     try:
-        answer = generate_quiz_basic("topic", 3, chunks, None, None, "QZtest")
+        # generate_quiz_basic() streams now -- drain to the last yield
+        # for the final concatenated text, same as any caller that just
+        # wants the finished result would.
+        answer = ""
+        for partial in generate_quiz_basic("topic", 3, chunks, None, None, "QZtest"):
+            answer = partial
     finally:
         quiz_module.generate_streaming = real_generate_streaming
 
@@ -240,10 +246,23 @@ def test_generate_quiz_basic_splits_chunks_evenly_and_skips_validation():
     assert "not json, just prose for QZtest-basic-q1" in answer
 
 
+def _drain(gen) -> tuple[str, str]:
+    """quiz_basic_document()/summarize_document() are generators now,
+    streaming (text, sources, trace_placeholder, query_id) 4-tuples like
+    document_chat() -- drain to the last one for the final (text, qid),
+    same convention server/api_server.py's _drain_activity_generator_sync
+    uses for the real blocking endpoint."""
+    text, qid = "", ""
+    for text, _sources, _trace, qid in gen:
+        pass
+    return text, qid
+
+
 def test_quiz_basic_document_requires_attached_document():
     service = AssistantService(RuntimeManager(embedder=WordOverlapEmbedder()))
-    result = service.quiz_basic_document("anything", 3, document_ids=None, session_id="s1")
-    assert "error" in result and "attach a document" in result["error"]
+    text, qid = _drain(service.quiz_basic_document("anything", 3, document_ids=None, session_id="s1"))
+    assert "attach a document" in text
+    assert qid  # still gets a real query_id -- a QueryTrace was stored even for this error
 
 
 def test_quiz_basic_document_returns_raw_answer_not_a_structured_quiz():
@@ -262,12 +281,75 @@ def test_quiz_basic_document_returns_raw_answer_not_a_structured_quiz():
     real_generate_streaming = quiz_module.generate_streaming
     quiz_module.generate_streaming = lambda prompt, *_a, **_kw: iter(["raw model text, unvalidated"])
     try:
-        result = service.quiz_basic_document(
+        text, qid = _drain(service.quiz_basic_document(
             "anything", 2, document_ids=["doc1"], session_id="s1",
-        )
+        ))
     finally:
         quiz_module.generate_streaming = real_generate_streaming
 
-    assert "error" not in result
-    assert "quiz" not in result
-    assert result["answer"].count("raw model text, unvalidated") == 2
+    assert qid
+    assert text.count("raw model text, unvalidated") == 2
+
+
+# ---------- real streaming, and the QueryTrace fix ----------
+
+def test_generate_quiz_basic_yields_growing_text_across_all_questions_not_just_a_final_value():
+    """The whole point of making this a generator: a caller watching the
+    stream sees each question's text grow and accumulate, not silence
+    for the whole multi-call run followed by one final blob -- this is
+    the actual "streaming doesn't work" bug for basic quiz."""
+    chunks = ["chunk one", "chunk two"]
+    import pipeline.quiz as quiz_module
+    real_generate_streaming = quiz_module.generate_streaming
+    quiz_module.generate_streaming = lambda prompt, *_a, **_kw: iter(["Q", "Q done."])
+    try:
+        seen = list(generate_quiz_basic("topic", 2, chunks, None, None, "QZtest"))
+    finally:
+        quiz_module.generate_streaming = real_generate_streaming
+
+    assert len(seen) == 4  # 2 growing yields per question x 2 questions
+    assert seen[0] == "Question 1:\nQ"
+    assert seen[1] == "Question 1:\nQ done."
+    # question 2's text accumulates ON TOP of question 1's finished text:
+    assert seen[2] == "Question 1:\nQ done.\n\nQuestion 2:\nQ"
+    assert seen[3] == "Question 1:\nQ done.\n\nQuestion 2:\nQ done."
+
+
+def test_quiz_basic_document_stores_a_retrievable_query_trace():
+    """Quiz/summarize never stored a QueryTrace before this fix, so
+    /api/feedback's get_trace(query_id) lookup always missed. This must
+    store one, same as document_chat() does."""
+    service = AssistantService(RuntimeManager(embedder=WordOverlapEmbedder()))
+
+    class FakeChunk:
+        def __init__(self, text):
+            self.text = text
+
+    class FakeDocument:
+        chunks = [FakeChunk("alpha"), FakeChunk("beta")]
+
+    service.documents.store.get = lambda document_id, session_id: FakeDocument()
+
+    import pipeline.quiz as quiz_module
+    real_generate_streaming = quiz_module.generate_streaming
+    quiz_module.generate_streaming = lambda prompt, *_a, **_kw: iter(["a question."])
+    try:
+        text, qid = _drain(service.quiz_basic_document(
+            "computational biology", 1, document_ids=["doc1"], session_id="s1",
+        ))
+    finally:
+        quiz_module.generate_streaming = real_generate_streaming
+
+    trace = get_trace(qid)
+    assert trace is not None
+    assert trace.query == "computational biology"
+    assert trace.final_answer == text
+    assert trace.intent_type == "quiz"
+
+
+def test_quiz_basic_document_stores_a_trace_even_on_a_validation_error():
+    service = AssistantService(RuntimeManager(embedder=WordOverlapEmbedder()))
+    text, qid = _drain(service.quiz_basic_document("anything", 3, document_ids=None, session_id="s1"))
+    trace = get_trace(qid)
+    assert trace is not None
+    assert trace.final_answer == text

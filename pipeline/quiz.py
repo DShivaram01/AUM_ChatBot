@@ -288,13 +288,18 @@ def _question_prompt(
 
 def generate_quiz_basic(
     topic: str, count: int, chunks: list[str], llm_tok, llm_model, query_id: str,
-) -> str:
+):
     """Minimal document quiz path: no JSON schema, no validation, no
     retries, no evidence_refs. The document's chunks are split evenly
     across the requested question count (chunks_per_question = total
     chunks / count) and each group gets exactly one LLM call asking for
     one plain-text MCQ. Whatever the model returns is used as-is and
     handed back for direct display, the same as any other chat answer.
+
+    A generator: yields the growing concatenated text across all N
+    questions as they're generated, one model call at a time, so the UI
+    can show real progress instead of going silent for the entire
+    multi-call run and dumping everything at once at the end.
     """
     chunks = chunks or ["(no document text available)"]
     per_question = max(1, len(chunks) // count)
@@ -315,8 +320,8 @@ def generate_quiz_basic(
             query_id=f"{query_id}-basic-q{q_num}", max_new_tokens=320,
         ):
             full = partial
+            yield "\n\n".join(parts + [f"Question {q_num}:\n{partial.strip()}"])
         parts.append(f"Question {q_num}:\n{full.strip()}")
-    return "\n\n".join(parts)
 
 
 def generate_quiz(

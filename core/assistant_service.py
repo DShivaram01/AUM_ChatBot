@@ -309,17 +309,40 @@ class AssistantService:
 
     def summarize_document(
         self, document_ids: list[str] | None, session_id: str | None,
-    ) -> dict:
+        question: str = "",
+    ) -> Iterator[tuple]:
         """Basic single-shot document summary: every chunk of the
         attached document(s), one unvalidated LLM call, no map-reduce
-        (see pipeline.summarize module docstring for why). Returns
-        {"answer": "..."} on success or {"error": "..."}.
+        (see pipeline.summarize module docstring for why).
+
+        A generator, same shape as document_chat() -- yields
+        (partial_text, sources, trace_placeholder, query_id) 4-tuples as
+        the summary streams, and stores a QueryTrace at the end (or on
+        an early error) so /api/feedback's get_trace(query_id) lookup
+        works for this activity too, same as every grounded pipeline.
+        Drain to the last item for a blocking caller, same convention
+        server/api_server.py's _run_chat_sync already uses for
+        document_chat().
         """
         qid = next_query_id("SUM")
+        trace = QueryTrace(
+            query_id=qid, query=question, tab="summarize",
+            timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            intent_type="summarize",
+        )
+
+        def _fail(message: str) -> Iterator[tuple]:
+            trace.response_state = "not_found"
+            trace.final_answer = message
+            store_trace(trace)
+            yield message, [], "", qid
+
         if not document_ids:
-            return {"error": "Please attach a document to summarize."}
+            yield from _fail("Please attach a document to summarize.")
+            return
         if not session_id:
-            return {"error": "A session is required to use uploaded documents."}
+            yield from _fail("A session is required to use uploaded documents.")
+            return
 
         chunks: list[str] = []
         try:
@@ -327,35 +350,65 @@ class AssistantService:
                 document = self.documents.store.get(document_id, session_id)
                 chunks.extend(chunk.text for chunk in document.chunks)
         except (KeyError, PermissionError) as exc:
-            return {"error": str(exc)}
+            yield from _fail(str(exc))
+            return
         if not chunks:
-            return {"error": "The uploaded document has no content to summarize."}
+            yield from _fail("The uploaded document has no content to summarize.")
+            return
 
-        answer = generate_summary_basic(
+        trace.routing_path = f"explicit document selection: {document_ids}"
+        trace.response_state = "paragraph"
+        full = ""
+        for partial in generate_summary_basic(
             chunks, self.runtime.llm_tok, self.runtime.llm_model, qid,
+        ):
+            full = partial
+            yield partial, [], "", qid
+        trace.final_answer = full
+        trace.full_prompt = (
+            f"<redacted: document summary prompt, {len(chunks)} chunk(s) "
+            f"from document(s) {document_ids}>"
         )
-        return {"answer": answer, "query_id": qid}
+        store_trace(trace)
 
     def quiz_basic_document(
         self, topic: str, count: int,
         document_ids: list[str] | None, session_id: str | None,
-    ) -> dict:
+    ) -> Iterator[tuple]:
         """Basic document quiz: every chunk of the attached document(s),
         split evenly across the requested question count, one
         unvalidated LLM call per question. No retries, no JSON parsing,
         no evidence checks -- see pipeline.quiz.generate_quiz_basic().
-        Returns {"answer": "..."} on success or {"error": "..."}.
+
+        A generator, same shape and same QueryTrace-storing contract as
+        summarize_document() above.
         """
         topic = topic.strip()
         qid = next_query_id("QZ")
+        trace = QueryTrace(
+            query_id=qid, query=topic, tab="quiz",
+            timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            intent_type="quiz",
+        )
+
+        def _fail(message: str) -> Iterator[tuple]:
+            trace.response_state = "not_found"
+            trace.final_answer = message
+            store_trace(trace)
+            yield message, [], "", qid
+
         if not topic:
-            return {"error": "Please provide a topic for the quiz."}
+            yield from _fail("Please provide a topic for the quiz.")
+            return
         if not 1 <= count <= 20:
-            return {"error": "Please request between 1 and 20 questions."}
+            yield from _fail("Please request between 1 and 20 questions.")
+            return
         if not document_ids:
-            return {"error": "Please attach a document for a document-grounded quiz."}
+            yield from _fail("Please attach a document for a document-grounded quiz.")
+            return
         if not session_id:
-            return {"error": "A session is required to use uploaded documents."}
+            yield from _fail("A session is required to use uploaded documents.")
+            return
 
         chunks: list[str] = []
         try:
@@ -363,14 +416,26 @@ class AssistantService:
                 document = self.documents.store.get(document_id, session_id)
                 chunks.extend(chunk.text for chunk in document.chunks)
         except (KeyError, PermissionError) as exc:
-            return {"error": str(exc)}
+            yield from _fail(str(exc))
+            return
         if not chunks:
-            return {"error": "The uploaded document has no content to quiz on."}
+            yield from _fail("The uploaded document has no content to quiz on.")
+            return
 
-        answer = generate_quiz_basic(
+        trace.routing_path = f"explicit document selection: {document_ids}"
+        trace.response_state = "paragraph"
+        full = ""
+        for partial in generate_quiz_basic(
             topic, count, chunks, self.runtime.llm_tok, self.runtime.llm_model, qid,
+        ):
+            full = partial
+            yield partial, [], "", qid
+        trace.final_answer = full
+        trace.full_prompt = (
+            f"<redacted: basic document quiz prompt, {len(chunks)} chunk(s) "
+            f"from document(s) {document_ids}, {count} questions>"
         )
-        return {"answer": answer, "query_id": qid}
+        store_trace(trace)
 
     def quiz(
         self, topic: str, count: int, source_mode: str,

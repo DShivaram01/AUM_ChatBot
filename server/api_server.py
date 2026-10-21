@@ -358,17 +358,19 @@ def _try_quiz_from_chat(req: "ChatRequest") -> dict | None:
         # validation/retries -- the model's raw output is returned as a
         # normal answer, same as any other chat response, instead of
         # AssistantService.quiz()'s validated quiz-card pipeline below.
-        result = get_assistant_service().quiz_basic_document(
+        # quiz_basic_document() is a generator now (streams, and stores
+        # its own QueryTrace on completion) -- returning it un-drained
+        # under "generator" lets the caller choose to stream it
+        # (/api/ask/stream) or drain it (/api/ask), same split
+        # _run_chat_sync/_run_chat_stream_sync already use for
+        # document_chat(). Calling a generator function doesn't run any
+        # of its body yet, so this is not itself a blocking call.
+        gen = get_assistant_service().quiz_basic_document(
             intent.topic, intent.count, req.document_ids, req.session_id,
         )
-        if "error" in result:
-            return {
-                "answer": result["error"], "topic_used": "quiz_unavailable",
-                "kind": "answer", "quiz": None,
-            }
         return {
-            "answer": result["answer"], "topic_used": "quiz", "kind": "answer",
-            "quiz": None, "source_mode": source_mode, "query_id": result["query_id"],
+            "topic_used": "quiz", "kind": "answer", "quiz": None,
+            "source_mode": source_mode, "generator": gen,
         }
 
     result = get_assistant_service().quiz(
@@ -411,16 +413,11 @@ def _try_summarize_from_chat(req: "ChatRequest") -> dict | None:
     if not service.detect_summarize_intent(req.question):
         return None
 
-    result = service.summarize_document(req.document_ids, req.session_id)
-    if "error" in result:
-        return {
-            "answer": result["error"], "topic_used": "summarize_unavailable",
-            "kind": "answer", "quiz": None,
-        }
-    return {
-        "answer": result["answer"], "topic_used": "summarize", "kind": "answer",
-        "quiz": None, "query_id": result["query_id"],
-    }
+    # summarize_document() is a generator (streams, and stores its own
+    # QueryTrace on completion) -- same "generator" convention as the
+    # document-quiz branch above; see that branch's comment.
+    gen = service.summarize_document(req.document_ids, req.session_id, question=req.question)
+    return {"topic_used": "summarize", "kind": "answer", "quiz": None, "generator": gen}
 
 
 def _format_quiz_explanation(quiz: dict, question_number: int) -> str:
@@ -487,6 +484,21 @@ def _try_quiz_followup_from_chat(req: "ChatRequest") -> dict | None:
         "answer": "", "topic_used": "quiz", "kind": "quiz", "quiz": result["quiz"],
         "source_mode": last["source_mode"],
     }
+
+
+def _drain_activity_generator_sync(gen) -> tuple[str, str]:
+    """Run a quiz-basic/summarize generator (core/assistant_service.py's
+    quiz_basic_document()/summarize_document()) to completion and return
+    its final (text, query_id) -- the blocking-endpoint equivalent of
+    the producer loop ask_stream() uses to stream the same generator
+    incrementally. Same drain-to-last-item convention _run_chat_sync
+    already uses for document_chat().
+    """
+    final_text, query_id = "", ""
+    for text, _sources, _trace, item_query_id in gen:
+        final_text = text
+        query_id = item_query_id
+    return final_text, query_id
 
 
 def _run_chat_sync(
@@ -703,14 +715,26 @@ async def ask(req: ChatRequest) -> ChatResponse:
             # deterministic checks have already said no.
             activity_result = await asyncio.to_thread(_try_summarize_from_chat, req)
         if activity_result is not None:
+            if "generator" in activity_result:
+                # Basic document quiz / summarize: drain their generator
+                # on a worker thread (same as the chunk below does for
+                # document_chat() via _run_chat_sync) rather than
+                # blocking the event loop for the whole generation.
+                answer, query_id = await asyncio.to_thread(
+                    _drain_activity_generator_sync, activity_result["generator"],
+                )
+                return ChatResponse(
+                    answer=answer, topic_used=activity_result["topic_used"],
+                    query_id=query_id, sources=[],
+                    kind=activity_result["kind"], quiz=activity_result["quiz"],
+                    source_mode=activity_result.get("source_mode"),
+                    latency_ms=int((time.time() - start) * 1000),
+                )
             return ChatResponse(
                 answer=activity_result["answer"], topic_used=activity_result["topic_used"],
-                # Basic document quiz and summarize both carry a real
-                # query_id (see quiz_basic_document()/summarize_document())
-                # so the feedback button on their answer-kind response can
-                # actually submit, same as any other answer -- every other
-                # activity_result branch still has no query_id to give, so
-                # this falls back to "".
+                # Every other activity_result branch (quiz_unavailable,
+                # structured quiz, quiz follow-ups) has no real query_id
+                # to give, so this falls back to "".
                 query_id=activity_result.get("query_id", ""), sources=[],
                 kind=activity_result["kind"], quiz=activity_result["quiz"],
                 source_mode=activity_result.get("source_mode"),
@@ -760,15 +784,63 @@ async def ask_stream(req: ChatRequest) -> StreamingResponse:
                 # quiz's cheap, deterministic checks have already said no.
                 activity_result = await asyncio.to_thread(_try_summarize_from_chat, req)
             if activity_result is not None:
+                if "generator" in activity_result:
+                    # Basic document quiz / summarize now genuinely
+                    # stream: same producer-thread-plus-queue pattern as
+                    # the topic-routing branch below, just fed by this
+                    # generator instead of _run_chat_stream_sync(). This
+                    # is the fix for "streaming doesn't work" on these
+                    # two features -- they used to block silently for
+                    # the entire generation (minutes, for a long
+                    # document) and deliver everything in one SSE event
+                    # at the end.
+                    import queue
+                    import threading
+
+                    gen_q: "queue.Queue[object]" = queue.Queue()
+                    GEN_DONE = object()
+
+                    def gen_producer():
+                        try:
+                            for item in activity_result["generator"]:
+                                gen_q.put((item[0], item[3]))
+                        except Exception as exc:
+                            log.exception("Pipeline error during activity streaming")
+                            gen_q.put((f"[error] {exc}", ""))
+                        finally:
+                            gen_q.put(GEN_DONE)
+
+                    threading.Thread(target=gen_producer, daemon=True).start()
+                    last_sent = ""
+                    query_id = ""
+                    while True:
+                        item = await asyncio.to_thread(gen_q.get)
+                        if item is GEN_DONE:
+                            break
+                        text, item_query_id = item
+                        query_id = item_query_id or query_id
+                        delta = text[len(last_sent):] if text.startswith(last_sent) else text
+                        last_sent = text
+                        if delta:
+                            yield _sse_event(delta)
+                    yield _sse_event(
+                        json.dumps({
+                            "query_id": query_id, "topic_used": activity_result["topic_used"],
+                            "kind": activity_result["kind"], "quiz": activity_result["quiz"],
+                            "source_mode": activity_result.get("source_mode"),
+                        }),
+                        event="done",
+                    )
+                    return
                 if activity_result["kind"] == "quiz":
                     yield _sse_event("Generating your quiz…")
                 else:
                     yield _sse_event(activity_result["answer"])
                 yield _sse_event(
                     json.dumps({
-                        # See the /api/ask branch's matching comment: only
-                        # the basic document quiz and summarize paths have
-                        # a real query_id to give here.
+                        # Every other activity_result branch (quiz_unavailable,
+                        # structured quiz, quiz follow-ups) has no real
+                        # query_id to give here.
                         "query_id": activity_result.get("query_id", ""),
                         "topic_used": activity_result["topic_used"],
                         "kind": activity_result["kind"], "quiz": activity_result["quiz"],
