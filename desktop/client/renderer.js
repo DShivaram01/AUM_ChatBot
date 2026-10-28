@@ -27,6 +27,12 @@ const attachBtn = document.getElementById('attachBtn');
 const documentFileInput = document.getElementById('documentFileInput');
 const attachmentRow = document.getElementById('attachmentRow');
 const attachmentStatus = document.getElementById('attachmentStatus');
+const chatArea = document.getElementById('chatArea');
+const coursesList = document.getElementById('coursesList');
+const courseView = document.getElementById('courseView');
+const courseViewTitle = document.getElementById('courseViewTitle');
+const courseViewBody = document.getElementById('courseViewBody');
+const courseBackBtn = document.getElementById('courseBackBtn');
 
 // Task 56: how many documents one chat may have attached at once. Bounds
 // both UI clutter and retrieval load -- AssistantService.quiz()'s
@@ -125,6 +131,7 @@ async function persistProjects() {
 }
 
 function startNewChat() {
+  showChatArea();
   activeChat = {
     id: makeId(),
     title: null,
@@ -145,6 +152,7 @@ function startNewChat() {
 function switchToChat(id) {
   const found = chats.find((c) => c.id === id);
   if (!found) return;
+  showChatArea();
   activeChat = found;
   if (!activeChat.documentIds) activeChat.documentIds = [];
   if (!activeChat.attachedDocuments) activeChat.attachedDocuments = [];
@@ -881,10 +889,153 @@ composer.addEventListener('submit', async (e) => {
   }
 });
 
+// ---------- Courses (pre-loaded sample data; clicking an assignment
+// dumps its raw content -- no LLM call, no summarization, no chunking.
+// See core/course_service.py for why the data is fictional sample
+// content, not a live AUM course feed. ----------
+
+let courses = [];
+
+function showChatArea() {
+  courseView.classList.add('hidden');
+  chatArea.classList.remove('hidden');
+  document.querySelectorAll('.course-row.active').forEach((row) => row.classList.remove('active'));
+}
+
+function showCourseView() {
+  chatArea.classList.add('hidden');
+  courseView.classList.remove('hidden');
+}
+
+function metaSpan(text) {
+  const span = document.createElement('span');
+  span.textContent = text;
+  return span;
+}
+
+async function loadCourses() {
+  try {
+    const res = await fetch(`${serverUrl}/api/courses`);
+    courses = res.ok ? await res.json() : [];
+  } catch (err) {
+    courses = [];
+  }
+  renderCoursesList();
+}
+
+function renderCoursesList() {
+  coursesList.innerHTML = '';
+  courses.forEach((course) => {
+    const row = document.createElement('button');
+    row.type = 'button';
+    row.className = 'course-row';
+    row.dataset.courseId = course.course_id;
+    row.textContent = course.course_name;
+    row.addEventListener('click', () => openCourse(course.course_id));
+    coursesList.appendChild(row);
+  });
+}
+
+async function openCourse(courseId) {
+  showCourseView();
+  document.querySelectorAll('.course-row').forEach((row) => {
+    row.classList.toggle('active', row.dataset.courseId === courseId);
+  });
+
+  const course = courses.find((c) => c.course_id === courseId);
+  courseViewTitle.textContent = course ? course.course_name : 'Course';
+  courseBackBtn.classList.remove('hidden');
+  courseBackBtn.textContent = '← Back to chat';
+  courseBackBtn.dataset.mode = 'list';
+  courseBackBtn.dataset.courseId = courseId;
+  courseViewBody.innerHTML = '<p class="course-meta">Loading assignments…</p>';
+
+  let assignments = [];
+  try {
+    const res = await fetch(`${serverUrl}/api/courses/${encodeURIComponent(courseId)}/assignments`);
+    assignments = res.ok ? await res.json() : [];
+  } catch (err) {
+    assignments = [];
+  }
+
+  courseViewBody.innerHTML = '';
+  if (course) {
+    const meta = document.createElement('p');
+    meta.className = 'course-meta';
+    meta.textContent = [course.instructor, course.term].filter(Boolean).join(' · ');
+    courseViewBody.appendChild(meta);
+  }
+  const list = document.createElement('div');
+  list.className = 'assignment-list';
+  assignments.forEach((a) => {
+    const row = document.createElement('button');
+    row.type = 'button';
+    row.className = 'assignment-row';
+    const title = document.createElement('span');
+    title.className = 'assignment-row-title';
+    title.textContent = a.title;
+    const due = document.createElement('span');
+    due.className = 'assignment-row-due';
+    due.textContent = a.due_date ? `Due ${a.due_date}` : '';
+    row.appendChild(title);
+    row.appendChild(due);
+    row.addEventListener('click', () => openAssignment(courseId, a.assignment_id));
+    list.appendChild(row);
+  });
+  courseViewBody.appendChild(list);
+}
+
+async function openAssignment(courseId, assignmentId) {
+  courseViewBody.innerHTML = '<p class="course-meta">Loading…</p>';
+  courseBackBtn.textContent = '← Back to assignments';
+  courseBackBtn.dataset.mode = 'dump';
+  courseBackBtn.dataset.courseId = courseId;
+
+  let assignment = null;
+  try {
+    const res = await fetch(
+      `${serverUrl}/api/courses/${encodeURIComponent(courseId)}/assignments/${encodeURIComponent(assignmentId)}`,
+    );
+    if (res.ok) assignment = await res.json();
+  } catch (err) {
+    assignment = null;
+  }
+
+  courseViewBody.innerHTML = '';
+  if (!assignment) {
+    const errP = document.createElement('p');
+    errP.className = 'course-meta';
+    errP.textContent = "Couldn't load this assignment.";
+    courseViewBody.appendChild(errP);
+    return;
+  }
+  courseViewTitle.textContent = assignment.title;
+
+  const meta = document.createElement('div');
+  meta.className = 'assignment-dump-meta';
+  if (assignment.due_date) meta.appendChild(metaSpan(`Due ${assignment.due_date}`));
+  if (assignment.points != null) meta.appendChild(metaSpan(`${assignment.points} points`));
+  meta.appendChild(metaSpan(assignment.course_name));
+  courseViewBody.appendChild(meta);
+
+  // The actual "dump": the content field is rendered exactly as stored,
+  // no processing of any kind -- see core/course_service.py's own
+  // docstring on get_assignment().
+  const content = document.createElement('pre');
+  content.className = 'assignment-dump-content';
+  content.textContent = assignment.content;
+  courseViewBody.appendChild(content);
+}
+
+courseBackBtn.addEventListener('click', () => {
+  if (courseBackBtn.dataset.mode === 'dump') openCourse(courseBackBtn.dataset.courseId);
+  else showChatArea();
+});
+
 // ---------- Init ----------
 
 (async function init() {
   await loadServerConfig();
-  await Promise.all([loadChats(), loadProjects()]);
+  await Promise.all([loadChats(), loadProjects(), loadCourses()]);
   startNewChat();
 })();

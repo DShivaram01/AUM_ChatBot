@@ -39,9 +39,10 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 # HOUSING_PDF / EMB_STORE -- not in the task's explicit constant list, but
 # included because pipeline/retrieval.py cannot locate the data without
 # them) ----
-COS_JSONL   = os.path.join(DATA_DIR, "cos_data.jsonl")
-HOUSING_PDF = os.path.join(DATA_DIR, "AUM-Housing-Community-Standards.pdf")
-EMB_STORE   = os.path.join(DATA_DIR, "emb_store")
+COS_JSONL     = os.path.join(DATA_DIR, "cos_data.jsonl")
+HOUSING_PDF   = os.path.join(DATA_DIR, "AUM-Housing-Community-Standards.pdf")
+EMB_STORE     = os.path.join(DATA_DIR, "emb_store")
+COURSES_JSON  = os.path.join(DATA_DIR, "courses_data.json")
 
 LOG_DIR = os.path.join(BASE_DIR, "logs")
 SCRATCH = os.environ.get("SCRATCH", os.path.join(DATA_DIR, "scratch"))

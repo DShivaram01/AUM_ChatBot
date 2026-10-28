@@ -61,6 +61,7 @@ from pipeline.quiz_intent import detect_quiz_followup, detect_quiz_intent, resol
 from core.runtime_lock import RuntimeLock, RuntimeLockError
 import config
 from core.orchestrator import get_assistant_service
+import core.course_service as course_service
 from evaluation.schemas import EvaluationEvent
 from evaluation.sanitizer import session_hash
 from evaluation.service import EvaluationService
@@ -700,6 +701,36 @@ async def delete_document(document_id: str, session_id: str) -> dict[str, str]:
         return {"status": "deleted"}
     except (ValueError, KeyError, PermissionError) as exc:
         raise _document_error(exc) from exc
+
+
+@app.get("/api/courses")
+async def list_courses() -> list[dict]:
+    """Pre-loaded sample courses (data/courses_data.json) -- summaries
+    only, no assignment content. See core/course_service.py's module
+    docstring for why this is sample data, not a real AUM course feed.
+    """
+    return course_service.list_courses()
+
+
+@app.get("/api/courses/{course_id}/assignments")
+async def list_assignments(course_id: str) -> list[dict]:
+    try:
+        return course_service.list_assignments(course_id)
+    except KeyError as exc:
+        raise _document_error(exc) from exc
+
+
+@app.get("/api/courses/{course_id}/assignments/{assignment_id}")
+async def get_assignment(course_id: str, assignment_id: str) -> dict:
+    """The raw dump: clicking an assignment fetches this directly, no
+    summarization/chunking/LLM involved -- the content field is
+    returned exactly as stored.
+    """
+    try:
+        return course_service.get_assignment(course_id, assignment_id)
+    except KeyError as exc:
+        raise _document_error(exc) from exc
+
 
 @app.post("/api/ask", response_model=ChatResponse)
 async def ask(req: ChatRequest) -> ChatResponse:

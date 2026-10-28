@@ -34,6 +34,10 @@
       </label>
 
       <div class="chat-list-wrap">
+        <div id="coursesSection" class="chat-section">
+          <p class="chat-section-label">Courses</p>
+          <div id="coursesList" class="course-list"></div>
+        </div>
         <div id="pinnedSection" class="chat-section hidden">
           <p class="chat-section-label">Pinned</p>
           <div id="pinnedList" class="chat-list"></div>
@@ -60,34 +64,44 @@
     </aside>
 
     <main class="chat">
-      <div id="messages" class="messages">
-        <div class="empty-state">
-          <p class="empty-title">What can I help with?</p>
-          <div class="topic-cards">
-            <button class="topic-card" data-topic="cos">
-              <span class="topic-card-title">Research</span>
-              <span class="topic-card-sub">AUM's research projects and symposium</span>
-            </button>
-            <button class="topic-card" data-topic="housing">
-              <span class="topic-card-title">Housing &amp; Community</span>
-              <span class="topic-card-sub">Residence hall policies and standards</span>
-            </button>
+      <div id="chatArea">
+        <div id="messages" class="messages">
+          <div class="empty-state">
+            <p class="empty-title">What can I help with?</p>
+            <div class="topic-cards">
+              <button class="topic-card" data-topic="cos">
+                <span class="topic-card-title">Research</span>
+                <span class="topic-card-sub">AUM's research projects and symposium</span>
+              </button>
+              <button class="topic-card" data-topic="housing">
+                <span class="topic-card-title">Housing &amp; Community</span>
+                <span class="topic-card-sub">Residence hall policies and standards</span>
+              </button>
+            </div>
+            <p class="empty-sub">Or just type your question below.</p>
           </div>
-          <p class="empty-sub">Or just type your question below.</p>
         </div>
+
+        <div id="attachmentRow" class="attachment-row hidden"></div>
+        <p id="attachmentStatus" class="attachment-status hidden" aria-live="polite"></p>
+
+        <form id="composer" class="composer">
+          <input id="documentFileInput" type="file" accept=".pdf,.txt,.md,.markdown,.csv,.docx,.pptx" multiple class="sr-only" />
+          <button type="button" id="attachBtn" class="attach-btn" title="Attach up to 5 documents (PDF, TXT, Markdown, CSV, Word, PowerPoint) to ask questions about">📎</button>
+          <input id="questionInput" type="text" autocomplete="off"
+                 placeholder="Ask a question…" />
+          <button type="submit" id="sendBtn">Ask</button>
+          <button type="button" id="stopBtn" class="hidden" title="Stop generating">Stop</button>
+        </form>
       </div>
 
-      <div id="attachmentRow" class="attachment-row hidden"></div>
-      <p id="attachmentStatus" class="attachment-status hidden" aria-live="polite"></p>
-
-      <form id="composer" class="composer">
-        <input id="documentFileInput" type="file" accept=".pdf,.txt,.md,.markdown,.csv,.docx,.pptx" multiple class="sr-only" />
-        <button type="button" id="attachBtn" class="attach-btn" title="Attach up to 5 documents (PDF, TXT, Markdown, CSV, Word, PowerPoint) to ask questions about">📎</button>
-        <input id="questionInput" type="text" autocomplete="off"
-               placeholder="Ask a question…" />
-        <button type="submit" id="sendBtn">Ask</button>
-        <button type="button" id="stopBtn" class="hidden" title="Stop generating">Stop</button>
-      </form>
+      <div id="courseView" class="course-view hidden">
+        <div class="course-view-header">
+          <button type="button" id="courseBackBtn" class="course-back-btn hidden">&larr; Back</button>
+          <h2 id="courseViewTitle"></h2>
+        </div>
+        <div id="courseViewBody" class="course-view-body"></div>
+      </div>
     </main>
 
   </div>

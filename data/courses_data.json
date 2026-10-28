@@ -1,0 +1,53 @@
+[
+  {
+    "course_id": "CS201",
+    "course_name": "CS 201: Data Structures and Algorithms",
+    "instructor": "Dr. Olcay Kursun",
+    "term": "Fall 2026",
+    "assignments": [
+      {
+        "assignment_id": "cs201-hw1",
+        "title": "Homework 1: Stack and Queue Implementation",
+        "due_date": "2026-09-19",
+        "points": 50,
+        "content": "CS 201 -- Homework 1: Stack and Queue Implementation\nDue: September 19, 2026, 11:59 PM\nPoints: 50\n\nOverview\n--------\nImplement a generic Stack and a generic Queue from scratch using a singly\nlinked list as the underlying storage. You may NOT use Python's built-in\nlist, collections.deque, or any other built-in container to store the\nelements -- the point of this assignment is the linked-list mechanics, not\nthe public interface.\n\nRequirements\n------------\n1. Implement class Stack with push(item), pop(), peek(), and is_empty().\n   pop() and peek() on an empty stack must raise IndexError with a clear\n   message, not crash with an unrelated exception.\n2. Implement class Queue with enqueue(item), dequeue(), peek(), and\n   is_empty(), with the same empty-queue error handling as Stack.\n3. Both classes must run in O(1) time for every operation above. If your\n   Queue's dequeue() is O(n), you have almost certainly chosen the wrong\n   end of the list to remove from -- revisit the lecture notes on\n   head/tail pointers before asking on the forum.\n4. Write at least 5 unit tests per class covering: normal operation,\n   popping/dequeuing down to empty, and the empty-container error case.\n\nSubmission\n----------\nSubmit a single file named hw1_<your_student_id>.py through the course\nportal. Late submissions lose 10% per day, up to 3 days; nothing is\naccepted after that without a documented excuse cleared with the\ninstructor in advance.\n\nGrading breakdown\n------------------\n- Stack implementation and correctness: 15 pts\n- Queue implementation and correctness: 15 pts\n- O(1) complexity (checked via a provided timing harness): 10 pts\n- Unit tests: 10 pts"
+      },
+      {
+        "assignment_id": "cs201-hw2",
+        "title": "Homework 2: Binary Search Tree Operations",
+        "due_date": "2026-10-10",
+        "points": 75,
+        "content": "CS 201 -- Homework 2: Binary Search Tree Operations\nDue: October 10, 2026, 11:59 PM\nPoints: 75\n\nOverview\n--------\nBuild a Binary Search Tree (BST) supporting insert, search, delete, and an\nin-order traversal that returns a sorted list of the tree's values.\n\nRequirements\n------------\n1. insert(value): standard BST insertion; duplicate values should be\n   ignored (do not insert a second copy, and do not raise an error).\n2. search(value) -> bool: returns whether value exists in the tree.\n3. delete(value): must correctly handle all three cases -- a leaf node,\n   a node with one child, and a node with two children (use the\n   in-order successor for the two-child case, as covered in lecture).\n4. inorder() -> list: returns all values in sorted order.\n5. height() -> int: returns the tree's height; an empty tree has height\n   -1, a single-node tree has height 0.\n\nA provided test harness (bst_harness.py, posted on the course portal)\nwill insert 500 random integers, delete 100 of them, and check that\ninorder() stays sorted and search() stays consistent throughout. Your\nsubmission must pass this harness without modification to pass.\n\nSubmission\n----------\nSubmit bst_<your_student_id>.py through the course portal. This\nassignment builds directly on Homework 1's linked-node style -- reuse\nyour own Node class pattern rather than starting from scratch.\n\nGrading breakdown\n------------------\n- insert/search: 20 pts\n- delete (all three cases): 30 pts\n- inorder/height: 15 pts\n- Passes the provided harness end-to-end: 10 pts"
+      },
+      {
+        "assignment_id": "cs201-hw3",
+        "title": "Homework 3: Graph Traversal (BFS/DFS)",
+        "due_date": "2026-11-07",
+        "points": 75,
+        "content": "CS 201 -- Homework 3: Graph Traversal (BFS/DFS)\nDue: November 7, 2026, 11:59 PM\nPoints: 75\n\nOverview\n--------\nImplement both breadth-first search (BFS) and depth-first search (DFS)\nover a graph represented as an adjacency list, and use them to answer\ntwo practical questions about the graph.\n\nRequirements\n------------\n1. Represent the graph as dict[node, list[node]] -- build a small loader\n   that reads an edge list from a text file (one 'A B' pair per line)\n   into this representation. Treat the graph as undirected unless a\n   line is prefixed with '>' (directed A -> B only).\n2. bfs(graph, start) -> list: returns nodes in visiting order.\n3. dfs(graph, start) -> list: returns nodes in visiting order\n   (iterative, using an explicit stack -- do NOT use recursion, to\n   avoid Python's recursion limit on larger graphs).\n4. shortest_path(graph, start, end) -> list | None: using BFS, return\n   the shortest path as a list of nodes, or None if unreachable.\n5. is_connected(graph) -> bool: true if every node is reachable from\n   every other node (treat the graph as undirected for this check,\n   even if it has directed edges).\n\nTest graphs (small.txt, medium.txt, disconnected.txt) are posted on the\ncourse portal along with expected outputs for shortest_path on each.\n\nSubmission\n----------\nSubmit graphs_<your_student_id>.py. Include a short README.txt (plain\ntext, no formatting needed) stating the time complexity of each of the\nfour functions above in terms of |V| and |E|.\n\nGrading breakdown\n------------------\n- Graph loader: 10 pts\n- BFS/DFS correctness: 30 pts\n- shortest_path correctness: 20 pts\n- is_connected correctness: 10 pts\n- Complexity README: 5 pts"
+      }
+    ]
+  },
+  {
+    "course_id": "CS301",
+    "course_name": "CS 301: Software Engineering Principles",
+    "instructor": "Dr. Sutanu Bhattacharya",
+    "term": "Fall 2026",
+    "assignments": [
+      {
+        "assignment_id": "cs301-proj1",
+        "title": "Project 1: Requirements Document and Use-Case Diagrams",
+        "due_date": "2026-09-26",
+        "points": 100,
+        "content": "CS 301 -- Project 1: Requirements Document and Use-Case Diagrams\nDue: September 26, 2026, 11:59 PM\nPoints: 100 (team grade)\n\nOverview\n--------\nIn teams of 3-4, pick ONE of the three provided problem statements\n(campus parking reservation, dorm maintenance ticketing, or club event\nsign-ups) and produce a requirements document for it.\n\nDeliverables\n------------\n1. A requirements document (PDF, max 6 pages) containing:\n   a. Project scope: one paragraph stating what the system will and\n      will NOT do.\n   b. At least 8 functional requirements, each with a unique ID\n      (FR-1, FR-2, ...), written as 'The system shall ...' statements.\n   c. At least 3 non-functional requirements (performance, security,\n      usability, etc.), each with a unique ID (NFR-1, ...).\n   d. A glossary of any domain-specific terms used.\n2. At least 3 use-case diagrams (UML notation), covering your three\n   most important user-facing scenarios. Hand-drawn diagrams are fine\n   if scanned clearly -- a messy photo that can't be read will be\n   graded as missing.\n3. A one-page team contribution statement: who wrote which sections,\n   signed (typed name is fine) by every team member.\n\nCommon mistakes from past semesters\n------------------------------------\n- Writing implementation details ('the system shall use a MySQL\n  database') instead of requirements ('the system shall persist\n  reservations across sessions'). Requirements describe WHAT, not HOW.\n- Use cases that are really just button-click sequences rather than\n  actual user goals.\n- Skipping the non-functional requirements entirely, or writing vague\n  ones like 'the system shall be fast' with no measurable threshold.\n\nSubmission\n----------\nOne submission per team through the course portal, team name in the\nfilename. Team formation is due one week before this deadline --\nunassigned students will be placed into a team by the instructor.\n\nGrading breakdown\n------------------\n- Scope and functional requirements: 35 pts\n- Non-functional requirements: 20 pts\n- Use-case diagrams: 30 pts\n- Contribution statement completeness: 15 pts"
+      },
+      {
+        "assignment_id": "cs301-proj2",
+        "title": "Project 2: Design Patterns Code Review",
+        "due_date": "2026-10-24",
+        "points": 80,
+        "content": "CS 301 -- Project 2: Design Patterns Code Review\nDue: October 24, 2026, 11:59 PM\nPoints: 80 (individual grade)\n\nOverview\n--------\nYou are given a ~600-line Python codebase (patterns_review_starter.zip,\non the course portal) that works correctly but was written without any\nconsideration for maintainability. Your job is to refactor it using at\nleast THREE of the design patterns covered in lecture (Strategy,\nObserver, Factory, Decorator, Singleton, Adapter) and document why each\none was the right fit.\n\nRequirements\n------------\n1. The refactored code must pass the existing test suite\n   (test_starter.py) UNCHANGED -- you may not edit the tests to make\n   your refactor pass.\n2. For each pattern you apply, write a short section (half a page max)\n   in PATTERNS.md explaining:\n   a. Which specific code smell or duplication the pattern addressed.\n   b. Why that pattern specifically, and not one of the others covered\n      in lecture.\n   c. A before/after snippet (a few lines each, not the whole file).\n3. Do not introduce a pattern just to hit the count of three -- a\n   pattern applied where it doesn't actually help will lose points,\n   not gain them.\n\nWhat we are actually grading\n-----------------------------\nThis assignment is graded on judgment, not pattern-counting. A\nsubmission with two well-justified, well-applied patterns will score\nhigher than one with three forced, unnecessary ones.\n\nSubmission\n----------\nSubmit a zip containing your refactored source and PATTERNS.md through\nthe course portal. Include your name and student ID at the top of\nPATTERNS.md.\n\nGrading breakdown\n------------------\n- Test suite still passes unmodified: 15 pts (required to receive any\n  further credit on this assignment)\n- Pattern selection and justification: 40 pts\n- Code quality of the refactor itself: 25 pts"
+      }
+    ]
+  }
+]
