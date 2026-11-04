@@ -14,6 +14,16 @@
   --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --sans: -apple-system, "Segoe UI", system-ui, sans-serif;
   --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+
+  /* Shared left/right inset for .messages, .composer, .attachment-row and
+     .attachment-status -- same formula on all four means the message
+     column and the input bar always share identical edges, instead of
+     the composer (full-width, flex:1 input) drifting away from the
+     message cards (max-width: 640px, flush-left) on a wide window. Below
+     a 760px-wide content column it's a flat 40px, same as before; above
+     that it grows to keep the content column centered and fixed at
+     760px regardless of how wide the window gets. */
+  --content-pad: max(40px, calc((100% - 760px) / 2));
 }
 
 * { box-sizing: border-box; }
@@ -35,24 +45,6 @@ body {
   grid-template-rows: minmax(0, 1fr);
   height: 100vh;
   overflow: hidden;
-}
-
-/* Below the app's own 720px minimum width there's no real estate to
-   spare on sidebar chrome -- narrow the clamp's own bounds and tighten
-   the chat area's padding so neither side gets cramped. */
-@media (max-width: 760px) {
-  .app {
-    grid-template-columns: clamp(190px, 28vw, 230px) 1fr;
-  }
-  .sidebar {
-    padding: 16px 12px;
-  }
-  .messages {
-    padding: 20px 20px;
-  }
-  .composer {
-    padding: 12px 20px 16px;
-  }
 }
 
 /* ---------- Sidebar ---------- */
@@ -409,7 +401,7 @@ body {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 28px 40px;
+  padding: 28px var(--content-pad);
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -478,7 +470,7 @@ body {
 .composer {
   display: flex;
   gap: 10px;
-  padding: 16px 40px 22px;
+  padding: 16px var(--content-pad) 22px;
   border-top: 1px solid var(--hairline);
   background: var(--panel);
 }
@@ -502,7 +494,7 @@ body {
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  padding: 0 40px;
+  padding: 0 var(--content-pad);
   margin-top: 10px;
 }
 .attachment-row.hidden { display: none; }
@@ -539,7 +531,7 @@ body {
 .attachment-remove:hover { color: var(--accent); }
 
 .attachment-status {
-  padding: 0 40px;
+  padding: 0 var(--content-pad);
   margin-top: 6px;
   font-size: 12px;
   color: var(--text-muted, #999);
@@ -761,3 +753,21 @@ body {
 .feedback-cancel { border: 1px solid var(--hairline); background: var(--panel-soft); color: var(--ink); }
 .feedback-confirm { border: 1px solid var(--accent); background: var(--accent); color: #fff; }
 .feedback-confirm:hover:not(:disabled) { background: var(--accent-hover); }
+
+/* Below the app's own 720px minimum width there's no real estate to
+   spare on sidebar chrome -- narrow the sidebar column's own clamp and
+   tighten its padding. Placed at the end of the file deliberately: a
+   media-query override needs to come AFTER the base rule it overrides
+   in source order to actually win the cascade (equal specificity,
+   source order decides) -- .messages/.composer/.attachment-row/
+   .attachment-status don't need an entry here, their shared
+   --content-pad variable (see :root) already collapses to a flat 40px
+   on its own once the window is this narrow. */
+@media (max-width: 760px) {
+  .app {
+    grid-template-columns: clamp(190px, 28vw, 230px) 1fr;
+  }
+  .sidebar {
+    padding: 16px 12px;
+  }
+}
