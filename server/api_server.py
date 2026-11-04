@@ -66,19 +66,26 @@ from evaluation.schemas import EvaluationEvent
 from evaluation.sanitizer import session_hash
 from evaluation.service import EvaluationService
 from evaluation.sinks.local_dev import LocalDevSink
+from evaluation.sinks.google_sheets import GoogleSheetsSink
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("aum_api")
 
 PIPELINE_READY = True
 
-# Task 38 (external review, workspace.md Entry 055): LocalDevSink is the
-# production sink too until Task 39 adds a remote one -- same mechanism,
-# sanitized and bounded instead of a raw asdict(QueryTrace) dump. Swapping
-# in a remote sink later means changing this constructor, not any call site.
-_evaluation_service = EvaluationService(
-    sinks=[LocalDevSink(Path(config.LOG_DIR) / "evaluation_events.jsonl")]
-)
+# Task 38 (external review, workspace.md Entry 055): LocalDevSink is always
+# present -- sanitized and bounded, same mechanism as the local JSONL log.
+# Task 39: GoogleSheetsSink is added alongside it, not instead of it, only
+# when config.GOOGLE_SHEETS_WEBHOOK_URL is actually set -- a contributor
+# without that env var still gets the local sink alone, unchanged.
+_eval_sinks: list = [LocalDevSink(Path(config.LOG_DIR) / "evaluation_events.jsonl")]
+if config.GOOGLE_SHEETS_WEBHOOK_URL:
+    _eval_sinks.append(GoogleSheetsSink(config.GOOGLE_SHEETS_WEBHOOK_URL))
+    log.info("[EvaluationService] GoogleSheetsSink enabled")
+else:
+    log.info("[EvaluationService] GOOGLE_SHEETS_WEBHOOK_URL not set -- local sink only")
+
+_evaluation_service = EvaluationService(sinks=_eval_sinks)
 
 
 class ChatRequest(BaseModel):

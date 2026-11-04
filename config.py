@@ -90,6 +90,14 @@ AUM_ROUTER = os.environ.get("AUM_ROUTER", "legacy").strip().lower()
 if AUM_ROUTER not in ("legacy", "semantic", "hybrid"):
     AUM_ROUTER = "legacy"
 
+# ---- Remote evaluation sink (Task 39) ----
+# The Apps Script Web App URL bound to the project owner's NSF-pilot
+# feedback sheet (workspace.md TASK 39/Entry 070). Empty by default --
+# GoogleSheetsSink is only added in server/api_server.py when this is set,
+# so a contributor without it still gets LocalDevSink alone. Treat this
+# URL as a secret: it is the only thing gating writes to that sheet.
+GOOGLE_SHEETS_WEBHOOK_URL = os.environ.get("GOOGLE_SHEETS_WEBHOOK_URL", "").strip()
+
 # ---- NOT FOUND IN backend.py ----
 # No RAM-checking logic exists anywhere in the ~2227-line source file
 # (verified by a full read, not just grep). Left as None rather than an

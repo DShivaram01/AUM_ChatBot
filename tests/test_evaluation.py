@@ -1,11 +1,16 @@
 """Task 38: evaluation sanitizer, bounded trace cache, and sink behavior.
 Task 45 additions: EvaluationService.record_event()'s sink-failure
 isolation, and the same guarantee for /api/feedback's missing-trace
-fallback path."""
+fallback path. Task 39 additions: GoogleSheetsSink's async delivery,
+retry, and backpressure -- no real network call is ever made in these
+tests, urlopen is mocked throughout."""
 
 import json
 import tempfile
+import threading
+import time
 from pathlib import Path
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
@@ -13,7 +18,17 @@ from evaluation.sanitizer import session_hash, trace_to_event
 from evaluation.schemas import EvaluationEvent
 from evaluation.service import EvaluationService
 from evaluation.sinks.local_dev import LocalDevSink
+from evaluation.sinks.google_sheets import GoogleSheetsSink
 from pipeline.classifier import QueryTrace, RetrievalCandidate, SESSION_TRACES
+
+
+def _wait_until(predicate, timeout=2.0):
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        if predicate():
+            return True
+        time.sleep(0.01)
+    return False
 
 
 def test_session_hash_is_deterministic_and_not_reversible():
@@ -187,6 +202,92 @@ def test_production_secret_gate():
                 os.environ.pop(k, None)
             else:
                 os.environ[k] = v
+
+
+def test_google_sheets_sink_requires_a_webhook_url():
+    try:
+        GoogleSheetsSink("")
+        raise AssertionError("expected ValueError for empty webhook_url")
+    except ValueError:
+        pass
+
+
+def test_google_sheets_sink_posts_the_event_without_blocking_the_caller():
+    calls = []
+
+    class FakeResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def read(self):
+            return b"{}"
+
+    def fake_urlopen(request, timeout=None):
+        calls.append(json.loads(request.data.decode("utf-8")))
+        return FakeResponse()
+
+    with patch("evaluation.sinks.google_sheets.urllib.request.urlopen", fake_urlopen):
+        sink = GoogleSheetsSink("https://script.google.com/macros/s/fake/exec")
+        event = EvaluationEvent(
+            event_id="e1", timestamp_utc="2026-10-08T00:00:00+00:00",
+            query_id="Q9001", session_hash="", activity="ask", source_mode="housing",
+        )
+        start = time.time()
+        sink.record(event)  # must return immediately, no network wait
+        assert time.time() - start < 0.5
+        assert _wait_until(lambda: len(calls) == 1)
+        assert calls[0]["query_id"] == "Q9001"
+
+
+def test_google_sheets_sink_retries_then_gives_up_without_raising():
+    attempts = []
+
+    def always_fails(request, timeout=None):
+        attempts.append(1)
+        raise OSError("simulated network failure")
+
+    with patch("evaluation.sinks.google_sheets.urllib.request.urlopen", always_fails), \
+         patch("evaluation.sinks.google_sheets.time.sleep", lambda s: None):
+        sink = GoogleSheetsSink("https://script.google.com/macros/s/fake/exec")
+        event = EvaluationEvent(
+            event_id="e2", timestamp_utc="2026-10-08T00:00:00+00:00",
+            query_id="Q9002", session_hash="", activity="ask", source_mode="housing",
+        )
+        sink.record(event)  # must not raise even though every attempt fails
+        assert _wait_until(lambda: len(attempts) == 3)
+
+
+def test_google_sheets_sink_drops_newest_event_when_queue_is_full():
+    release = threading.Event()
+
+    def blocks_forever(request, timeout=None):
+        release.wait(timeout=5)
+        raise OSError("simulated network failure")
+
+    with patch("evaluation.sinks.google_sheets.urllib.request.urlopen", blocks_forever), \
+         patch("evaluation.sinks.google_sheets.time.sleep", lambda s: None):
+        sink = GoogleSheetsSink("https://script.google.com/macros/s/fake/exec", max_queue=1)
+        first = EvaluationEvent(
+            event_id="e3", timestamp_utc="2026-10-08T00:00:00+00:00",
+            query_id="Q9003", session_hash="", activity="ask", source_mode="housing",
+        )
+        second = EvaluationEvent(
+            event_id="e4", timestamp_utc="2026-10-08T00:00:00+00:00",
+            query_id="Q9004", session_hash="", activity="ask", source_mode="housing",
+        )
+        sink.record(first)
+        assert _wait_until(lambda: sink._queue.empty())  # worker has dequeued `first`
+        # Fill the queue while the worker is still blocked sending `first`.
+        sink.record(second)
+        sink.record(EvaluationEvent(
+            event_id="e5", timestamp_utc="2026-10-08T00:00:00+00:00",
+            query_id="Q9005", session_hash="", activity="ask", source_mode="housing",
+        ))  # must not raise or block -- dropped, since the queue is full
+        assert sink._dropped >= 1
+        release.set()
 
 
 def test_session_traces_is_bounded():
