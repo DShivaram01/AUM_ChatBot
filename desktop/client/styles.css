@@ -422,12 +422,14 @@ body {
   margin: 0;
 }
 
-/* index-card style message */
+/* index-card style message. Asymmetric widths, not matching: the bot's
+   reply (left, "output") and the user's own sent message (right,
+   "input") are deliberately different proportions of the available
+   width, same as a typical two-sided chat bubble layout -- this was
+   never actually about the composer's text-entry box, which stays
+   untouched (flex: 1, full width) from here on. */
 .card {
-  /* No max-width: .messages is a column flex container, so with no
-     cross-axis constraint each card stretches (default align-items:
-     stretch) to the full width of the content area -- the same width
-     .composer's input bar uses, via the shared --content-pad inset. */
+  max-width: 75%;
   background: var(--panel);
   border: 1px solid var(--hairline);
   border-left: 3px solid var(--auto);
@@ -439,6 +441,8 @@ body {
 }
 
 .card.user {
+  align-self: flex-end;
+  max-width: 60%;
   border-left-color: var(--accent);
   background: var(--panel-soft);
 }
