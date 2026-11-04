@@ -16,14 +16,12 @@
   --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 
   /* Shared left/right inset for .messages, .composer, .attachment-row and
-     .attachment-status -- same formula on all four means the message
-     column and the input bar always share identical edges, instead of
-     the composer (full-width, flex:1 input) drifting away from the
-     message cards (max-width: 640px, flush-left) on a wide window. Below
-     a 760px-wide content column it's a flat 40px, same as before; above
-     that it grows to keep the content column centered and fixed at
-     760px regardless of how wide the window gets. */
-  --content-pad: max(40px, calc((100% - 760px) / 2));
+     .attachment-status -- one variable means all four always share
+     identical edges. A centered, fixed-width content column was tried
+     here and rejected (looked detached from the window's own left/right
+     walls on a maximized screen) -- full width, flat inset, is the
+     chosen look: see .card below for the matching full-width bubbles. */
+  --content-pad: 40px;
 }
 
 * { box-sizing: border-box; }
@@ -426,7 +424,10 @@ body {
 
 /* index-card style message */
 .card {
-  max-width: 640px;
+  /* No max-width: .messages is a column flex container, so with no
+     cross-axis constraint each card stretches (default align-items:
+     stretch) to the full width of the content area -- the same width
+     .composer's input bar uses, via the shared --content-pad inset. */
   background: var(--panel);
   border: 1px solid var(--hairline);
   border-left: 3px solid var(--auto);
@@ -438,7 +439,6 @@ body {
 }
 
 .card.user {
-  align-self: flex-end;
   border-left-color: var(--accent);
   background: var(--panel-soft);
 }
