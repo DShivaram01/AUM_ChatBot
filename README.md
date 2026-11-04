@@ -29,3 +29,11 @@ Build Electron with: cd desktop/client && npm run dist
 Optional flash-attn can be installed manually with the active lab version: python -m pip install --no-build-isolation flash-attn==2.8.3.post1. The copied source now falls back to PyTorch SDPA when it is unavailable.
 
 Review data provenance and redistribution rights before public release. See docs/project_guides/source_provenance_and_versioning.md.
+
+## New here, or new to LLMs/RAG?
+
+Start with `docs/project_guides/student_guide_rag_llm_quiz_and_summarizer.md` --
+a from-scratch explanation of what an LLM and RAG are, how this app's
+quiz and document-summarizer features work and why they were built the
+way they were, and the context-window benchmark that backs the current
+token limits. Assumes zero prior AI/ML background.

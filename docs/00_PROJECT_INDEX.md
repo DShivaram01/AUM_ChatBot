@@ -6,6 +6,11 @@
 
 This directory is the shared operating guide for the AUM Academic Assistant. It should be usable by the project owner, Claude Code, Codex, and future engineering agents even if all chat history disappears.
 
+**New to LLMs or RAG, or just want to understand the quiz/summarizer
+features?** Read `project_guides/student_guide_rag_llm_quiz_and_summarizer.md`
+first -- it assumes zero prior background and is a separate, beginner-level
+entry point from the engineering reading order below.
+
 ## Required reading order
 
 Before substantial architectural work, read:
