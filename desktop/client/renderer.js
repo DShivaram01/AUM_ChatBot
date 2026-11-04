@@ -47,7 +47,6 @@ const MAX_ATTACHED_DOCUMENTS = 5;
 let pendingFeedback = null;
 
 let serverUrl = 'http://localhost:8000';
-let currentTopic = 'auto';
 
 // Saved chats only -- temporary chats are never added to this array, so they
 // never get persisted and never show up in the sidebar list, matching
@@ -56,20 +55,16 @@ let chats = [];
 let projects = [];
 let activeChat = null;
 
+// Topic-card buttons (Research / Housing) used to live here, pinning a
+// module-level currentTopic to an explicit value for the rest of the chat.
+// Every later message in that chat then skipped auto-routing entirely and
+// got rejected or misrouted if it belonged to a different mode. Removed
+// along with currentTopic itself -- routing is now always "auto" unless
+// the user explicitly opts into Open-ended mode (see the fetch body below).
 const EMPTY_STATE_HTML = `
   <div class="empty-state">
     <p class="empty-title">What can I help with?</p>
-    <div class="topic-cards">
-      <button class="topic-card" data-topic="cos">
-        <span class="topic-card-title">Research</span>
-        <span class="topic-card-sub">AUM's research projects and symposium</span>
-      </button>
-      <button class="topic-card" data-topic="housing">
-        <span class="topic-card-title">Housing &amp; Community</span>
-        <span class="topic-card-sub">Residence hall policies and standards</span>
-      </button>
-    </div>
-    <p class="empty-sub">Or just type your question below.</p>
+    <p class="empty-sub">Ask a question about AUM research or housing policy, or just type below.</p>
   </div>
 `;
 
@@ -143,7 +138,6 @@ function startNewChat() {
     documentIds: [],
     attachedDocuments: [],
   };
-  currentTopic = 'auto';
   renderActiveChatMessages();
   renderChatList();
   renderAttachmentRow();
@@ -156,7 +150,6 @@ function switchToChat(id) {
   activeChat = found;
   if (!activeChat.documentIds) activeChat.documentIds = [];
   if (!activeChat.attachedDocuments) activeChat.attachedDocuments = [];
-  currentTopic = 'auto';
   renderActiveChatMessages();
   renderChatList();
   renderAttachmentRow();
@@ -560,27 +553,12 @@ function appendChatRow(container, chatObj) {
 
 document.addEventListener('click', () => closeChatMenus());
 
-// ---------- Topic cards (empty state) ----------
-
-function wireTopicCards() {
-  document.querySelectorAll('.topic-card').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      // Choosing an AUM source card is an explicit grounded-mode choice.
-      openEndedToggle.checked = false;
-      updateModeHint();
-      currentTopic = btn.dataset.topic;
-      questionInput.focus();
-    });
-  });
-}
-
 // ---------- Message rendering ----------
 
 function renderActiveChatMessages() {
   messagesEl.innerHTML = '';
   if (!activeChat || activeChat.messages.length === 0) {
     messagesEl.innerHTML = EMPTY_STATE_HTML;
-    wireTopicCards();
     return;
   }
   activeChat.messages.forEach((m) => {
@@ -814,7 +792,7 @@ composer.addEventListener('submit', async (e) => {
       // GENERAL is explicit and only selected through the visible opt-in toggle.
       body: JSON.stringify({
         question,
-        topic: openEndedToggle.checked ? 'general' : currentTopic,
+        topic: openEndedToggle.checked ? 'general' : 'auto',
         session_id: activeChat.id,
         // An attached document always wins server-side (see api_server.py
         // _resolve_topic), so this is sent regardless of the mode toggle.
