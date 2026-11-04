@@ -453,20 +453,63 @@ function renderChatList() {
   pinned.forEach((chat) => appendChatRow(pinnedList, chat));
   unassigned.forEach((chat) => appendChatRow(chatList, chat));
 
-  projects.forEach((project) => {
-    const group = document.createElement('div');
-    group.className = 'project-group';
-    const heading = document.createElement('p');
-    heading.className = 'project-name';
-    heading.textContent = project.name;
-    const list = document.createElement('div');
-    list.className = 'chat-list';
-    chats.filter((chat) => projectIdFor(chat) === project.id)
-      .forEach((chat) => appendChatRow(list, chat));
-    group.appendChild(heading);
-    group.appendChild(list);
-    projectList.appendChild(group);
+  projects.forEach((project) => appendProjectGroup(projectList, project));
+}
+
+function appendProjectGroup(container, project) {
+  const group = document.createElement('div');
+  group.className = 'project-group';
+
+  const header = document.createElement('div');
+  header.className = 'project-row';
+
+  const heading = document.createElement('p');
+  heading.className = 'project-name';
+  heading.textContent = project.name;
+
+  const menuToggle = document.createElement('button');
+  menuToggle.type = 'button';
+  menuToggle.className = 'chat-menu-toggle';
+  menuToggle.textContent = '⋯';
+  menuToggle.title = 'Project actions';
+  menuToggle.setAttribute('aria-label', `Project actions for ${project.name}`);
+
+  const menu = document.createElement('div');
+  menu.className = 'chat-menu hidden';
+  menu.appendChild(menuButton('Delete project', async (event) => {
+    event.stopPropagation();
+    const memberCount = chats.filter((chat) => projectIdFor(chat) === project.id).length;
+    const warning = memberCount > 0
+      ? `Delete "${project.name}"? Its ${memberCount} chat${memberCount === 1 ? '' : 's'} will move back to your unfiled chats -- they won't be deleted.`
+      : `Delete "${project.name}"?`;
+    if (!window.confirm(warning)) return;
+    chats.forEach((chat) => {
+      if (projectIdFor(chat) === project.id) chat.project_id = null;
+    });
+    projects = projects.filter((p) => p.id !== project.id);
+    await persistChats();
+    await persistProjects();
+    renderChatList();
+  }, 'danger'));
+
+  menuToggle.addEventListener('click', (event) => {
+    event.stopPropagation();
+    const opening = menu.classList.contains('hidden');
+    closeChatMenus(menu);
+    menu.classList.toggle('hidden', !opening);
   });
+
+  header.appendChild(heading);
+  header.appendChild(menuToggle);
+  header.appendChild(menu);
+
+  const list = document.createElement('div');
+  list.className = 'chat-list';
+  chats.filter((chat) => projectIdFor(chat) === project.id)
+    .forEach((chat) => appendChatRow(list, chat));
+  group.appendChild(header);
+  group.appendChild(list);
+  container.appendChild(group);
 }
 
 function closeChatMenus(except = null) {

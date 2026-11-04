@@ -27,10 +27,32 @@ body {
 
 .app {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  /* Scales with window width instead of a fixed 280px -- stays
+     proportionate from the Electron window's own 720px minWidth
+     (desktop/client/main.js) up through a wide monitor, without ever
+     crowding out the message/composer area below that minimum. */
+  grid-template-columns: clamp(220px, 22vw, 300px) 1fr;
   grid-template-rows: minmax(0, 1fr);
   height: 100vh;
   overflow: hidden;
+}
+
+/* Below the app's own 720px minimum width there's no real estate to
+   spare on sidebar chrome -- narrow the clamp's own bounds and tighten
+   the chat area's padding so neither side gets cramped. */
+@media (max-width: 760px) {
+  .app {
+    grid-template-columns: clamp(190px, 28vw, 230px) 1fr;
+  }
+  .sidebar {
+    padding: 16px 12px;
+  }
+  .messages {
+    padding: 20px 20px;
+  }
+  .composer {
+    padding: 12px 20px 16px;
+  }
 }
 
 /* ---------- Sidebar ---------- */
@@ -188,8 +210,17 @@ body {
   border-left: 1px solid var(--hairline);
 }
 
-.project-name {
+.project-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
   margin: 0 0 5px;
+}
+
+.project-name {
+  margin: 0;
   color: var(--ink);
   font-size: 12px;
   font-weight: 600;
@@ -208,6 +239,12 @@ body {
   line-height: 1;
 }
 .chat-menu-toggle:hover { border-color: var(--hairline); color: var(--ink); }
+
+.project-row .chat-menu-toggle {
+  width: 18px;
+  height: 18px;
+  font-size: 14px;
+}
 
 .chat-menu {
   position: absolute;
