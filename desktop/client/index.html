@@ -17,8 +17,8 @@
         </div>
       </div>
 
-      <button id="newChatBtn" class="new-chat-btn">+ New chat</button>
-      <button id="newProjectBtn" class="new-project-btn">+ New project</button>
+      <button id="newChatBtn" class="new-chat-btn"><svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg><span>New chat</span></button>
+      <button id="newProjectBtn" class="new-project-btn"><svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg><span>New project</span></button>
       <form id="projectCreator" class="project-creator hidden">
         <label class="sr-only" for="projectNameInput">Project folder name</label>
         <input id="projectNameInput" type="text" maxlength="80" placeholder="Project folder name" />
@@ -87,7 +87,7 @@
 
         <form id="composer" class="composer">
           <input id="documentFileInput" type="file" accept=".pdf,.txt,.md,.markdown,.csv,.docx,.pptx" multiple class="sr-only" />
-          <button type="button" id="attachBtn" class="attach-btn" title="Attach up to 5 documents (PDF, TXT, Markdown, CSV, Word, PowerPoint) to ask questions about">📎</button>
+          <button type="button" id="attachBtn" class="attach-btn" title="Attach up to 5 documents (PDF, TXT, Markdown, CSV, Word, PowerPoint) to ask questions about" aria-label="Attach documents"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button>
           <input id="questionInput" type="text" autocomplete="off"
                  placeholder="Ask a question…" />
           <button type="submit" id="sendBtn">Ask</button>

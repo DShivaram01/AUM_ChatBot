@@ -188,7 +188,8 @@ function renderAttachmentRow() {
 
     const chip = document.createElement('span');
     chip.className = 'attachment-chip';
-    chip.textContent = `📄 ${doc.filename}`;
+    chip.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>';
+    chip.appendChild(document.createTextNode(doc.filename));
     group.appendChild(chip);
 
     const removeBtn = document.createElement('button');
@@ -626,11 +627,15 @@ function addReactionControls(card, query_id) {
   controls.className = 'reaction-controls';
   const canSubmit = Boolean(query_id);
 
-  [['up', '👍', 'Helpful'], ['down', '👎', 'Not helpful']].forEach(([reaction, icon, label]) => {
+  const REACTION_ICONS = {
+    up: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>',
+    down: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>',
+  };
+  [['up', 'Helpful'], ['down', 'Not helpful']].forEach(([reaction, label]) => {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'reaction-btn';
-    button.textContent = icon;
+    button.innerHTML = REACTION_ICONS[reaction];
     button.title = canSubmit ? label : 'Feedback is available for new responses.';
     button.setAttribute('aria-label', label);
     button.disabled = !canSubmit;
