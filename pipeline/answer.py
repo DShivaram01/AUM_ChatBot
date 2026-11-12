@@ -96,9 +96,21 @@ class GeneratedOnlyRepetitionGuard(LogitsProcessor):
     outputs: "$30" for "$35", "every 15 minutes" for 12, "extension 3410"
     for 4410, "Shutttle" / "Willlow" when the name had already appeared.
     That breaks every grounded pipeline (COS / Housing / Document / Quiz),
-    whose whole job is to repeat the context faithfully."""
+    whose whole job is to repeat the context faithfully.
 
-    def __init__(self, prompt_len: int, ngram: int = _NO_REPEAT_NGRAM, penalty: float = _REPETITION_PENALTY,
+    The same mechanism, scoped to just the generated tokens, still misfires
+    on quiz.py's multiple-choice generation: a question's own options
+    routinely need to repeat the same lead-in phrase several times (e.g.
+    four options that all start "Aligning a character from..."). Banning
+    that repeated 4-gram outright forces the model onto a different token
+    for the repeat, and Mistral's subword vocabulary has separate tokens
+    per capitalization, so the forced alternative often lands on a mangled
+    case variant of the same word ("AlignING", "Alignning") instead of a
+    different word. ngram=None (quiz.py's calls) disables that hard ban
+    while keeping the softer repetition_penalty, which only discourages
+    repeats instead of forcing a token substitution."""
+
+    def __init__(self, prompt_len: int, ngram: int | None = _NO_REPEAT_NGRAM, penalty: float = _REPETITION_PENALTY,
                  banned_sequences: list[list[int]] | None = None):
         self.prompt_len, self.ngram, self.penalty = prompt_len, ngram, penalty
         # Token sequences whose _AVOID_NGRAM-grams must not be reproduced (quiz:
@@ -124,7 +136,7 @@ class GeneratedOnlyRepetitionGuard(LogitsProcessor):
         picked = torch.where(picked < 0, picked * self.penalty, picked / self.penalty)
         scores = scores.scatter(1, generated, picked)
         for row, tokens in enumerate(generated.tolist()):
-            banned = self._banned(tokens, [tokens], self.ngram)
+            banned = self._banned(tokens, [tokens], self.ngram) if self.ngram is not None else []
             banned += self._banned(tokens, self.banned_sequences, _AVOID_NGRAM)
             if banned:
                 scores[row, banned] = -float("inf")
@@ -218,6 +230,7 @@ def generate_streaming(
     avoid_texts: list[str] | None = None,
     do_sample: bool = False,
     temperature: float = 0.7,
+    no_repeat_ngram: int | None = _NO_REPEAT_NGRAM,
 ):
     MAX_CHARS = _PROMPT_MAX_CHARS
     if len(prompt) > MAX_CHARS:
@@ -265,6 +278,7 @@ def generate_streaming(
         logits_processor=LogitsProcessorList(
             [GeneratedOnlyRepetitionGuard(
                 int(inputs["input_ids"].shape[1]),
+                ngram=no_repeat_ngram,
                 banned_sequences=[tokenizer(t, add_special_tokens=False)["input_ids"] for t in (avoid_texts or [])],
             )]
         ),
