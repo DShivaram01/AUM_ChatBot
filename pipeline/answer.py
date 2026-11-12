@@ -357,8 +357,14 @@ def _format_chooser_list(cands, qinfo):
             f"   Mentor: {mentor}"
         )
     parts = ["I found the following projects"]
-    if qinfo.get("dept_hint"):
-        parts.append(f"in {qinfo['dept_hint'].title()}")
+    # retrieve_cos_rrf() can fall back to candidates outside dept_hint when
+    # that department's own matches read as weak evidence (see its
+    # docstring note on the dept-filter retry) -- only claim the department
+    # here when every shown result actually belongs to it, so the header
+    # never describes results it isn't showing.
+    dept_hint = qinfo.get("dept_hint")
+    if dept_hint and all(dept_hint in c["meta"].get("departments", []) for c in show):
+        parts.append(f"in {dept_hint.title()}")
     if qinfo.get("year_hint"):
         parts.append(f"from {qinfo['year_hint']}")
     header = " ".join(parts) + ":"
@@ -567,7 +573,17 @@ def build_cos_answer_streaming(
     trace.threshold_cutoff = mean + SIGMA * std
     trace.threshold_passed = is_strong
 
-    if not is_strong:
+    # A dept_hint/year_hint match is a ground-truth metadata filter, not a
+    # fuzzy text guess -- TYPE_PERSON already skips the cross-encoder floor
+    # above for the same reason (exact name match). The free-text evidence
+    # floor exists to catch vague list-type asks ("show me some projects")
+    # with nothing but noisy BM25/FAISS hits backing them; it should not
+    # also reject a browse-by-department-or-year request whose candidates
+    # are already confirmed to match, just because their abstracts don't
+    # happen to read as topically similar to the query's wording.
+    has_structured_filter = bool(qinfo.get("dept_hint") or qinfo.get("year_hint"))
+
+    if not is_strong and not (qinfo["is_broad"] and has_structured_filter):
         msg = (
             "I could not find sufficiently relevant COS symposium projects matching your query.\n"
             "Try asking about a specific department, year, mentor, or project title."
