@@ -9,6 +9,7 @@ from collections.abc import Iterator
 from datetime import datetime
 
 import config
+import core.course_service as course_service
 from core.document_service import DocumentService
 from core.runtime_manager import RuntimeManager
 from pipeline.answer import (
@@ -39,6 +40,19 @@ from pipeline.semantic_router import classify_topic_hybrid, classify_topic_seman
 _DOCUMENT_INSUFFICIENT_EVIDENCE = (
     "I could not find enough information in the uploaded document to answer that."
 )
+
+# document_id -> a custom insufficient-evidence message to use in place of
+# _DOCUMENT_INSUFFICIENT_EVIDENCE above. Populated by start_assignment_chat()
+# for the ephemeral per-session documents it ingests from assignment content,
+# so a student asking about an assignment gets pointed at their instructor
+# instead of the generic "uploaded document" wording. In-memory and
+# unbounded by design, same as DocumentStore/_session_pending/_session_
+# history in server/api_server.py -- entries become unreachable once the
+# underlying document expires (DocumentStore's 24h TTL) but are never
+# actively evicted; this process is not expected to run for long enough
+# between restarts for that to matter (see those modules for the same
+# accepted tradeoff).
+_ASSIGNMENT_CONTACT_MESSAGES: dict[str, str] = {}
 
 
 def _document_cite(hit: dict) -> str:
@@ -73,6 +87,32 @@ class AssistantService:
 
     def delete_document(self, document_id: str, session_id: str) -> None:
         self.documents.delete(document_id, session_id)
+
+    def start_assignment_chat(self, course_id: str, assignment_id: str, session_id: str) -> dict:
+        """Ingests one assignment's content as a session-scoped document
+        (same mechanism as a student's own upload) so it can be asked
+        about through the existing document_chat() path, and registers a
+        "contact your professor" fallback for it instead of document_chat()'s
+        generic insufficient-evidence message.
+
+        Re-ingesting the same assignment in the same session is cheap and
+        idempotent (DocumentService.ingest()'s document_id is a hash of
+        session_id + content, and DocumentStore.put() just overwrites by
+        that id), so this can be called again -- e.g. if the student
+        reopens the assignment -- without tracking extra per-session state.
+        """
+        if not session_id or not session_id.strip():
+            raise ValueError("session_id is required")
+        assignment = course_service.get_assignment(course_id, assignment_id)
+        filename = f"{assignment['title']}.txt"
+        document = self.documents.ingest(filename, assignment["content"].encode("utf-8"), session_id)
+        document_id = document.version.document_id
+        instructor = assignment.get("instructor") or "your professor"
+        _ASSIGNMENT_CONTACT_MESSAGES[document_id] = (
+            "I could not find enough information in this assignment to answer that. "
+            f"Please contact {instructor} for clarification."
+        )
+        return {"document_id": document_id, "filename": filename, "title": assignment["title"]}
 
     def classify_topic(self, question: str, routing_path: list[str] | None = None) -> str:
         """Dispatches on config.AUM_ROUTER (Task 42). Default "legacy" is
@@ -243,12 +283,17 @@ class AssistantService:
         trace.threshold_passed = is_strong
 
         if not hits or not is_strong:
+            message = next(
+                (_ASSIGNMENT_CONTACT_MESSAGES[doc_id] for doc_id in document_ids
+                 if doc_id in _ASSIGNMENT_CONTACT_MESSAGES),
+                _DOCUMENT_INSUFFICIENT_EVIDENCE,
+            )
             trace.response_state = "not_found"
-            trace.final_answer = _DOCUMENT_INSUFFICIENT_EVIDENCE
+            trace.final_answer = message
             trace.full_prompt = "<redacted: evidence gate rejected, no prompt generated>"
             store_trace(trace)
             logger.info(f"[{qid}] Document evidence gate rejected (top={top:.3f})")
-            yield _DOCUMENT_INSUFFICIENT_EVIDENCE, [], "", qid
+            yield message, [], "", qid
             return
 
         # Task 56, found live with 3 real attached documents (one on-topic,

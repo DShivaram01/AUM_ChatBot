@@ -3,11 +3,23 @@ browser -- no LLM, no embeddings, no retrieval. See
 core/course_service.py's module docstring for why the data is
 fictional sample content, not a real AUM course feed."""
 
+import numpy as np
 import pytest
 from fastapi.testclient import TestClient
 
 import core.course_service as course_service
 import server.api_server as api_server
+from core.assistant_service import AssistantService
+from core.orchestrator import set_assistant_service
+from core.runtime_manager import RuntimeManager
+
+
+class _FakeEmbedder:
+    def encode(self, texts, **_kwargs):
+        values = np.zeros((len(texts), 4), dtype=np.float32)
+        for row, _text in enumerate(texts):
+            values[row, row % 4] = 1.0
+        return values
 
 
 # ---------- core/course_service.py ----------
@@ -101,4 +113,38 @@ def test_api_get_assignment_404_for_unknown_assignment():
     client = TestClient(api_server.app)
     course_id = client.get("/api/courses").json()[0]["course_id"]
     response = client.get(f"/api/courses/{course_id}/assignments/NOT_REAL")
+    assert response.status_code == 404
+
+
+def test_api_start_assignment_chat_returns_an_attachable_document_id():
+    """"Can a student converse with the assignment document" -- the client
+    attaches this document_id to a normal chat exactly like an uploaded
+    file's, so the student's questions go through the existing
+    document-grounded /api/ask(/stream) path with no extra endpoint."""
+    set_assistant_service(AssistantService(RuntimeManager(embedder=_FakeEmbedder())))
+    client = TestClient(api_server.app)
+    course_id = client.get("/api/courses").json()[0]["course_id"]
+    assignment_id = client.get(f"/api/courses/{course_id}/assignments").json()[0]["assignment_id"]
+
+    response = client.post(
+        f"/api/courses/{course_id}/assignments/{assignment_id}/chat/start",
+        json={"session_id": "asg-api-session"},
+    )
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["document_id"].startswith("doc_")
+    # Private to the session it was started in, same as an uploaded document.
+    assert client.get(
+        f"/api/documents/{body['document_id']}", params={"session_id": "someone-elses-session"},
+    ).status_code == 403
+
+
+def test_api_start_assignment_chat_404_for_unknown_assignment():
+    set_assistant_service(AssistantService(RuntimeManager(embedder=_FakeEmbedder())))
+    client = TestClient(api_server.app)
+    course_id = client.get("/api/courses").json()[0]["course_id"]
+    response = client.post(
+        f"/api/courses/{course_id}/assignments/NOT_REAL/chat/start",
+        json={"session_id": "asg-api-session"},
+    )
     assert response.status_code == 404

@@ -1044,6 +1044,13 @@ async function openAssignment(courseId, assignmentId) {
   meta.appendChild(metaSpan(assignment.course_name));
   courseViewBody.appendChild(meta);
 
+  const askBtn = document.createElement('button');
+  askBtn.type = 'button';
+  askBtn.className = 'assignment-ask-btn';
+  askBtn.textContent = 'Ask about this assignment';
+  askBtn.addEventListener('click', () => askAboutAssignment(courseId, assignmentId, assignment.title));
+  courseViewBody.appendChild(askBtn);
+
   // The actual "dump": the content field is rendered exactly as stored,
   // no processing of any kind -- see core/course_service.py's own
   // docstring on get_assignment().
@@ -1051,6 +1058,45 @@ async function openAssignment(courseId, assignmentId) {
   content.className = 'assignment-dump-content';
   content.textContent = assignment.content;
   courseViewBody.appendChild(content);
+}
+
+// Starts a fresh chat with this assignment's content attached as a
+// document, the same mechanism (and the same per-chat privacy scope --
+// see the document-attachment section's module comment) an uploaded
+// file already uses. Every following question in this chat then goes
+// through the existing document-grounded /api/ask(/stream) path with no
+// separate chat UI of its own; the server swaps in a "contact your
+// professor" fallback for this document_id instead of the generic
+// "uploaded document" one when the assignment itself doesn't have
+// enough information to answer (see AssistantService.start_assignment_chat).
+async function askAboutAssignment(courseId, assignmentId, title) {
+  startNewChat();
+  setAttachmentStatus(`Attaching "${title}"…`);
+  try {
+    const res = await fetch(
+      `${serverUrl}/api/courses/${encodeURIComponent(courseId)}/assignments/${encodeURIComponent(assignmentId)}/chat/start`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: activeChat.id }),
+      },
+    );
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.detail || `server returned ${res.status}`);
+    }
+    const started = await res.json();
+    activeChat.documentIds = [...(activeChat.documentIds || []), started.document_id];
+    activeChat.attachedDocuments = [
+      ...(activeChat.attachedDocuments || []),
+      { document_id: started.document_id, filename: started.filename },
+    ];
+    renderAttachmentRow();
+    await saveActiveChatIfNeeded();
+    setAttachmentStatus(`"${title}" attached — ask your question below.`);
+  } catch (err) {
+    setAttachmentStatus(`Couldn't attach this assignment: ${err.message}`);
+  }
 }
 
 courseBackBtn.addEventListener('click', () => {

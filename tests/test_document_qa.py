@@ -4,7 +4,9 @@ import re
 
 import numpy as np
 import pymupdf
+import pytest
 
+import core.course_service as course_service
 from core.assistant_service import AssistantService
 from core.document_service import DocumentService
 from core.runtime_manager import RuntimeManager
@@ -148,6 +150,99 @@ def test_document_chat_with_multiple_documents_does_not_cite_irrelevant_ones():
     assert "unrelated filler content" not in prompt
     assert "doc_filler1.pdf" not in prompt
     assert "doc_filler2.pdf" not in prompt
+
+
+# ---------- start_assignment_chat() -- "can a student converse with the
+# assignment document" -- ingests the real assignment content through the
+# exact same document_chat() path above, with a "contact your professor"
+# fallback swapped in for the generic "uploaded document" one. ----------
+
+def _service_with_assignment_chat_started(session_id="asg-session-a"):
+    courses = course_service.list_courses()
+    course_id = courses[0]["course_id"]
+    assignment_id = course_service.list_assignments(course_id)[0]["assignment_id"]
+    content = course_service.get_assignment(course_id, assignment_id)["content"]
+    # A real, distinctive word straight from the assignment's own content,
+    # not a hardcoded assumption about fixture wording -- robust to
+    # data/courses_data.json changing independently of this test.
+    content_word = max(re.findall(r"[a-zA-Z]{6,}", content), key=len).lower()
+
+    embedder = WordOverlapEmbedder()
+    embedder.VOCAB = [content_word, "qwertyzzyxnotpresent"]
+    service = AssistantService(RuntimeManager(embedder=embedder))
+    started = service.start_assignment_chat(course_id, assignment_id, session_id)
+    return service, started, content_word
+
+
+def test_start_assignment_chat_returns_an_attachable_document_id():
+    service, started, _word = _service_with_assignment_chat_started()
+    assert started["document_id"].startswith("doc_")
+    assert started["filename"].endswith(".txt")
+    # Same shape /api/documents' own upload response has (document_id,
+    # filename) -- the client attaches it to a chat the identical way.
+    metadata = service.get_document(started["document_id"], "asg-session-a")
+    assert metadata["document_id"] == started["document_id"]
+
+
+def test_start_assignment_chat_is_idempotent_for_the_same_session():
+    service, first, _word = _service_with_assignment_chat_started()
+    course_id = course_service.list_courses()[0]["course_id"]
+    assignment_id = course_service.list_assignments(course_id)[0]["assignment_id"]
+    second = service.start_assignment_chat(course_id, assignment_id, "asg-session-a")
+    assert first["document_id"] == second["document_id"]
+
+
+def test_start_assignment_chat_raises_key_error_for_an_unknown_assignment():
+    service = AssistantService(RuntimeManager(embedder=WordOverlapEmbedder()))
+    with pytest.raises(KeyError):
+        service.start_assignment_chat("NOT_A_REAL_COURSE", "whatever", "asg-session-a")
+
+
+def test_start_assignment_chat_requires_a_session_id():
+    service = AssistantService(RuntimeManager(embedder=WordOverlapEmbedder()))
+    course_id = course_service.list_courses()[0]["course_id"]
+    assignment_id = course_service.list_assignments(course_id)[0]["assignment_id"]
+    with pytest.raises(ValueError):
+        service.start_assignment_chat(course_id, assignment_id, "")
+
+
+def test_assignment_chat_grounded_answer_comes_only_from_the_assignment():
+    service, started, content_word = _service_with_assignment_chat_started()
+    import core.assistant_service as assistant_module
+    real_generate_streaming = assistant_module.generate_streaming
+
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300, trace=None):
+        assert "Do NOT use outside knowledge" in prompt
+        assert content_word in prompt.lower()  # the real assignment chunk IS in the prompt
+        yield f"The assignment covers {content_word}. (cited)"
+
+    assistant_module.generate_streaming = fake_generate_streaming
+    try:
+        items = list(service.document_chat(
+            f"What does the assignment say about {content_word}?",
+            [started["document_id"]], "asg-session-a",
+        ))
+    finally:
+        assistant_module.generate_streaming = real_generate_streaming
+
+    answer = items[-1][0]
+    assert content_word in answer
+
+
+def test_assignment_chat_abstention_suggests_contacting_the_professor():
+    """The whole point of the feature request: when the assignment itself
+    doesn't have enough information, the student is pointed at their
+    instructor instead of getting document_chat()'s generic "uploaded
+    document" abstention."""
+    service, started, _content_word = _service_with_assignment_chat_started()
+    items = list(service.document_chat(
+        "qwertyzzyxnotpresent in the assignment?",
+        [started["document_id"]], "asg-session-a",
+    ))
+    answer = items[-1][0]
+    assert "contact" in answer.lower()
+    assert "assignment" in answer.lower()
+    assert "uploaded document" not in answer
 
 
 def test_document_chat_denies_cross_session_access():
