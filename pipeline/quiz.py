@@ -286,6 +286,20 @@ def _question_prompt(
     )
 
 
+_LEADING_QUESTION_LABEL_RE = re.compile(r"^\s*question\s*\d*\s*[:.]?\s*", re.IGNORECASE)
+
+
+def _strip_leading_question_label(text: str) -> str:
+    """generate_quiz_basic()'s prompt asks the model to "write one...quiz
+    question", and it reliably starts its own answer with "Question:" (or
+    "Question 1:") before the actual question text. The template then
+    prepends its own "Question {n}:" label on top, producing a doubled
+    "Question 1:\nQuestion: <text>" that reads as a formatting bug to
+    anyone looking at the output. Strip the model's own label so only the
+    template's numbering shows."""
+    return _LEADING_QUESTION_LABEL_RE.sub("", text, count=1)
+
+
 def generate_quiz_basic(
     topic: str, count: int, chunks: list[str], llm_tok, llm_model, query_id: str,
 ):
@@ -336,8 +350,8 @@ def generate_quiz_basic(
             no_repeat_ngram=None,
         ):
             full = partial
-            yield "\n\n".join(parts + [f"Question {q_num}:\n{partial.strip()}"])
-        parts.append(f"Question {q_num}:\n{full.strip()}")
+            yield "\n\n".join(parts + [f"Question {q_num}:\n{_strip_leading_question_label(partial.strip())}"])
+        parts.append(f"Question {q_num}:\n{_strip_leading_question_label(full.strip())}")
 
 
 def generate_quiz(
