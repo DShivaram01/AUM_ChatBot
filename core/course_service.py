@@ -76,5 +76,6 @@ def get_assignment(course_id: str, assignment_id: str) -> dict:
                 **assignment,
                 "course_id": course["course_id"],
                 "course_name": course["course_name"],
+                "instructor": course.get("instructor", ""),
             }
     raise KeyError(f"No assignment '{assignment_id}' in course '{course_id}'")

@@ -383,6 +383,19 @@ body {
   gap: 16px;
   flex-wrap: wrap;
 }
+.assignment-ask-btn {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  margin: 0 0 16px;
+}
+.assignment-ask-btn:hover { background: var(--accent-hover); }
 .assignment-dump-content {
   white-space: pre-wrap;
   font-family: var(--sans);

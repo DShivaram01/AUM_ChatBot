@@ -125,6 +125,10 @@ class StopRequest(BaseModel):
     query_id: str
 
 
+class AssignmentChatStartRequest(BaseModel):
+    session_id: str
+
+
 class FeedbackRequest(BaseModel):
     reaction: Literal["up", "down"]
     scope: Literal["single", "conversation"]
@@ -736,6 +740,25 @@ async def get_assignment(course_id: str, assignment_id: str) -> dict:
     try:
         return course_service.get_assignment(course_id, assignment_id)
     except KeyError as exc:
+        raise _document_error(exc) from exc
+
+
+@app.post("/api/courses/{course_id}/assignments/{assignment_id}/chat/start")
+async def start_assignment_chat(course_id: str, assignment_id: str, req: AssignmentChatStartRequest) -> dict:
+    """Ingests this assignment's content as a session-scoped document (the
+    same mechanism /api/documents' upload uses) and returns a document_id
+    the client attaches to its chat the same way an uploaded file's
+    document_id would -- every following /api/ask(/stream) call then goes
+    through the existing document-grounded path with no new chat endpoint
+    needed, just a custom "contact your professor" fallback registered
+    for this document_id (see AssistantService.start_assignment_chat).
+    """
+    try:
+        return await asyncio.to_thread(
+            get_assistant_service().start_assignment_chat,
+            course_id, assignment_id, req.session_id,
+        )
+    except (ValueError, KeyError, PermissionError) as exc:
         raise _document_error(exc) from exc
 
 

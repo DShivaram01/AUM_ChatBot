@@ -24,6 +24,7 @@ open-ended questions. The COS/Housing heuristic remains a fallback only for
 those domains; otherwise fallback routing is GENERAL_AUM or GENERAL.
 """
 
+import difflib
 import re
 from collections import deque
 from dataclasses import dataclass, field
@@ -181,6 +182,33 @@ _DEPT_PATTERNS = [
     (re.compile(r"\b(psychology|psych)\b", re.IGNORECASE), "Psychology"),
 ]
 
+# Single-token fallback keywords for _fuzzy_dept_match -- "computer science"
+# is deliberately absent since it is two words and a misspelling there is
+# far rarer than on a single long department word.
+_DEPT_FUZZY_KEYWORDS = {
+    "mathematics": "Mathematics",
+    "biology": "Biology and Environmental Science",
+    "chemistry": "Chemistry",
+    "psychology": "Psychology",
+}
+_DEPT_FUZZY_CUTOFF = 0.75
+
+
+def _fuzzy_dept_match(query: str) -> Optional[str]:
+    """Catch misspelled department names (e.g. "mathemetics", "chemistery")
+    that _DEPT_PATTERNS' exact word-boundary regexes miss outright, so a
+    typo doesn't silently drop the department filter instead of applying it.
+    """
+    for word in re.findall(r"[a-z]+", query.lower()):
+        if len(word) < 5:
+            continue
+        match = difflib.get_close_matches(
+            word, _DEPT_FUZZY_KEYWORDS, n=1, cutoff=_DEPT_FUZZY_CUTOFF
+        )
+        if match:
+            return _DEPT_FUZZY_KEYWORDS[match[0]]
+    return None
+
 _STOPWORDS = {
     "what", "which", "who", "when", "where", "how", "why", "tell",
     "show", "give", "list", "find", "name", "about", "from", "with",
@@ -212,13 +240,19 @@ def classify_query(query: str) -> dict:
         result["is_broad"]  = True
         result["type"]      = "TYPE_BROAD"
 
-    # ── 2. Department (word-boundary only) ───────────────────────
+    # ── 2. Department (word-boundary exact match, then fuzzy fallback) ─
     for pattern, canonical in _DEPT_PATTERNS:
         if pattern.search(q):
             result["dept_hint"] = canonical
             result["is_broad"]  = True
             result["type"]      = "TYPE_BROAD"
             break
+    else:
+        fuzzy_canonical = _fuzzy_dept_match(q)
+        if fuzzy_canonical:
+            result["dept_hint"] = fuzzy_canonical
+            result["is_broad"]  = True
+            result["type"]      = "TYPE_BROAD"
 
     # ── 3. List intent ───────────────────────────────────────────
     if _LIST_RE.search(q):

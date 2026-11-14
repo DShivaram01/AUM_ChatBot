@@ -666,6 +666,21 @@ def _exact_person_cands(person_hints, META_LIST, TEXTS_LIST):
     } for idx in sorted_idxs]
 
 
+def _cos_evidence_passes(cands, top_n=10):
+    """Mirrors pipeline.answer._relative_threshold's pass/fail call (not
+    imported from there to avoid a circular import -- see module docstring)
+    so retrieve_cos_rrf can decide whether a dept-filtered pool is worth
+    keeping without duplicating the dept/year filtering in pipeline/answer.py.
+    """
+    scores = [c["rerank"] for c in cands[:top_n] if c.get("rerank") is not None]
+    if not scores:
+        return False
+    top  = scores[0]
+    mean = float(np.mean(scores))
+    std  = float(np.std(scores)) if len(scores) > 1 else 0.0
+    return top >= config.EVIDENCE_SCORE_FLOOR and top >= mean + config.SIGMA * std
+
+
 def _rerank(query, cands, reranker, max_rerank, qid, trace=None):
     keep   = min(len(cands), max_rerank)
     pairs  = [(query, cands[i]["text"]) for i in range(keep)]
@@ -771,45 +786,70 @@ def retrieve_cos_rrf(
 
     bm25_rank  = {int(i): rank for rank, i in enumerate(bm_idxs)}
     faiss_rank = {int(I[0][r]): r for r in range(len(I[0])) if I[0][r] != -1}
-    all_idxs   = set(bm25_rank) | set(faiss_rank)
+    base_idxs  = set(bm25_rank) | set(faiss_rank)
 
     if qinfo["year_hint"]:
-        all_idxs = {i for i in all_idxs if META_LIST[i].get("year") == qinfo["year_hint"]}
-        logger.info(f"[{query_id}] Year filter {qinfo['year_hint']}: {len(all_idxs)} remain")
-    if qinfo["dept_hint"]:
-        all_idxs = {i for i in all_idxs
-                    if qinfo["dept_hint"] in META_LIST[i].get("departments", [])}
-        logger.info(f"[{query_id}] Dept filter '{qinfo['dept_hint']}': {len(all_idxs)} remain")
+        base_idxs = {i for i in base_idxs if META_LIST[i].get("year") == qinfo["year_hint"]}
+        logger.info(f"[{query_id}] Year filter {qinfo['year_hint']}: {len(base_idxs)} remain")
 
-    if not all_idxs:
-        logger.warning(f"[{query_id}] No candidates after filters")
-        if trace: trace.t_total = (_time.time() - t_start) * 1000
-        return []
+    def _rrf_and_rerank(idxs, label):
+        if not idxs:
+            logger.warning(f"[{query_id}] No candidates ({label})")
+            return []
+        rrf = {
+            idx: (1.0 / (RRF_K + bm25_rank.get(idx, top_k_bm25)) +
+                  1.0 / (RRF_K + faiss_rank.get(idx, top_k_vec)))
+            for idx in idxs
+        }
+        sorted_idxs = sorted(rrf, key=rrf.get, reverse=True)
+        if trace: trace.rrf_total = len(sorted_idxs)
+        logger.info(f"[{query_id}] RRF combined ({label}): {len(sorted_idxs)} candidates")
+        for rank, idx in enumerate(sorted_idxs[:5], 1):
+            logger.info(f"[{query_id}]   RRF #{rank}: {rrf[idx]:.5f}  {META_LIST[idx].get('title','')[:50]}")
 
-    rrf = {
-        idx: (1.0 / (RRF_K + bm25_rank.get(idx, top_k_bm25)) +
-              1.0 / (RRF_K + faiss_rank.get(idx, top_k_vec)))
-        for idx in all_idxs
-    }
-    sorted_idxs = sorted(rrf, key=rrf.get, reverse=True)
-    if trace: trace.rrf_total = len(sorted_idxs)
-    logger.info(f"[{query_id}] RRF combined: {len(sorted_idxs)} candidates")
-    for rank, idx in enumerate(sorted_idxs[:5], 1):
-        logger.info(f"[{query_id}]   RRF #{rank}: {rrf[idx]:.5f}  {META_LIST[idx].get('title','')[:50]}")
+        built = [{
+            "idx": idx,
+            "vec":      float(D[0][faiss_rank[idx]]) if idx in faiss_rank else 0.0,
+            "bm25":     float(bm_scores[idx])        if idx < len(bm_scores) else 0.0,
+            "combined": rrf[idx], "rerank": None,
+            "meta":     META_LIST[idx], "text": TEXTS_LIST[idx],
+            "_bm25_rank": bm25_rank.get(idx, 9999), "_faiss_rank": faiss_rank.get(idx, 9999),
+        } for idx in sorted_idxs]
+        t0 = _time.time()
+        reranked = _rerank(query, built, reranker, max_rerank, query_id, trace)
+        if trace: trace.t_rerank = (_time.time() - t0) * 1000
+        return reranked
 
-    cands = [{
-        "idx": idx,
-        "vec":      float(D[0][faiss_rank[idx]]) if idx in faiss_rank else 0.0,
-        "bm25":     float(bm_scores[idx])        if idx < len(bm_scores) else 0.0,
-        "combined": rrf[idx], "rerank": None,
-        "meta":     META_LIST[idx], "text": TEXTS_LIST[idx],
-        "_bm25_rank": bm25_rank.get(idx, 9999), "_faiss_rank": faiss_rank.get(idx, 9999),
-    } for idx in sorted_idxs]
+    dept_hint = qinfo["dept_hint"]
+    dept_idxs = (
+        {i for i in base_idxs if dept_hint in META_LIST[i].get("departments", [])}
+        if dept_hint else base_idxs
+    )
+    if dept_hint:
+        logger.info(f"[{query_id}] Dept filter '{dept_hint}': {len(dept_idxs)} remain")
 
-    t0    = _time.time()
-    cands = _rerank(query, cands, reranker, max_rerank, query_id, trace)
+    cands = _rrf_and_rerank(dept_idxs, f"dept={dept_hint}" if dept_hint else "no dept filter")
+
+    # dept_hint can come from a topic word that merely overlaps a department
+    # name (e.g. "computational biology" -> Biology and Environmental
+    # Science) rather than a literal request to restrict to that department.
+    # Hard-filtering on it can throw away the single best, genuinely relevant
+    # candidate when it happens to be filed under a different department
+    # (e.g. a computational-biology project filed under Computer Science),
+    # leaving only weaker same-department candidates and false-rejecting the
+    # whole query at the evidence floor. If the dept-filtered pool reads as
+    # weak evidence, retry once across all departments (year filter still
+    # applied) and prefer that result if it reads as strong evidence instead.
+    if dept_hint and not _cos_evidence_passes(cands) and dept_idxs != base_idxs:
+        fallback = _rrf_and_rerank(base_idxs, "dept filter dropped, retry")
+        if _cos_evidence_passes(fallback):
+            cands = fallback
+        # else: keep the dept-filtered result -- it's the literal, truthful
+        # answer to an explicit department ask even if none of that
+        # department's abstracts read as a strong textual match, and that
+        # beats silently substituting unrelated departments' top hits.
+
     if trace:
-        trace.t_rerank = (_time.time() - t0) * 1000
         trace.candidates = []
         for rank, c in enumerate(cands[:10], 1):
             m = c["meta"]

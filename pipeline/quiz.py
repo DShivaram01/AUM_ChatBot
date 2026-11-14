@@ -286,6 +286,20 @@ def _question_prompt(
     )
 
 
+_LEADING_QUESTION_LABEL_RE = re.compile(r"^\s*question\s*\d*\s*[:.]?\s*", re.IGNORECASE)
+
+
+def _strip_leading_question_label(text: str) -> str:
+    """generate_quiz_basic()'s prompt asks the model to "write one...quiz
+    question", and it reliably starts its own answer with "Question:" (or
+    "Question 1:") before the actual question text. The template then
+    prepends its own "Question {n}:" label on top, producing a doubled
+    "Question 1:\nQuestion: <text>" that reads as a formatting bug to
+    anyone looking at the output. Strip the model's own label so only the
+    template's numbering shows."""
+    return _LEADING_QUESTION_LABEL_RE.sub("", text, count=1)
+
+
 def generate_quiz_basic(
     topic: str, count: int, chunks: list[str], llm_tok, llm_model, query_id: str,
 ):
@@ -327,10 +341,17 @@ def generate_quiz_basic(
         for partial in generate_streaming(
             prompt, llm_tok, llm_model,
             query_id=f"{query_id}-basic-q{q_num}", max_new_tokens=320,
+            # A real MCQ's own options legitimately repeat the same lead-in
+            # phrase (e.g. "Aligning a character from..." in three of four
+            # options) -- the default hard no-repeat-ngram ban forces the
+            # model onto a mangled case variant of the repeated word instead
+            # ("AlignING", "Alignning"). See GeneratedOnlyRepetitionGuard's
+            # docstring in pipeline/answer.py.
+            no_repeat_ngram=None,
         ):
             full = partial
-            yield "\n\n".join(parts + [f"Question {q_num}:\n{partial.strip()}"])
-        parts.append(f"Question {q_num}:\n{full.strip()}")
+            yield "\n\n".join(parts + [f"Question {q_num}:\n{_strip_leading_question_label(partial.strip())}"])
+        parts.append(f"Question {q_num}:\n{_strip_leading_question_label(full.strip())}")
 
 
 def generate_quiz(
@@ -399,6 +420,11 @@ def generate_quiz(
                 # generate_streaming's do_sample docstring note).
                 do_sample=attempt > 1,
                 temperature=_RETRY_TEMPERATURES.get(attempt, 0.7),
+                # See generate_quiz_basic()'s identical no_repeat_ngram note:
+                # a question's own four options legitimately repeat shared
+                # lead-in phrasing, which the default hard ban mangles into
+                # a case-garbled variant instead of allowing the repeat.
+                no_repeat_ngram=None,
             ):
                 full = partial
             try:

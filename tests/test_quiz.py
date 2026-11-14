@@ -247,6 +247,29 @@ def test_generate_quiz_basic_splits_chunks_evenly_and_skips_validation():
     assert "not json, just prose for QZtest-basic-q1" in answer
 
 
+def test_generate_quiz_basic_strips_the_models_own_question_label():
+    """The model reliably starts its own answer with "Question:" (or
+    "Question 1:") since the prompt asks it to write one -- the template
+    then prepends its own "Question {n}:" on top of that, which used to
+    read as a doubled "Question 1:\nQuestion: <text>" formatting bug."""
+    import pipeline.quiz as quiz_module
+    real_generate_streaming = quiz_module.generate_streaming
+
+    def fake_generate_streaming(prompt, tokenizer, model, query_id=None, max_new_tokens=300, **_kwargs):
+        yield "Question: What is the capital of France?\n\nA) Lyon\nB) Paris\nC) Nice\nD) Caen\n\nCorrect Answer: B"
+
+    quiz_module.generate_streaming = fake_generate_streaming
+    try:
+        answer = ""
+        for partial in generate_quiz_basic("topic", 1, ["chunk"], None, None, "QZtest2"):
+            answer = partial
+    finally:
+        quiz_module.generate_streaming = real_generate_streaming
+
+    assert "Question 1:\nQuestion:" not in answer
+    assert answer.startswith("Question 1:\nWhat is the capital of France?")
+
+
 def _drain(gen) -> tuple[str, str]:
     """quiz_basic_document()/summarize_document() are generators now,
     streaming (text, sources, trace_placeholder, query_id) 4-tuples like
